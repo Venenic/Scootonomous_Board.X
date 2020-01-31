@@ -219,4 +219,7 @@ void initializeUART(void)
     
     U1CON0bits.TXEN = 1; //[5] Enable to transmitter 
      U1CON1bits.ON = 1; // [7] //Enable Serial Port
+     
+    PIE4bits.U1TXIE = 1; // [1] Enable UART 1 Transmits enable
+
 }
