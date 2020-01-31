@@ -10,8 +10,12 @@ This file initializes the PIC hardware
 ****************************************************************/
 
 #include <xc.h>
+
+#include "hardwareDefinitions.h"
 #include "initializeHardware.h"
 #include "initializeOscillator.h"
+#include "loadCells.h"
+
 #include "device_config.h"
 
 void initializeInterrupts(void);
@@ -22,18 +26,13 @@ void initializeUART(void);
 void initializeHardware(void)
 {
 	initializeOscillator();
-    
-    TRISBbits.TRISB0 = OUTPUT_PIN;
-    ANSELBbits.ANSELB0 = 0; //[0] Set as digital input for IOC
-    //TODO: Give #define names to TRIS bits
+    initializeLoadCells();
     
     TRISBbits.TRISB4 = OUTPUT_PIN;
     
-    
-    RB0PPS = 0x19; //RBO configured as PWM1_P2 output
     RB4PPS = 0x20; //RB4 configured as TX1 output
     
-    initializeADC_CLK();
+	initializeADC_CLK();
     initializeInterrupts();
     initializeUART();
     

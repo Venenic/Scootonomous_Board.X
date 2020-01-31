@@ -7,6 +7,8 @@
       <itemPath>device_config.h</itemPath>
       <itemPath>initializeHardware.h</itemPath>
       <itemPath>initializeOscillator.h</itemPath>
+      <itemPath>loadCells.h</itemPath>
+      <itemPath>hardwareDefinitions.h</itemPath>
     </logicalFolder>
     <logicalFolder name="LinkerScript"
                    displayName="Linker Files"
@@ -19,6 +21,7 @@
       <itemPath>device_config.c</itemPath>
       <itemPath>initializeHardware.c</itemPath>
       <itemPath>initializeOscillator.c</itemPath>
+      <itemPath>loadCells.c</itemPath>
     </logicalFolder>
     <logicalFolder name="ExternalFiles"
                    displayName="Important Files"

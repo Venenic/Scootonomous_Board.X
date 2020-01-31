@@ -12,7 +12,8 @@ This file initializes the system oscillator with the following parameters:
 -Fosc = 64MHz
 
 *******************************************************************************/
-
+#ifndef INITIALIZEOSCILLATOR_H
+#define	INITIALIZEOSCILLATOR_H
 
 //so initializeHardware: -------------------------------------------------------
 // Parameters:		void
@@ -26,8 +27,7 @@ This file initializes the system oscillator with the following parameters:
 //------------------------------------------------------------------------------
 void initializeOscillator(void);
 
-#ifndef INITIALIZEOSCILLATOR_H
-#define	INITIALIZEOSCILLATOR_H
+
 
 
 

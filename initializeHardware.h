@@ -8,18 +8,7 @@ Date:		Jan 27, 2020
 #ifndef INITIALIZEHARDWARE_H
 #define	INITIALIZEHARDWARE_H
 
-#define INPUT_PIN 1
-#define OUTPUT_PIN 0
-
 void initializeHardware(void);
-
-#ifdef	__cplusplus
-extern "C" {
-#endif
-
-#ifdef	__cplusplus
-}
-#endif
 
 #endif	/* INITIALIZEHARDWARE_H */
 

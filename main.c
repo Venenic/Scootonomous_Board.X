@@ -10,7 +10,6 @@
 
 #include "device_config.h"
 #include "initializeHardware.h"
-#include "initializeOscillator.h"
 
  volatile char point = 0;
  char hello_world [] = "Hello World \n";
