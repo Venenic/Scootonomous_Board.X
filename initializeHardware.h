@@ -12,8 +12,6 @@ Date:		Jan 27, 2020
 #define OUTPUT_PIN 0
 
 void initializeHardware(void);
-void initializeADC_CLK(void);
-void initializeOscillator(void);
 
 #ifdef	__cplusplus
 extern "C" {
