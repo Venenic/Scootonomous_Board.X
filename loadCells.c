@@ -25,6 +25,8 @@ ADC clock:
 #include "loadCells.h"
 #include "hardwareDefinitions.h"
 
+volatile unsigned char pulseCount = 0;
+
 //so initializeLoadCells: ------------------------------------------------------
 // Parameters:		void
 // Returns:			void 
@@ -40,8 +42,10 @@ ADC clock:
 // Created by:		Kyle Hedges 
 // Last Modified:	Jan 31, 2020
 //------------------------------------------------------------------------------
+
 void __interrupt(low_priority,irq(PWM1),base(8)) Default_ISR_1()
 {
+	//pulseCount++;
     PWM1GIRbits.S1P1IF = 0; // [0] Clear P1 interrupt flag
 }
 
@@ -105,6 +109,9 @@ void initializeLoadCells(void)
 	
 	PWM1CONbits.LD = 0; //[2] Period and duty cycle load is disabled 
 	
+	//Peripheral Interrupt Priority Register 4
+	IPR4bits.PWM1IP = 0; // [7] Parameter interrupt is low priority
+	
 	//Peripheral Interrupt Enable Register 4
 	PIE4bits.PWM1IE= 1; // [7] Enable parameter interrupts
 	
@@ -135,8 +142,32 @@ void initializeLoadCells(void)
 	*/
 }
 
+
+//so enableADC_CLK: ------------------------------------------------------
+// Parameters:		void
+// Returns:			void 
+//
+// Description: 	Enables the PWM module
+//
+// Created by:		Kyle Hedges 
+// Last Modified:	Jan 31, 2020
+//------------------------------------------------------------------------------
 void enableADC_CLK(void)
 {
 	PWM1CONbits.EN = 1; //[7] Enable the PWM module
+}
+
+//so enableADC_CLK: ------------------------------------------------------
+// Parameters:		void
+// Returns:			void 
+//
+// Description: 	Disables the PWM module
+//
+// Created by:		Kyle Hedges 
+// Last Modified:	Jan 31, 2020
+//------------------------------------------------------------------------------
+void disableADC_CLK(void)
+{
+	PWM1CONbits.EN = 0; //[7] Disable the PWM module
 }
 

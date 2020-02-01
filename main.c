@@ -28,6 +28,12 @@ void __interrupt(low_priority,irq(U1TX),base(8)) Default_ISR_2()
     point++;
 }
 
+//Default interrupt case. Should never be called
+void __interrupt(low_priority, irq(default), base(8)) Default()
+{
+  
+}
+
 //Note: Use unsigned short long to hold load cell ADC values.
 void main(void) {   
   

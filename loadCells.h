@@ -39,12 +39,24 @@ ADC clock:
 // Description: 	Initializes the PWM clock used to access the Hx711 and the 
 //					negative edge IOC used to read in the data. Additional pins 
 //					are configured as inputs to recieve this data.
-//
-// Created by:		Kyle Hedges 
-// Last Modified:	Jan 31, 2020
 //------------------------------------------------------------------------------
 void initializeLoadCells(void);
+
+//so enableADC_CLK: ------------------------------------------------------
+// Parameters:		void
+// Returns:			void 
+//
+// Description: 	Enables the PWM module
+//------------------------------------------------------------------------------
 void enableADC_CLK(void);
+
+//so enableADC_CLK: ------------------------------------------------------
+// Parameters:		void
+// Returns:			void 
+//
+// Description: 	Disables the PWM module
+//------------------------------------------------------------------------------
+void disableADC_CLK(void);
 
 
 
