@@ -26,8 +26,11 @@ ADC clock:
 //PWM output pin (RB0) setup definitions
 #define ADC_CLK_TRIS TRISBbits.TRISB0 
 #define ADC_CLK_ANSEL ANSELBbits.ANSELB0 
-#define RB0_SOURCE RB0PPS 
-#define PWM1_P2_OUT 0x19 
+#define ADC_CLK_PPS RB0PPS 
+#define PWM1_P1_OUT 0x18 //PWM1_P2 output source identifier
+
+//25 -> Gain of 128
+//27 -> Gain of 64
 
 //so initializeLoadCells: ------------------------------------------------------
 // Parameters:		void
@@ -41,6 +44,7 @@ ADC clock:
 // Last Modified:	Jan 31, 2020
 //------------------------------------------------------------------------------
 void initializeLoadCells(void);
+void enableADC_CLK(void);
 
 
 

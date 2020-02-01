@@ -11,6 +11,7 @@ This file handles the operation of the four load cells used to measure the
 center of gravity on the board's surface.
 
 ADC clock:
+					-PWM1_P1 module used
 //					-RB0 (Pin 33)
 //					-500kHz, 50% DC
 //					-Interrupt on negative change
@@ -32,6 +33,30 @@ ADC clock:
 //					negative edge IOC used to read in the data. Additional pins 
 //					are configured as inputs to recieve this data.
 //
+// 500kHz clock can be generated using the period or prescaler registers
+// Currently uses the period register only
+// Frequency: F = 64MHz/128 = 500kHz (Period register = 127)
+//
+// Created by:		Kyle Hedges 
+// Last Modified:	Jan 31, 2020
+//------------------------------------------------------------------------------
+void __interrupt(low_priority,irq(PWM1),base(8)) Default_ISR_1()
+{
+    PWM1GIRbits.S1P1IF = 0; // [0] Clear P1 interrupt flag
+}
+
+//so initializeLoadCells: ------------------------------------------------------
+// Parameters:		void
+// Returns:			void 
+//
+// Description: 	Initializes the PWM clock used to access the Hx711 and the 
+//					negative edge IOC used to read in the data. Additional pins 
+//					are configured as inputs to recieve this data.
+//
+// 500kHz clock can be generated using the period or prescaler registers
+// Currently uses the period register only
+// Frequency: F = 64MHz/128 = 500kHz (Period register = 127)
+//
 // Created by:		Kyle Hedges 
 // Last Modified:	Jan 31, 2020
 //------------------------------------------------------------------------------
@@ -39,8 +64,79 @@ void initializeLoadCells(void)
 {
 	ADC_CLK_TRIS = OUTPUT_PIN;
 	ADC_CLK_ANSEL = DIGITAL_INPUT_PIN;
+	ADC_CLK_PPS = PWM1_P1_OUT; //PWM1_P2 output PPS configuration
 	
-	RB0_SOURCE = PWM1_P2_OUT; //RB0 configured as PWM1_P2 output
+	//PRM Control Register
+    PWM1CONbits.EN = 0; //[7] PWM module is disabled
+    PWM1CONbits.LD = 1; //[2] Period and duty cycle load is enabled (Redundant)
+    //PWM1CONbits.ERSPOL = 0; //[1]External Reset is active-high 
+    //PWM1CONbits.ERSNOW = 0; //[0]Stop counter at end of period(External reset)
 	
+	 //Clock source
+    PWM1CLKbits.CLK = 0b00011; // [4:0] HFINTOSC source
+
+    //Period register
+    //128 Clock cycles per PWM period. F = 64MHz/128 = 500kHz
+    PWM1PRHbits.PRH = 0;  // [15:8] High byte
+    PWM1PRLbits.PRL = 127; // [7:0] Lower byte
+	
+	//Clock Prescaler Register (Prescaler divides clock signal))
+    PWM1CPREbits.CPRE = 0; //[7:0] no prescaler (division of 0+1 = 1)
+	
+	//Interrupt Register
+    //PWM1GIRbits.S1P2IF = 0; // [1] Clear P2 interrupt flag (Unused)
+    PWM1GIRbits.S1P1IF = 0; // [0] Clear P1 interrupt flag
+	
+	//Interrupt Enable Register
+    PWM1GIEbits.S1P2IE = 0; // [1] P2 match interrupt disabled 
+    PWM1GIEbits.S1P1IE = 1; // [0] P1 match enabled
+	
+	//PWM Slice "a" Configuration Register
+    PWM1S1CFGbits.POL2 = 0; // [7] P2 output true is high
+    PWM1S1CFGbits.POL1 = 0; // [6] P1 output true is high
+    PWM1S1CFGbits.PPEN = 0; // [3] Push-Pull is disabled
+    PWM1S1CFGbits.MODE = 0b000; // [2:0] P1,P2 mode is left aligned
+	
+	//Slice "a" Parameter 1 Register
+    //With left aligned: number of clock periods for which P1 output is high
+    //0x0400 = 64. 64MHz/64 = 1MHz = 1us on time (and 1us off time) for 50%DC
+    PWM1S1P1Hbits.S1P1H = 0x00; // [15:8] //High byte
+    PWM1S1P1Lbits.S1P1L = 0x40; // [7:0] //Low byte
+	
+	PWM1CONbits.LD = 0; //[2] Period and duty cycle load is disabled 
+	
+	//Peripheral Interrupt Enable Register 4
+	PIE4bits.PWM1IE= 1; // [7] Enable parameter interrupts
+	
+	
+	  
+	/* Following PWM1 registers are not relevant to current implementation:
+	
+	//External Reset Source
+    PWM1ERSbits.ERS = 0b00000; // [4:0] All external resets disabled
+	
+	//Auto-load Trigger Source Select Register
+    PWM1LDSbits.LDS = 0b00000; // [4:0] Auto-load disabled
+	
+	 //Period Interrupt Postscale Value
+    PWM1PIPOSbits.PIPOS = 0; //[7:0] Set postscale value
+	
+	//Slice "a" Parameter 2 Register (Unused for this design)
+    //With left aligned: number of clock periods for which P2 output is high
+    //0x0400 = 64. 64MHz/64 = 1MHz = 1us on time (and 1us off time) for 50%DC
+    PWM1S1P2Hbits.S1P2H = 0x00; // [15:8] //High byte
+    PWM1S1P2Lbits.S1P2L = 0x40; // [7:0] //Low byte
+	
+	//Mirror copies of all PWMxLD bits (To synchronize load event)
+    PWMLOADbits.MPWM1LD = 0; //[0] No PWM1 values transfers pending
+	
+	//Mirror copies of all PWMxEN bits (turn on all at once))
+    PWMENbits.MPWM1EN = 0; //[0] PWM1 is not enabled
+	*/
+}
+
+void enableADC_CLK(void)
+{
+	PWM1CONbits.EN = 1; //[7] Enable the PWM module
 }
 

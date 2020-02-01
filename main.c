@@ -15,10 +15,7 @@
  char hello_world [] = "Hello World \n";
 
 //Interrupt function for ADCPWM
-void __interrupt(low_priority,irq(IOC),base(8)) Default_ISR_3()
-{
-    IOCBFbits.IOCBF0 = 0;
-}
+
 
 void __interrupt(low_priority,irq(U1TX),base(8)) Default_ISR_2()
 {

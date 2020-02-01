@@ -27,85 +27,16 @@ void initializeHardware(void)
 {
 	initializeOscillator();
     initializeLoadCells();
+	enableADC_CLK();
     
     TRISBbits.TRISB4 = OUTPUT_PIN;
     
     RB4PPS = 0x20; //RB4 configured as TX1 output
     
-	initializeADC_CLK();
+	initializeUART();
     initializeInterrupts();
-    initializeUART();
     
-}
-
-
-
-//Initialize a 500kHz square wave with 50% Duty Cycle;
-//Utilizes PWM module 1, slice 1. Slice 2 is unused
-void initializeADC_CLK(void)
-{
-    //External Reset Source
-    PWM1ERSbits.ERS = 0b00000; // [4:0] All external resets disabled
     
-    //Clock source
-    PWM1CLKbits.CLK = 0b00011; // [4:0] HFINTOSC source
-    
-    //Auto-load Trigger Source Select Register
-    PWM1LDSbits.LDS = 0b00000; // [4:0] Auto-load disabled
-    
-    //500kHz can be obtained using the period or the prescaler register
-    
-    //Period register
-    //128 Clock cycles per PWM period. F = 64MHz/128 = 500kHz
-    PWM1PRHbits.PRH = 0;  // [15:8] High byte
-    PWM1PRLbits.PRL = 127; // [7:0] Lower byte
-    
-    //Clock Prescaler Register (Prescaler divides clock signal))
-    PWM1CPREbits.CPRE = 0; //[7:0] no prescaler (division of 0+1 = 1)
-    
-    //Period Interrupt Postscale Value
-    PWM1PIPOSbits.PIPOS = 0; //[7:0] no postscale value
-    
-    //Interrupt Register
-    PWM1GIRbits.S1P2IF = 0; // [1] Clear P2 interrupt flag
-    PWM1GIRbits.S1P1IF = 0; // [0] Clear P1 interrupt flag
-    
-    //Interrupt Enable Register
-    PWM1GIEbits.S1P2IE = 0; // [1] P2 interrupt disabled
-    PWM1GIEbits.S1P1IE = 0; // [0] P1 interrupt disabled
-    
-    //PRM Control Register
-    PWM1CONbits.EN = 0; //[7] PWM module is disabled
-    PWM1CONbits.LD = 0; //[2] Period and duty cycle load disabled
-    PWM1CONbits.ERSPOL = 0; //[1] External Reset is active-high 
-    PWM1CONbits.ERSNOW = 0; //[0] Stop counter at end of period
-    
-    //PWM Slice "a" Configuration Register
-    PWM1S1CFGbits.POL2 = 0; // [7] P2 output true is high
-    PWM1S1CFGbits.POL1 = 0; // [6] P1 output true is high
-    PWM1S1CFGbits.PPEN = 0; // [3] Push-Pull is disabled
-    PWM1S1CFGbits.MODE = 0b000; // [2:0] P1,P2 mode is left aligned
-    
-    //Slice "a" Parameter 1 Register
-    //With left aligned: number of clock periods for which P1 output is high
-    //0x0400 = 64. 64MHz/64 = 1MHz = 1us on time (and 1us off time) for 50%DC
-    PWM1S1P1Hbits.S1P1H = 0x00; // [15:8] //High byte
-    PWM1S1P1Lbits.S1P1L = 0x40; // [7:0] //Low byte
-            
-     //Slice "a" Parameter 2 Register (Unneeded for this design)
-    //With left aligned: number of clock periods for which P2 output is high
-    //0x0400 = 64. 64MHz/64 = 1MHz = 1us on time (and 1us off time) for 50%DC
-    PWM1S1P2Hbits.S1P2H = 0x00; // [15:8] //High byte
-    PWM1S1P2Lbits.S1P2L = 0x40; // [7:0] //Low byte
-    
-         
-    //Mirror copies of all PWMxLD bits (To synchronize load event)
-    PWMLOADbits.MPWM1LD = 0; //[0] No PWM1 values transfers pending
-    
-    //Mirror copies of all PWMxEN bits (turn on all at once))
-    PWMENbits.MPWM1EN = 0; //[0] PWM1 is not enabled
-  
-    PWM1CONbits.EN = 1; //[7] PWM1 module is enabled  
 }
 
 void initializeInterrupts(void)
@@ -137,23 +68,7 @@ void initializeInterrupts(void)
     
     //Shadow Control Register
     SHADCONbits.SHADLO = 0; //[0] Default state. Not really sure what it does
-    
-    //Peripheral Interrupt Enable Register 0
-    PIE0bits.IOCIE = 1; // [7] //Enable interrupt on change 
-    
-    //Interrupt-on-Change Negative Edge Register Example
-    IOCBNbits.IOCBN0 = 1; //Interrupt enabled on pin 0 (ADC PWM output)
-    
-    //Peripheral Interrupt Request Register 0
-    IPR0bits.IOCIP = 0; // [7] Set IOC to low priority
-    
-    
-    //Peripheral Interrupt Request Register 0
-    //PIR0bits.IOCIF [7] Read only Interrupt-on-Change Flag
-    //Contains all IOC status flags and will only be cleared by clearing all flags
-    
-    //Interrupt-on-Change Flag Register
-    //IOCBFbits.IOCBF0 Set if a negative edge is detected. Must be cleared.
+ 
     
     INTCON0bits.GIEH = 1; // [7] Enable all high priority interrupts
     INTCON0bits.GIEL = 1; // [6] Enable all low priority interrupts
