@@ -9,6 +9,7 @@
       <itemPath>initializeOscillator.h</itemPath>
       <itemPath>loadCells.h</itemPath>
       <itemPath>hardwareDefinitions.h</itemPath>
+      <itemPath>serialOutput.h</itemPath>
     </logicalFolder>
     <logicalFolder name="LinkerScript"
                    displayName="Linker Files"
@@ -22,6 +23,7 @@
       <itemPath>initializeHardware.c</itemPath>
       <itemPath>initializeOscillator.c</itemPath>
       <itemPath>loadCells.c</itemPath>
+      <itemPath>serialOutput.c</itemPath>
     </logicalFolder>
     <logicalFolder name="ExternalFiles"
                    displayName="Important Files"

@@ -15,6 +15,7 @@ This file initializes the PIC hardware
 #include "initializeHardware.h"
 #include "initializeOscillator.h"
 #include "loadCells.h"
+#include "serialOutput.h"
 
 #include "device_config.h"
 
@@ -28,15 +29,8 @@ void initializeHardware(void)
 	initializeOscillator();
     initializeLoadCells();
 	enableADC_CLK();
-    
-    TRISBbits.TRISB4 = OUTPUT_PIN;
-    
-    RB4PPS = 0x20; //RB4 configured as TX1 output
-    
-	initializeUART();
-    initializeInterrupts();
-    
-    
+	initializeSerialOutput();
+    initializeInterrupts(); 
 }
 
 void initializeInterrupts(void)
@@ -75,28 +69,3 @@ void initializeInterrupts(void)
     
 }
 
-void initializeUART(void)
-{
-    //UART1 Control Register 0
-    U1CON0bits.BRGS = 1; // [7] Baud Rate speed select used for baud rate calculation
-    U1CON0bits.TXEN = 0; //[5] Disable to transmitter for setup
-    U1CON0bits.RXEN = 0; // [4] Disable the receiver
-    U1CON0bits.MODE = 0b0000; // [3:0] Set to Asynchronous 8-bit mode
-    
-    //UART1 Control Register 1
-    U1CON1bits.ON = 0; // [7] //Serial port disabled for setup
-    
-    //UART Baud Rate Generator
-    //Baud rate = Fosc*(1+(BRGS*3))/(16*(BRG-1))
-    //          = 64MHz * (1 + 1*3)/(16*(1668-1))
-    U1BRGHbits.BRGH = 6; // [15:8] High byte
-    U1BRGLbits.BRGL = 132; // [7:0] Low byte
-    
-    U1CON0bits.TXEN = 1; //[5] Enable to transmitter 
-     U1CON1bits.ON = 1; // [7] //Enable Serial Port
-    
-	//Peripheral Interrupt Priority Register 4
-	IPR4bits.U1TXIP = 0; // [3] Transmit interrupt is low priority
-    PIE4bits.U1TXIE = 1; // [1] Enable UART 1 Transmits interrutpt enable
-	
-}

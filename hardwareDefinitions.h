@@ -20,4 +20,10 @@ This file contains defines for various register level hardware values.
 #define DIGITAL_INPUT_PIN 0
 #define ANALOG_INPUT_PIN 1 
 
+#define LOW_PRIORITY 0
+#define HIGH_PRIORITY 1
+
+#define ENABLE_INTERRUPT 1
+#define DISABLE_INTERRUPT 0
+
 #endif	/* HARDWAREDEFINITIONS_H */

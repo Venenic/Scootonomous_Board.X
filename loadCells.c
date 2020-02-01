@@ -2,7 +2,7 @@
 File:			loadCells.h
 Authors:		Kyle Hedges
 Date:			Jan 31, 2020
-Last Modified:	Jan 31, 2020
+Last Modified:	Feb 1, 2020
 (c) 2020 Lakehead University
 
 TARGET DEVICE:PIC18F45K22
@@ -11,14 +11,14 @@ This file handles the operation of the four load cells used to measure the
 center of gravity on the board's surface.
 
 ADC clock:
-					-PWM1_P1 module used
-//					-RB0 (Pin 33)
-//					-500kHz, 50% DC
-//					-Interrupt on negative change
-//
-//					Data pins:
-//					-Cell [3:0] use RD[4:7] (Pins 27-30)
-//
+					-RB0 (Pin 33)
+					-PWM1 module
+					-500kHz, 50% DC
+					-Low priority intterupt at end of ton
+
+					Data pins:
+					-Load cells [3:0] use RD[4:7] (Pins 27-30) respectively
+
 *******************************************************************************/
 
 #include <xc.h>
@@ -27,23 +27,19 @@ ADC clock:
 
 volatile unsigned char pulseCount = 0;
 
-//so initializeLoadCells: ------------------------------------------------------
-// Parameters:		void
+//so loadCell_ISR: ------------------------------------------------------
+// Parameters:		low_priority: It is a low priority interrupt
+//					irq(PWM1): Interrupt vector source is PWM1 
+//					base(8): Base address of the vector table (8 is default)
 // Returns:			void 
 //
-// Description: 	Initializes the PWM clock used to access the Hx711 and the 
-//					negative edge IOC used to read in the data. Additional pins 
-//					are configured as inputs to recieve this data.
-//
-// 500kHz clock can be generated using the period or prescaler registers
-// Currently uses the period register only
-// Frequency: F = 64MHz/128 = 500kHz (Period register = 127)
+// Description:		Reads in the data on the negative edge of the PWM pulse and
+//					counts out the number of pulses
 //
 // Created by:		Kyle Hedges 
-// Last Modified:	Jan 31, 2020
+// Last Modified:	Feb 1, 2020
 //------------------------------------------------------------------------------
-
-void __interrupt(low_priority,irq(PWM1),base(8)) Default_ISR_1()
+void __interrupt(low_priority,irq(PWM1),base(8)) loadCell_ISR()
 {
 	//pulseCount++;
     PWM1GIRbits.S1P1IF = 0; // [0] Clear P1 interrupt flag
@@ -66,6 +62,7 @@ void __interrupt(low_priority,irq(PWM1),base(8)) Default_ISR_1()
 //------------------------------------------------------------------------------
 void initializeLoadCells(void)
 {
+	//Output pin configuration
 	ADC_CLK_TRIS = OUTPUT_PIN;
 	ADC_CLK_ANSEL = DIGITAL_INPUT_PIN;
 	ADC_CLK_PPS = PWM1_P1_OUT; //PWM1_P2 output PPS configuration
@@ -110,10 +107,10 @@ void initializeLoadCells(void)
 	PWM1CONbits.LD = 0; //[2] Period and duty cycle load is disabled 
 	
 	//Peripheral Interrupt Priority Register 4
-	IPR4bits.PWM1IP = 0; // [7] Parameter interrupt is low priority
+	IPR4bits.PWM1IP = LOW_PRIORITY; // [7] Parameter interrupt is low priority
 	
 	//Peripheral Interrupt Enable Register 4
-	PIE4bits.PWM1IE= 1; // [7] Enable parameter interrupts
+	PIE4bits.PWM1IE= ENABLE_INTERRUPT; // [7] Enable parameter interrupts
 	
 	
 	  

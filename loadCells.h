@@ -11,14 +11,14 @@ This file handles the operation of the four load cells used to measure the
 center of gravity on the board's surface.
 
 ADC clock:
-//					-RB0 (Pin 33)
-//					-PWM1 module
-//					-500kHz, 50% DC
-//					-Interrupt on negative change
-//
-//					Data pins:
-//					-Load cells [3:0] use RD[4:7] (Pins 27-30) respectively
-//
+					-RB0 (Pin 33)
+					-PWM1 module
+					-500kHz, 50% DC
+					-Low priority intterupt at end of ton
+
+					Data pins:
+					-Load cells [3:0] use RD[4:7] (Pins 27-30) respectively
+
 *******************************************************************************/
 #ifndef LOADCELLS_H
 #define	LOADCELLS_H
@@ -29,6 +29,7 @@ ADC clock:
 #define ADC_CLK_PPS RB0PPS 
 #define PWM1_P1_OUT 0x18 //PWM1_P2 output source identifier
 
+#define NUMBER_OF_PULSES 25
 //25 -> Gain of 128
 //27 -> Gain of 64
 
