@@ -1,9 +1,14 @@
-/*
- * File:   main.c
- * Author: khedg
- *
- * Created on January 27, 2020, 8:43 PM
- */
+/*******************************************************************************
+File:			loadCells.h
+Authors:		Kyle Hedges
+Date:			Jan 27, 2020
+Last Modified:	Feb 2, 2020
+(c) 2020 Lakehead University
+
+TARGET DEVICE:PIC18F45K22
+
+TODO:Insert description here
+*******************************************************************************/
 
 
 #include <xc.h>
@@ -14,19 +19,22 @@
 #include "serialOutput.h"
 #include "initializeSysTick.h" 
 #include "hardwareDefinitions.h"
+#include "binaryToString.h"
 
 volatile bool transmitString = false;
 volatile int transmitTimer = 0;
-//Interrupt function for ADCPWM
+
+char outputMessage[] = "Output num: SXXXXXXX E\n";
+
 //D0 is only being used as a test output for the system tick
 
-//Default interrupt case. Should never be called
+//Default interrupt case. 1ms tick
 void __interrupt(low_priority, irq(TMR2), base(8)) sysTick()
 {
     LATDbits.LATD0 = !LATDbits.LATD0;
     
     transmitTimer ++;
-    if(transmitTimer == 1000){
+    if(transmitTimer == 10){
         enableADC_CLK();
         transmitString = true;
         transmitTimer = 0;
@@ -44,21 +52,40 @@ void __interrupt(low_priority, irq(default), base(8)) Default()
 
 //Note: Use unsigned short long to hold load cell ADC values.
 void main(void) {   
-  
+    initializeHardware(); 
+    
     TRISDbits.TRISD0 = OUTPUT_PIN;
     LATDbits.LATD0 = 1;
     
 	char hello_world [] = "Hello World \n";
-  
-    initializeHardware(); 
-
+ 
+    __int24 testNum = 0;
+   
+    
+    unsigned char i = 0;
+    while(outputMessage[i] != ':') i++;
+   convert24Bit(testNum, &outputMessage[i+2]); //Write the number after the :
+        
+    bool countFlag = false;
+    
     while(1)                                               
     {
+        
+        if(countFlag)
+        {
+           while(outputMessage[i] != ':') i++;
+           convert24Bit(testNum, &outputMessage[i+2]); //Write the number after the :
+           countFlag = false;
+        }
+        
         if(transmitString)
         {
-            bool stuff = sendString(hello_world);
-        
-            if(stuff == true) transmitString = false;
+            bool sentString = sendString(outputMessage);
+            if(sentString == true){
+                testNum --;
+                countFlag = true;
+                transmitString = false;
+            }
         }
     }
     return;

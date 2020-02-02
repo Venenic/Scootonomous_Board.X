@@ -11,6 +11,7 @@
       <itemPath>hardwareDefinitions.h</itemPath>
       <itemPath>serialOutput.h</itemPath>
       <itemPath>initializeSysTick.h</itemPath>
+      <itemPath>binaryToString.h</itemPath>
     </logicalFolder>
     <logicalFolder name="LinkerScript"
                    displayName="Linker Files"
@@ -26,6 +27,7 @@
       <itemPath>loadCells.c</itemPath>
       <itemPath>serialOutput.c</itemPath>
       <itemPath>initializeSysTick.c</itemPath>
+      <itemPath>binaryToString.c</itemPath>
     </logicalFolder>
     <logicalFolder name="ExternalFiles"
                    displayName="Important Files"
