@@ -16,6 +16,7 @@ This file initializes the PIC hardware
 #include "initializeOscillator.h"
 #include "loadCells.h"
 #include "serialOutput.h"
+#include "initializeSysTick.h"
 
 #include "device_config.h"
 
@@ -30,6 +31,7 @@ void initializeHardware(void)
     initializeLoadCells();
 	enableADC_CLK();
 	initializeSerialOutput();
+    initializeSysTick();
     initializeInterrupts(); 
 }
 

@@ -39,9 +39,13 @@ volatile unsigned char pulseCount = 0;
 // Created by:		Kyle Hedges 
 // Last Modified:	Feb 1, 2020
 //------------------------------------------------------------------------------
-void __interrupt(low_priority,irq(PWM1),base(8)) loadCell_ISR()
+void __interrupt(high_priority,irq(PWM1),base(8)) loadCell_ISR()
 {
-	//pulseCount++;
+	pulseCount++;
+	if(pulseCount == NUMBER_OF_PULSES){
+		disableADC_CLK();
+		pulseCount = 0;
+	}
     PWM1GIRbits.S1P1IF = 0; // [0] Clear P1 interrupt flag
 }
 
@@ -56,6 +60,7 @@ void __interrupt(low_priority,irq(PWM1),base(8)) loadCell_ISR()
 // 500kHz clock can be generated using the period or prescaler registers
 // Currently uses the period register only
 // Frequency: F = 64MHz/128 = 500kHz (Period register = 127)
+// 				Frequency can be lowered if too fast for data collection
 //
 // Created by:		Kyle Hedges 
 // Last Modified:	Jan 31, 2020
@@ -77,7 +82,7 @@ void initializeLoadCells(void)
     PWM1CLKbits.CLK = 0b00011; // [4:0] HFINTOSC source
 
     //Period register
-    //128 Clock cycles per PWM period. F = 64MHz/128 = 500kHz
+    //128 Clock cycles per PWM period. F = 64MHz/127 = 500kHz
     PWM1PRHbits.PRH = 0;  // [15:8] High byte
     PWM1PRLbits.PRL = 127; // [7:0] Lower byte
 	
@@ -100,14 +105,14 @@ void initializeLoadCells(void)
 	
 	//Slice "a" Parameter 1 Register
     //With left aligned: number of clock periods for which P1 output is high
-    //0x0400 = 64. 64MHz/64 = 1MHz = 1us on time (and 1us off time) for 50%DC
+    //0x0400 = 16. 64MHz/16 = 4MHz = 0.25us on time 
     PWM1S1P1Hbits.S1P1H = 0x00; // [15:8] //High byte
-    PWM1S1P1Lbits.S1P1L = 0x40; // [7:0] //Low byte
+    PWM1S1P1Lbits.S1P1L = 0x10; // [7:0] //Low byte
 	
 	PWM1CONbits.LD = 0; //[2] Period and duty cycle load is disabled 
 	
 	//Peripheral Interrupt Priority Register 4
-	IPR4bits.PWM1IP = LOW_PRIORITY; // [7] Parameter interrupt is low priority
+	IPR4bits.PWM1IP = HIGH_PRIORITY; // [7] Parameter interrupt is low priority
 	
 	//Peripheral Interrupt Enable Register 4
 	PIE4bits.PWM1IE= ENABLE_INTERRUPT; // [7] Enable parameter interrupts
