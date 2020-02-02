@@ -2,7 +2,7 @@
 File:			loadCells.h
 Authors:		Kyle Hedges
 Date:			Jan 31, 2020
-Last Modified:	Jan 31, 2020
+Last Modified:	Feb 2, 2020
 (c) 2020 Lakehead University
 
 TARGET DEVICE:PIC18F45K22
@@ -51,7 +51,7 @@ void initializeLoadCells(void);
 //------------------------------------------------------------------------------
 void enableADC_CLK(void);
 
-//so enableADC_CLK: ------------------------------------------------------
+//so disableADC_CLK: ------------------------------------------------------
 // Parameters:		void
 // Returns:			void 
 //

@@ -2,7 +2,7 @@
 File:			serialOutput.h
 Authors:		Kyle Hedges
 Date:			Feb 1, 2020
-Last Modified:	Feb 1, 2020
+Last Modified:	Feb 2, 2020
 (c) 2020 Lakehead University
 
 TARGET DEVICE:PIC18F45K22
@@ -40,9 +40,6 @@ Serial Settings:
 //					-1 Stop bit
 //					-8 Data bits
 //					-No parity
-//
-// Created by:		Kyle Hedges 
-// Last Modified:	Feb 1, 2020
 //------------------------------------------------------------------------------
 void initializeSerialOutput(void);
 
@@ -54,9 +51,6 @@ void initializeSerialOutput(void);
 // Description:		If the UART is not busy it copies the string over and
 //					initiates the transmission process.
 //					IMPORTANT: Strings must be null terminated
-//
-// Created by:		Kyle Hedges 
-// Last Modified:	Feb 1, 2020
 //------------------------------------------------------------------------------
 bool sendString(char *);
 

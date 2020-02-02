@@ -2,7 +2,7 @@
 File:			loadCells.h
 Authors:		Kyle Hedges
 Date:			Jan 31, 2020
-Last Modified:	Feb 1, 2020
+Last Modified:	Feb 2, 2020
 (c) 2020 Lakehead University
 
 TARGET DEVICE:PIC18F45K22
@@ -94,11 +94,11 @@ void initializeLoadCells(void)
     PWM1GIRbits.S1P1IF = 0; // [0] Clear P1 interrupt flag
 	
 	//Interrupt Enable Register
-    PWM1GIEbits.S1P2IE = 0; // [1] P2 match interrupt disabled 
-    PWM1GIEbits.S1P1IE = 1; // [0] P1 match enabled
+    PWM1GIEbits.S1P2IE = DISABLE_INTERRUPT; // [1] P2 match interrupt disabled 
+    PWM1GIEbits.S1P1IE = ENABLE_INTERRUPT; // [0] P1 match enabled
 	
 	//PWM Slice "a" Configuration Register
-    PWM1S1CFGbits.POL2 = 0; // [7] P2 output true is high
+    //PWM1S1CFGbits.POL2 = 0; // [7] P2 output true is high
     PWM1S1CFGbits.POL1 = 0; // [6] P1 output true is high
     PWM1S1CFGbits.PPEN = 0; // [3] Push-Pull is disabled
     PWM1S1CFGbits.MODE = 0b000; // [2:0] P1,P2 mode is left aligned
@@ -159,7 +159,7 @@ void enableADC_CLK(void)
 	PWM1CONbits.EN = 1; //[7] Enable the PWM module
 }
 
-//so enableADC_CLK: ------------------------------------------------------
+//so disableADC_CLK: ------------------------------------------------------
 // Parameters:		void
 // Returns:			void 
 //
