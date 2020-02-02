@@ -31,11 +31,12 @@ char outputMessage[] = "Output num: SXXXXXXX E\n";
 //Default interrupt case. 1ms tick
 void __interrupt(low_priority, irq(TMR2), base(8)) sysTick()
 {
-    LATDbits.LATD0 = !LATDbits.LATD0;
+    
     
     transmitTimer ++;
     if(transmitTimer == 10){
-        enableADC_CLK();
+        LATDbits.LATD0 = !LATDbits.LATD0;
+        //enableADC_CLK();
         transmitString = true;
         transmitTimer = 0;
     }

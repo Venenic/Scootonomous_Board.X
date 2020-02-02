@@ -23,11 +23,9 @@ Serial Settings:
 
 #include "serialOutput.h"
 #include "hardwareDefinitions.h"
-
-char outputString[MAX_STRING_LENGTH]; 
-volatile unsigned char outIndex = 0;
+ 
 volatile bool senderBusy = false;
-
+char *outputString = NULL;
 //so serialOutput_ISR: ------------------------------------------------------
 // Parameters:		low_priority: It is a low priority interrupt
 //					irq(U1TX): Interrupt vector source is UART1 TX
@@ -43,18 +41,17 @@ volatile bool senderBusy = false;
 
 void __interrupt(low_priority,irq(U1TX),base(8)) serialOutput_ISR()
 {
-	U1TXB = outputString[outIndex];
+	U1TXB = *outputString;
 	
-    if(outputString[outIndex] == '\0'){
+    if(*outputString == '\0'){
 		
 		//Peripheral Interrupt Enable Register 4
 		PIE4bits.U1TXIE = DISABLE_INTERRUPT; // [1] Disable transmit interrutpt
-		
-		outIndex = 0;
+	
 		senderBusy = false;
 	}	
 	else{
-		outIndex++;
+		outputString++;
 	}
 	
 	//Peripheral Interrupt Request Register 4
@@ -125,13 +122,7 @@ bool sendString(char *message)
 	if(senderBusy) return false;
 	else 
 	{
-		char* currentCharacter = &outputString[0];
-		while (*message != '\0')
-		{
-			*currentCharacter = *message;
-			currentCharacter++;
-			message++;
-		}	
+		outputString = message;
 		
 		senderBusy = true;
 		
