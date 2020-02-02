@@ -15,9 +15,8 @@
 #include "initializeSysTick.h" 
 #include "hardwareDefinitions.h"
 
-bool transmitString = false;
-
-int transmitTimer = 0;
+volatile bool transmitString = false;
+volatile int transmitTimer = 0;
 //Interrupt function for ADCPWM
 //D0 is only being used as a test output for the system tick
 
