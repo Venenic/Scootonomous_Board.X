@@ -13,7 +13,7 @@ center of gravity on the board's surface.
 ADC clock:
 					-RB0 (Pin 33)
 					-PWM1 module
-					-500kHz, 50% DC
+					-500kHz, 0.25us ton
 					-Low priority intterupt at end of ton
 
 					Data pins:

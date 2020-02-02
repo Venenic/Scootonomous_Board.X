@@ -29,7 +29,7 @@ ADC clock:
 #define ADC_CLK_PPS RB0PPS 
 #define PWM1_P1_OUT 0x18 //PWM1_P2 output source identifier
 
-#define NUMBER_OF_PULSES 25
+#define NUMBER_OF_PULSES 3
 //25 -> Gain of 128
 //27 -> Gain of 64
 

@@ -29,7 +29,6 @@ void initializeHardware(void)
 {
 	initializeOscillator();
     initializeLoadCells();
-	enableADC_CLK();
 	initializeSerialOutput();
     initializeSysTick();
     initializeInterrupts(); 
