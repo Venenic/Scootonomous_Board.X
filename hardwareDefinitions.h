@@ -2,7 +2,7 @@
 File:			hardwareDefinitions.h
 Authors:		Kyle Hedges
 Date:			Jan 31, 2020
-Last Modified:	Jan 31, 2020
+Last Modified:	Feb 3, 2020
 (c) 2020 Lakehead University
 
 TARGET DEVICE:PIC18F45K22
@@ -25,5 +25,8 @@ This file contains defines for various register level hardware values.
 
 #define ENABLE_INTERRUPT 1
 #define DISABLE_INTERRUPT 0
+
+#define MAX_SLEW_RATE 0
+#define LIMITED_SLEW_RATE 1
 
 #endif	/* HARDWAREDEFINITIONS_H */

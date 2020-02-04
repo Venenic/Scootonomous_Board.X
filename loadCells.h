@@ -20,18 +20,46 @@ ADC clock:
 					-Load cells [3:0] use RD[4:7] (Pins 27-30) respectively
 
 *******************************************************************************/
+#include <stdbool.h>
+
 #ifndef LOADCELLS_H
 #define	LOADCELLS_H
 
 //PWM output pin (RB0) setup definitions
 #define ADC_CLK_TRIS TRISBbits.TRISB0 
 #define ADC_CLK_ANSEL ANSELBbits.ANSELB0 
+#define ADC_CLK_SLR SLRCONBbits.SLRB0
 #define ADC_CLK_PPS RB0PPS 
 #define PWM1_P1_OUT 0x18 //PWM1_P2 output source identifier
 
-#define NUMBER_OF_PULSES 3
+#define LOADCELL_1_DATA_TRIS TRISDbits.TRISD4
+#define LOADCELL_2_DATA_TRIS TRISDbits.TRISD5
+#define LOADCELL_3_DATA_TRIS TRISDbits.TRISD6
+#define LOADCELL_4_DATA_TRIS TRISDbits.TRISD7
+
+#define LOADCELL_1_DATA_ANSEL ANSELDbits.ANSELD4
+#define LOADCELL_2_DATA_ANSEL ANSELDbits.ANSELD5
+#define LOADCELL_3_DATA_ANSEL ANSELDbits.ANSELD6
+#define LOADCELL_4_DATA_ANSEL ANSELDbits.ANSELD7
+
+#define LOADCELL_1_DATA_IN PORTDbits.RD4
+#define LOADCELL_2_DATA_IN PORTDbits.RD5
+#define LOADCELL_3_DATA_IN PORTDbits.RD6
+#define LOADCELL_4_DATA_IN PORTDbits.RD7
+
+#define DATA_PULSES 24
+#define MAX_PULSES 25
 //25 -> Gain of 128
 //27 -> Gain of 64
+
+//Will only hold 24 bits, but that's slower than using 32 for some reason
+typedef struct loadCellData {
+	unsigned long cellData1;
+	unsigned long cellData2;
+	unsigned long cellData3;
+	unsigned long cellData4;
+} loadCellData;
+	
 
 //so initializeLoadCells: ------------------------------------------------------
 // Parameters:		void
@@ -59,7 +87,9 @@ void enableADC_CLK(void);
 //------------------------------------------------------------------------------
 void disableADC_CLK(void);
 
-
+bool pollLoadCells(loadCellData*);
+bool isDataReady(void);
+__int24 getData(void);
 
 #endif	/* LOADCELLS_H */
 

@@ -12,6 +12,7 @@ TODO:Insert description here
 
 
 #include <xc.h>
+#include <stdbool.h>
 
 #include "device_config.h"
 #include "initializeHardware.h"
@@ -24,7 +25,13 @@ TODO:Insert description here
 volatile bool transmitString = false;
 volatile int transmitTimer = 0;
 
-char outputMessage[] = "Output num: SXXXXXXX E\n";
+char testOutputMessage[] = "Output: SXXXXXXX \n";
+char cell1OutputMessage[] = "Output 1: SXXXXXXX \n";
+char cell2OutputMessage[] = "Output 1: SXXXXXXX \n";
+char cell3OutputMessage[] = "Output 1: SXXXXXXX \n";
+char cell4OutputMessage[] = "Output 1: SXXXXXXX \n";
+
+loadCellData cellData;
 
 //D0 is only being used as a test output for the system tick
 
@@ -34,9 +41,9 @@ void __interrupt(low_priority, irq(TMR2), base(8)) sysTick()
     
     
     transmitTimer ++;
-    if(transmitTimer == 10){
-        LATDbits.LATD0 = !LATDbits.LATD0;
-        //enableADC_CLK();
+    if(transmitTimer == 1000){
+        //LATDbits.LATD0 = !LATDbits.LATD0;
+        enableADC_CLK(); //For testing purposes only
         transmitString = true;
         transmitTimer = 0;
     }
@@ -53,6 +60,7 @@ void __interrupt(low_priority, irq(default), base(8)) Default()
 
 //Note: Use unsigned short long to hold load cell ADC values.
 void main(void) {   
+    
     initializeHardware(); 
     
     TRISDbits.TRISD0 = OUTPUT_PIN;
@@ -60,34 +68,37 @@ void main(void) {
     
 	char hello_world [] = "Hello World \n";
  
-    __int24 testNum = 0;
+    sendString(hello_world);
    
-    
-    unsigned char i = 0;
-    while(outputMessage[i] != ':') i++;
-   convert24Bit(testNum, &outputMessage[i+2]); //Write the number after the :
-        
-    bool countFlag = false;
+
+   unsigned char i = 0;
+   __int24 testNum = 0;
+   while(testOutputMessage[i] != ':') i++;
+   convert24Bit(testNum, &testOutputMessage[i+2]); //Write the number after the :
     
     while(1)                                               
     {
+        //sendString(hello_world);
         
-        if(countFlag)
+        if(pollLoadCells(&cellData))
         {
-           while(outputMessage[i] != ':') i++;
-           convert24Bit(testNum, &outputMessage[i+2]); //Write the number after the :
-           countFlag = false;
+            i = 0;
+            while(cell1OutputMessage[i] != ':') i++;
+            convert24Bit(cellData.cellData1, &cell1OutputMessage[i+2]);
+            sendString(cell1OutputMessage);
+            
         }
-        
+         /*  
         if(transmitString)
         {
-            bool sentString = sendString(outputMessage);
-            if(sentString == true){
-                testNum --;
-                countFlag = true;
-                transmitString = false;
-            }
+            testNum++;
+            while(testOutputMessage[i] != ':') i++;
+            convert24Bit(testNum, &testOutputMessage[i+2]); //Write the number after the :
+            
+            sendString(testOutputMessage);
+            transmitString = false;
         }
+           */
     }
     return;
 }

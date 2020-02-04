@@ -24,8 +24,12 @@ ADC clock:
 #include <xc.h>
 #include "loadCells.h"
 #include "hardwareDefinitions.h"
+#include <stdbool.h>
 
-volatile unsigned char pulseCount = 0;
+volatile unsigned char pulseCount;
+volatile __int24 inData1 = 0;
+volatile bool dataReady;
+volatile loadCellData rawData;
 
 //so loadCell_ISR: ------------------------------------------------------
 // Parameters:		low_priority: It is a low priority interrupt
@@ -41,11 +45,26 @@ volatile unsigned char pulseCount = 0;
 //------------------------------------------------------------------------------
 void __interrupt(high_priority,irq(PWM1),base(8)) loadCell_ISR()
 {
+	LATDbits.LATD0 = 1;
 	pulseCount++;
-	if(pulseCount == NUMBER_OF_PULSES){
-		disableADC_CLK();
+	
+    if(pulseCount <= DATA_PULSES)
+    {
+     rawData.cellData1 <<= 1;
+     rawData.cellData1 += LOADCELL_1_DATA_IN;
+     rawData.cellData2 <<= 1;
+     rawData.cellData2 += LOADCELL_2_DATA_IN;
+     rawData.cellData3 <<= 1;
+     rawData.cellData3 += LOADCELL_3_DATA_IN;
+     rawData.cellData4 <<= 1;
+     rawData.cellData4 += LOADCELL_4_DATA_IN;
+    }
+    else if(pulseCount == MAX_PULSES){
+        dataReady = true;
+		PWM1CONbits.EN = 0; //[7] Disable the PWM module
 		pulseCount = 0;
 	}
+	LATDbits.LATD0 = 0;
     PWM1GIRbits.S1P1IF = 0; // [0] Clear P1 interrupt flag
 }
 
@@ -71,6 +90,7 @@ void initializeLoadCells(void)
 	ADC_CLK_TRIS = OUTPUT_PIN;
 	ADC_CLK_ANSEL = DIGITAL_INPUT_PIN;
 	ADC_CLK_PPS = PWM1_P1_OUT; //PWM1_P2 output PPS configuration
+	ADC_CLK_SLR = MAX_SLEW_RATE;
 	
 	//PRM Control Register
     PWM1CONbits.EN = 0; //[7] PWM module is disabled
@@ -82,9 +102,9 @@ void initializeLoadCells(void)
     PWM1CLKbits.CLK = 0b00011; // [4:0] HFINTOSC source
 
     //Period register
-    //128 Clock cycles per PWM period. F = 64MHz/127 = 500kHz
-    PWM1PRHbits.PRH = 0;  // [15:8] High byte
-    PWM1PRLbits.PRL = 127; // [7:0] Lower byte
+    //300 Clock cycles per PWM period. F = 64MHz/300 = 200kHz 
+    PWM1PRHbits.PRH = 1;  // [15:8] High byte (299+1)
+    PWM1PRLbits.PRL = 63; // [7:0] Lower byte
 	
 	//Clock Prescaler Register (Prescaler divides clock signal))
     PWM1CPREbits.CPRE = 0; //[7:0] no prescaler (division of 0+1 = 1)
@@ -116,8 +136,6 @@ void initializeLoadCells(void)
 	
 	//Peripheral Interrupt Enable Register 4
 	PIE4bits.PWM1IE= ENABLE_INTERRUPT; // [7] Enable parameter interrupts
-	
-	
 	  
 	/* Following PWM1 registers are not relevant to current implementation:
 	
@@ -142,6 +160,19 @@ void initializeLoadCells(void)
 	//Mirror copies of all PWMxEN bits (turn on all at once))
     PWMENbits.MPWM1EN = 0; //[0] PWM1 is not enabled
 	*/
+	
+	pulseCount = 0;
+	dataReady = 0;
+    
+    LOADCELL_1_DATA_TRIS = INPUT_PIN;
+    LOADCELL_2_DATA_TRIS = INPUT_PIN;
+    LOADCELL_3_DATA_TRIS = INPUT_PIN;
+    LOADCELL_4_DATA_TRIS = INPUT_PIN;
+    
+    LOADCELL_1_DATA_ANSEL = DIGITAL_INPUT_PIN;
+    LOADCELL_2_DATA_ANSEL = DIGITAL_INPUT_PIN;
+    LOADCELL_3_DATA_ANSEL = DIGITAL_INPUT_PIN;
+    LOADCELL_4_DATA_ANSEL = DIGITAL_INPUT_PIN;
 }
 
 
@@ -171,5 +202,36 @@ void enableADC_CLK(void)
 void disableADC_CLK(void)
 {
 	PWM1CONbits.EN = 0; //[7] Disable the PWM module
+}
+
+bool pollLoadCells(loadCellData *currentSample)
+{
+	if(dataReady){
+		//Write data to struct
+        currentSample -> cellData1 = rawData.cellData1; 
+        currentSample -> cellData2 = rawData.cellData2; 
+        currentSample -> cellData3 = rawData.cellData3; 
+        currentSample -> cellData4 = rawData.cellData4; 
+		dataReady = false;
+		return true;
+	}
+    else if(LOADCELL_1_DATA_IN == 0){
+		//Start reading data from ADC
+        enableADC_CLK();
+	}
+	
+	//Waiting
+	return false;
+}
+
+bool isDataReady(void)
+{
+    return dataReady;
+}
+
+__int24 getData(void)
+{
+    dataReady = false;
+    return inData1;
 }
 

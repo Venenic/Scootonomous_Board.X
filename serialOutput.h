@@ -52,7 +52,7 @@ void initializeSerialOutput(void);
 //					initiates the transmission process.
 //					IMPORTANT: Strings must be null terminated
 //------------------------------------------------------------------------------
-bool sendString(char *);
+void sendString(char *);
 
 #endif	/* XC_HEADER_TEMPLATE_H */
 

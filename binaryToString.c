@@ -11,7 +11,7 @@ TODO: Efficiency can be improved by splitting the short long into 3 bytes
 #include "binaryToString.h"
 #include "xc.h"
 
-void convert24Bit(__int24 binInput, char* charAddr)
+void convert24Bit(signed long binInput, char* charAddr)
 {
 	//Check sign 
 	if(binInput & 0x800000)
@@ -25,7 +25,7 @@ void convert24Bit(__int24 binInput, char* charAddr)
 	//Conversion consist of shifting the binary number left into the bcd number
 	//When any single bcd digit is above 5, 3 is added to it
 	
-    unsigned __int24 bcdOutput = 0;
+    unsigned long bcdOutput = 0;
     unsigned char i = 0;
 	//4 MSB of binary number
 	for(i = 0; i < 4; i++)

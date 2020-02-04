@@ -2,7 +2,7 @@
 File:			serialOutput.h
 Authors:		Kyle Hedges
 Date:			Feb 1, 2020
-Last Modified:	Feb 1, 2020
+Last Modified:	Feb 3, 2020
 (c) 2020 Lakehead University
 
 TARGET DEVICE:PIC18F45K22
@@ -19,24 +19,33 @@ Serial Settings:
 *******************************************************************************/
 
 #include <xc.h>
-#include <stdbool.h>
 
 #include "serialOutput.h"
 #include "hardwareDefinitions.h"
  
-volatile bool senderBusy = false;
-char *outputString = NULL;
+#define BUFFER_INDEX_MASK 0x07; //Buffer size is 8 (7+1))
+
+volatile unsigned char txIndex;
+unsigned char storeIndex;
+char* outputBuffer[8];
+volatile unsigned char queueLength;
+volatile char* outputString;
 //so serialOutput_ISR: ------------------------------------------------------
 // Parameters:		low_priority: It is a low priority interrupt
 //					irq(U1TX): Interrupt vector source is UART1 TX
 //					base(8): Base address of the vector table (8 is default)
 // Returns:			void 
 //
-// Description:		Detects that the transmission buffer is empty and sends the
-//					next character in the string
+// Description:		Detects that the transmission buffer is empty and sends a
+//					character from a string.
+//
+//					Problem: Does not copy over the string, so it will only
+//					print a string as long as it remains in memory.
+//					Potential Fix: Make a buffer to hold the string and print 
+//					characters from that buffer.
 //
 // Created by:		Kyle Hedges 
-// Last Modified:	Feb 1, 2020
+// Last Modified:	Feb 2, 2020
 //------------------------------------------------------------------------------
 
 void __interrupt(low_priority,irq(U1TX),base(8)) serialOutput_ISR()
@@ -44,11 +53,14 @@ void __interrupt(low_priority,irq(U1TX),base(8)) serialOutput_ISR()
 	U1TXB = *outputString;
 	
     if(*outputString == '\0'){
-		
-		//Peripheral Interrupt Enable Register 4
-		PIE4bits.U1TXIE = DISABLE_INTERRUPT; // [1] Disable transmit interrutpt
-	
-		senderBusy = false;
+		if(queueLength == 0){
+            //Peripheral Interrupt Enable Register 4
+            PIE4bits.U1TXIE = DISABLE_INTERRUPT; // [1] Disable transmit interrutpt
+        }else{
+            outputString = outputBuffer[txIndex];
+            txIndex = (txIndex+1)&BUFFER_INDEX_MASK; //buffer length of 8 max
+            queueLength -= 1;        
+        }
 	}	
 	else{
 		outputString++;
@@ -72,7 +84,7 @@ void __interrupt(low_priority,irq(U1TX),base(8)) serialOutput_ISR()
 //					-No parity
 //
 // Created by:		Kyle Hedges 
-// Last Modified:	Feb 1, 2020
+// Last Modified:	Feb 3, 2020
 //------------------------------------------------------------------------------
 void initializeSerialOutput(void)
 {
@@ -100,35 +112,34 @@ void initializeSerialOutput(void)
 	//Peripheral Interrupt Enable Register 4
 	PIE4bits.U1TXIE = DISABLE_INTERRUPT; // [1] Disable UART 1 Transmits interrutpt enable
 	
+	
+    storeIndex = 0;
+    txIndex = 0;
+    queueLength = 0;
+    outputString = NULL;
+    
 	U1CON0bits.TXEN = 1; //[5] Enable to transmitter 
     U1CON1bits.ON = 1; // [7] //Enable Serial Port
 }
 
 
 //so sendString: ------------------------------------------------------
-// Parameters:		message: A pointer to the start of the string being sent
-// Returns:			bool: 	true if the string is being sent
-//							false if busy sending a previous string
+// Parameters:		message: A pointer to the start of a string
+// Returns:			void
 //
-// Description:		If the UART is not busy it copies the string over and
-//					initiates the transmission process.
-//					IMPORTANT: Strings must be null terminated
+// Description:		Adds the pointer to the start of a string to the output
+//					buffer
 //
 // Created by:		Kyle Hedges 
-// Last Modified:	Feb 1, 2020
+// Last Modified:	Feb 2, 2020
 //------------------------------------------------------------------------------
-bool sendString(char *message)
+void sendString(char *message)
 {
-	if(senderBusy) return false;
-	else 
-	{
-		outputString = message;
-		
-		senderBusy = true;
-		
-		//Peripheral Interrupt Enable Register 4
-		PIE4bits.U1TXIE = ENABLE_INTERRUPT; // [1] Enable UART 1 Transmits interrutpt enable
-	}
+	outputBuffer[storeIndex] = message;
+	queueLength += 1; //Needs to be before interrupt enable
 	
-	return true;
+	//Peripheral Interrupt Enable Register 4
+	PIE4bits.U1TXIE = ENABLE_INTERRUPT; // [1] Enable UART 1 Transmits interrutpt enable
+	
+	storeIndex = (storeIndex + 1) & BUFFER_INDEX_MASK; 
 }

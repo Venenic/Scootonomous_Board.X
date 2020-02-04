@@ -5,7 +5,7 @@
  * Created on February 2, 2020, 11:00 AM
  */
 
-void convert24Bit(__int24, char*);
+void convert24Bit(signed long, char*);
 
 #ifndef BINARYTOSTRING_H
 #define	BINARYTOSTRING_H
