@@ -1,7 +1,8 @@
 /****************************************************************
-File:		initializeHardware.c
-Authors:	Kyle Hedges
-Date:		Jan 27, 2020
+File:			initializeHardware.c
+Authors:		Kyle Hedges
+Date:			Jan 27, 2020
+Last Modified:	Feb 4, 2020
 (c) 2020 Lakehead University
 
 DEVICE:	PIC18F47Q43

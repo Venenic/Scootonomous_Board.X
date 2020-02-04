@@ -2,7 +2,7 @@
 File:			loadCells.h
 Authors:		Kyle Hedges
 Date:			Jan 31, 2020
-Last Modified:	Feb 2, 2020
+Last Modified:	Feb 4, 2020
 (c) 2020 Lakehead University
 
 TARGET DEVICE:PIC18F45K22
@@ -45,7 +45,6 @@ volatile loadCellData rawData;
 //------------------------------------------------------------------------------
 void __interrupt(high_priority,irq(PWM1),base(8)) loadCell_ISR()
 {
-	LATDbits.LATD0 = 1;
 	pulseCount++;
 	
     if(pulseCount <= DATA_PULSES)
@@ -64,7 +63,6 @@ void __interrupt(high_priority,irq(PWM1),base(8)) loadCell_ISR()
 		PWM1CONbits.EN = 0; //[7] Disable the PWM module
 		pulseCount = 0;
 	}
-	LATDbits.LATD0 = 0;
     PWM1GIRbits.S1P1IF = 0; // [0] Clear P1 interrupt flag
 }
 

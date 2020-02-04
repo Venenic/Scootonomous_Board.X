@@ -23,13 +23,13 @@ Serial Settings:
 #include "serialOutput.h"
 #include "hardwareDefinitions.h"
  
-#define BUFFER_INDEX_MASK 0x07; //Buffer size is 8 (7+1))
+#define BUFFER_INDEX_MASK 127 //Buffer size is 128 (127+1))
 
 volatile unsigned char txIndex;
 unsigned char storeIndex;
-char* outputBuffer[8];
+volatile char outputBuffer[BUFFER_INDEX_MASK +1]; //If buffer is too small and it overlaps the output will break
 volatile unsigned char queueLength;
-volatile char* outputString;
+
 //so serialOutput_ISR: ------------------------------------------------------
 // Parameters:		low_priority: It is a low priority interrupt
 //					irq(U1TX): Interrupt vector source is UART1 TX
@@ -50,21 +50,19 @@ volatile char* outputString;
 
 void __interrupt(low_priority,irq(U1TX),base(8)) serialOutput_ISR()
 {
-	U1TXB = *outputString;
+	U1TXB = outputBuffer[txIndex];
 	
-    if(*outputString == '\0'){
+    if(outputBuffer[txIndex] == '\0'){
+        queueLength -= 1;
 		if(queueLength == 0){
             //Peripheral Interrupt Enable Register 4
             PIE4bits.U1TXIE = DISABLE_INTERRUPT; // [1] Disable transmit interrutpt
-        }else{
-            outputString = outputBuffer[txIndex];
-            txIndex = (txIndex+1)&BUFFER_INDEX_MASK; //buffer length of 8 max
-            queueLength -= 1;        
-        }
-	}	
-	else{
-		outputString++;
-	}
+        }      
+    }
+	
+
+	txIndex = (txIndex+1)&BUFFER_INDEX_MASK; //buffer length of 8 max
+
 	
 	//Peripheral Interrupt Request Register 4
 	//PIRbits.U1TXIF is a read only bit and is cleared automatically
@@ -115,9 +113,8 @@ void initializeSerialOutput(void)
 	
     storeIndex = 0;
     txIndex = 0;
-    queueLength = 0;
-    outputString = NULL;
-    
+    queueLength = 0; 
+
 	U1CON0bits.TXEN = 1; //[5] Enable to transmitter 
     U1CON1bits.ON = 1; // [7] //Enable Serial Port
 }
@@ -135,11 +132,16 @@ void initializeSerialOutput(void)
 //------------------------------------------------------------------------------
 void sendString(char *message)
 {
-	outputBuffer[storeIndex] = message;
+	while(*message != '\0')
+	{
+		outputBuffer[storeIndex] = *message;
+        message++;
+        storeIndex = (storeIndex + 1) & BUFFER_INDEX_MASK; 
+	}
+    outputBuffer[storeIndex] = '\0';
+    storeIndex = (storeIndex + 1) & BUFFER_INDEX_MASK; 
+    
 	queueLength += 1; //Needs to be before interrupt enable
-	
 	//Peripheral Interrupt Enable Register 4
 	PIE4bits.U1TXIE = ENABLE_INTERRUPT; // [1] Enable UART 1 Transmits interrutpt enable
-	
-	storeIndex = (storeIndex + 1) & BUFFER_INDEX_MASK; 
 }

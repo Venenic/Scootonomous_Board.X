@@ -2,7 +2,7 @@
 File:			loadCells.h
 Authors:		Kyle Hedges
 Date:			Jan 31, 2020
-Last Modified:	Feb 2, 2020
+Last Modified:	Feb 4, 2020
 (c) 2020 Lakehead University
 
 TARGET DEVICE:PIC18F45K22
@@ -58,6 +58,7 @@ typedef struct loadCellData {
 	unsigned long cellData2;
 	unsigned long cellData3;
 	unsigned long cellData4;
+	unsigned char sampleTime; //Time since last sample in ms
 } loadCellData;
 	
 

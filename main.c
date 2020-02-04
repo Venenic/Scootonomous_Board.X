@@ -2,7 +2,7 @@
 File:			loadCells.h
 Authors:		Kyle Hedges
 Date:			Jan 27, 2020
-Last Modified:	Feb 2, 2020
+Last Modified:	Feb 4, 2020
 (c) 2020 Lakehead University
 
 TARGET DEVICE:PIC18F45K22
@@ -24,6 +24,7 @@ TODO:Insert description here
 
 volatile bool transmitString = false;
 volatile int transmitTimer = 0;
+volatile unsigned int sampleTimer;
 
 char testOutputMessage[] = "Output: SXXXXXXX \n";
 char cell1OutputMessage[] = "Output 1: SXXXXXXX \n";
@@ -41,9 +42,10 @@ void __interrupt(low_priority, irq(TMR2), base(8)) sysTick()
     
     
     transmitTimer ++;
+	sampleTimer++;
     if(transmitTimer == 1000){
         //LATDbits.LATD0 = !LATDbits.LATD0;
-        enableADC_CLK(); //For testing purposes only
+        ///enableADC_CLK(); //For testing purposes only FOR TESTING ONLY
         transmitString = true;
         transmitTimer = 0;
     }
@@ -64,7 +66,9 @@ void main(void) {
     initializeHardware(); 
     
     TRISDbits.TRISD0 = OUTPUT_PIN;
-    LATDbits.LATD0 = 1;
+    LATDbits.LATD0 = 0;
+	
+	sampleTimer++;
     
 	char hello_world [] = "Hello World \n";
  
@@ -82,11 +86,27 @@ void main(void) {
         
         if(pollLoadCells(&cellData))
         {
+            cellData.sampleTime = sampleTimer;
+            sampleTimer = 0;
+            
+            sendString("Time(ms) = ");
+            char temp[] = "12345678 ";
+            convert24Bit(cellData.sampleTime, temp);
+            sendString(temp);
+                    
+			//LATDbits.LATD0 = 0;
+			
             i = 0;
             while(cell1OutputMessage[i] != ':') i++;
             convert24Bit(cellData.cellData1, &cell1OutputMessage[i+2]);
+            if(cell1OutputMessage[i+2] == '-')
+            {
+                sendString("Stop");
+                
+            }
             sendString(cell1OutputMessage);
-            
+            //LATDbits.LATD0 = 1;
+			//sampleTimer++;
         }
          /*  
         if(transmitString)
