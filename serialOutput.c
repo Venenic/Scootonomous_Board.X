@@ -43,9 +43,6 @@ volatile unsigned char queueLength;
 //					print a string as long as it remains in memory.
 //					Potential Fix: Make a buffer to hold the string and print 
 //					characters from that buffer.
-//
-// Created by:		Kyle Hedges 
-// Last Modified:	Feb 2, 2020
 //------------------------------------------------------------------------------
 
 void __interrupt(low_priority,irq(U1TX),base(8)) serialOutput_ISR()
@@ -80,9 +77,6 @@ void __interrupt(low_priority,irq(U1TX),base(8)) serialOutput_ISR()
 //					-1 Stop bit
 //					-8 Data bits
 //					-No parity
-//
-// Created by:		Kyle Hedges 
-// Last Modified:	Feb 3, 2020
 //------------------------------------------------------------------------------
 void initializeSerialOutput(void)
 {
@@ -126,9 +120,6 @@ void initializeSerialOutput(void)
 //
 // Description:		Adds the pointer to the start of a string to the output
 //					buffer
-//
-// Created by:		Kyle Hedges 
-// Last Modified:	Feb 2, 2020
 //------------------------------------------------------------------------------
 void sendString(char *message)
 {

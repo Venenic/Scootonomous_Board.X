@@ -39,9 +39,6 @@ volatile loadCellData rawData;
 //
 // Description:		Reads in the data on the negative edge of the PWM pulse and
 //					counts out the number of pulses
-//
-// Created by:		Kyle Hedges 
-// Last Modified:	Feb 1, 2020
 //------------------------------------------------------------------------------
 void __interrupt(high_priority,irq(PWM1),base(8)) loadCell_ISR()
 {
@@ -78,9 +75,6 @@ void __interrupt(high_priority,irq(PWM1),base(8)) loadCell_ISR()
 // Currently uses the period register only
 // Frequency: F = 64MHz/128 = 500kHz (Period register = 127)
 // 				Frequency can be lowered if too fast for data collection
-//
-// Created by:		Kyle Hedges 
-// Last Modified:	Jan 31, 2020
 //------------------------------------------------------------------------------
 void initializeLoadCells(void)
 {
@@ -179,9 +173,6 @@ void initializeLoadCells(void)
 // Returns:			void 
 //
 // Description: 	Enables the PWM module
-//
-// Created by:		Kyle Hedges 
-// Last Modified:	Jan 31, 2020
 //------------------------------------------------------------------------------
 void enableADC_CLK(void)
 {
@@ -193,9 +184,6 @@ void enableADC_CLK(void)
 // Returns:			void 
 //
 // Description: 	Disables the PWM module
-//
-// Created by:		Kyle Hedges 
-// Last Modified:	Jan 31, 2020
 //------------------------------------------------------------------------------
 void disableADC_CLK(void)
 {
@@ -213,7 +201,7 @@ bool pollLoadCells(loadCellData *currentSample)
 		dataReady = false;
 		return true;
 	}
-    else if(LOADCELL_1_DATA_IN == 0){
+    else if(LOADCELL_1_DATA_IN == 0 && LOADCELL_2_DATA_IN == 0){
 		//Start reading data from ADC
         enableADC_CLK();
 	}
@@ -222,14 +210,5 @@ bool pollLoadCells(loadCellData *currentSample)
 	return false;
 }
 
-bool isDataReady(void)
-{
-    return dataReady;
-}
 
-__int24 getData(void)
-{
-    dataReady = false;
-    return inData1;
-}
 

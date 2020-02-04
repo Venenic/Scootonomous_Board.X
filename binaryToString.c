@@ -11,12 +11,12 @@ TODO: Efficiency can be improved by splitting the short long into 3 bytes
 #include "binaryToString.h"
 #include "xc.h"
 
-void convert24Bit(signed long binInput, char* charAddr)
+void convert24Bit(int32_t binInput, char* charAddr)
 {
 	//Check sign 
 	if(binInput & 0x800000)
 	{
-		//Negative
+		//Negative. Take two's compliment
 		binInput = ~binInput;
 		binInput += 1;
 		*charAddr = '-';

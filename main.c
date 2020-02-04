@@ -13,6 +13,7 @@ TODO:Insert description here
 
 #include <xc.h>
 #include <stdbool.h>
+#include <stdint.h>
 
 #include "device_config.h"
 #include "initializeHardware.h"
@@ -23,14 +24,9 @@ TODO:Insert description here
 #include "binaryToString.h"
 
 volatile bool transmitString = false;
-volatile int transmitTimer = 0;
-volatile unsigned int sampleTimer;
+volatile uint16_t transmitTimer = 0;
+volatile uint16_t sampleTimer;
 
-char testOutputMessage[] = "Output: SXXXXXXX \n";
-char cell1OutputMessage[] = "Output 1: SXXXXXXX \n";
-char cell2OutputMessage[] = "Output 1: SXXXXXXX \n";
-char cell3OutputMessage[] = "Output 1: SXXXXXXX \n";
-char cell4OutputMessage[] = "Output 1: SXXXXXXX \n";
 
 loadCellData cellData;
 
@@ -39,13 +35,9 @@ loadCellData cellData;
 //Default interrupt case. 1ms tick
 void __interrupt(low_priority, irq(TMR2), base(8)) sysTick()
 {
-    
-    
     transmitTimer ++;
 	sampleTimer++;
     if(transmitTimer == 1000){
-        //LATDbits.LATD0 = !LATDbits.LATD0;
-        ///enableADC_CLK(); //For testing purposes only FOR TESTING ONLY
         transmitString = true;
         transmitTimer = 0;
     }
@@ -68,18 +60,9 @@ void main(void) {
     TRISDbits.TRISD0 = OUTPUT_PIN;
     LATDbits.LATD0 = 0;
 	
-	sampleTimer++;
-    
-	char hello_world [] = "Hello World \n";
- 
-    sendString(hello_world);
+	sampleTimer =0;
+    sendString("Hello World \n\n");
    
-
-   unsigned char i = 0;
-   __int24 testNum = 0;
-   while(testOutputMessage[i] != ':') i++;
-   convert24Bit(testNum, &testOutputMessage[i+2]); //Write the number after the :
-    
     while(1)                                               
     {
         //sendString(hello_world);
@@ -90,22 +73,37 @@ void main(void) {
             sampleTimer = 0;
             
             sendString("Time(ms) = ");
-            char temp[] = "12345678 ";
+            char temp[] = "12345678 \n";
             convert24Bit(cellData.sampleTime, temp);
             sendString(temp);
                     
-			//LATDbits.LATD0 = 0;
+			LATDbits.LATD0 = 0;
 			
-            i = 0;
-            while(cell1OutputMessage[i] != ':') i++;
-            convert24Bit(cellData.cellData1, &cell1OutputMessage[i+2]);
-            if(cell1OutputMessage[i+2] == '-')
-            {
-                sendString("Stop");
-                
-            }
-            sendString(cell1OutputMessage);
-            //LATDbits.LATD0 = 1;
+           // signed long average = ((cellData.cellData1)*100)/(cellData.cellData1+cellData.cellData2);
+            int24String dataString = "SXXXXXXX";
+			convert24Bit(cellData.cellData1, dataString);
+			sendString("1: ");
+			sendString(dataString);
+			sendString("\n");
+            
+            convert24Bit(cellData.cellData2, dataString);
+			sendString("2: ");
+			sendString(dataString);
+			sendString("\n");
+            
+            convert24Bit(cellData.cellData3, dataString);
+			sendString("3: ");
+			sendString(dataString);
+			sendString("\n");
+            
+            convert24Bit(cellData.cellData4, dataString);
+			sendString("4: ");
+			sendString(dataString);
+			sendString("\n");
+            
+            sendString("\n");
+           
+            LATDbits.LATD0 = 1;
 			//sampleTimer++;
         }
          /*  

@@ -28,6 +28,8 @@ void initializeUART(void);
 
 void initializeHardware(void)
 {
+	
+	
 	initializeOscillator();
     initializeLoadCells();
 	initializeSerialOutput();
