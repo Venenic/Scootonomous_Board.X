@@ -47,8 +47,7 @@ ADC clock:
 #define LOADCELL_3_DATA_IN PORTDbits.RD6
 #define LOADCELL_4_DATA_IN PORTDbits.RD7
 
-#define DATA_PULSES 24
-#define MAX_PULSES 25
+#define NUMBER_OF_PULSES 25
 //25 -> Gain of 128
 //27 -> Gain of 64
 

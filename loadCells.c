@@ -43,19 +43,17 @@ volatile loadCellData rawData;
 void __interrupt(high_priority,irq(PWM1),base(8)) loadCell_ISR()
 {
 	pulseCount++;
-	
-    if(pulseCount <= DATA_PULSES)
-    {
-     rawData.cellData1 <<= 1;
-     rawData.cellData1 += LOADCELL_1_DATA_IN;
-     rawData.cellData2 <<= 1;
-     rawData.cellData2 += LOADCELL_2_DATA_IN;
-     rawData.cellData3 <<= 1;
-     rawData.cellData3 += LOADCELL_3_DATA_IN;
-     rawData.cellData4 <<= 1;
-     rawData.cellData4 += LOADCELL_4_DATA_IN;
-    }
-    else if(pulseCount == MAX_PULSES){
+
+    rawData.cellData1 <<= 1;
+    rawData.cellData1 += LOADCELL_1_DATA_IN;
+    rawData.cellData2 <<= 1;
+    rawData.cellData2 += LOADCELL_2_DATA_IN;
+    rawData.cellData3 <<= 1;
+    rawData.cellData3 += LOADCELL_3_DATA_IN;
+    rawData.cellData4 <<= 1;
+    rawData.cellData4 += LOADCELL_4_DATA_IN;
+
+    if(pulseCount == NUMBER_OF_PULSES){
         dataReady = true;
 		PWM1CONbits.EN = 0; //[7] Disable the PWM module
 		pulseCount = 0;
@@ -194,10 +192,16 @@ bool pollLoadCells(loadCellData *currentSample)
 {
 	if(dataReady){
 		//Write data to struct
-        currentSample -> cellData1 = rawData.cellData1; 
-        currentSample -> cellData2 = rawData.cellData2; 
-        currentSample -> cellData3 = rawData.cellData3; 
-        currentSample -> cellData4 = rawData.cellData4; 
+        //Shift all the way to the left, then back to maintain sign extension
+        rawData.cellData1 <<= (32-NUMBER_OF_PULSES);
+        rawData.cellData1 >>= 8;
+        currentSample -> cellData1 = rawData.cellData1;
+        rawData.cellData2 <<= (32-NUMBER_OF_PULSES);
+        currentSample -> cellData2 = rawData.cellData2 >> 8; 
+        rawData.cellData3 <<= (32-NUMBER_OF_PULSES);
+        currentSample -> cellData3 = rawData.cellData3 >> 8; 
+        rawData.cellData4 <<= (32-NUMBER_OF_PULSES);
+        currentSample -> cellData4 = rawData.cellData4 >> 8; 
 		dataReady = false;
 		return true;
 	}
