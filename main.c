@@ -56,10 +56,7 @@ void __interrupt(low_priority, irq(default), base(8)) Default()
 void main(void) {   
     
     initializeHardware(); 
-    
-    TRISDbits.TRISD0 = OUTPUT_PIN;
-    LATDbits.LATD0 = 0;
-	
+ 
 	sampleTimer =0;
     sendString("Hello World \n\n");
     
@@ -83,8 +80,6 @@ void main(void) {
     while(1)                                               
     {
         //sendString(hello_world);
-        TRISDbits.TRISD0 = OUTPUT_PIN;
-         LATDbits.LATD0 = 0;
         if(pollLoadCells(&cellData[dataIndex]))
         {
             if(mode == ZEROING)
@@ -142,7 +137,6 @@ void main(void) {
 
                 if(dataIndex == 10)
                 {
-                    LATDbits.LATD0 = 1;
                     dataIndex = 0;
 
                     dataAverage1  /= 10;
@@ -185,7 +179,6 @@ void main(void) {
                     dataAverage4  = 0;
                     elapsedTime = 0;
 
-                    LATDbits.LATD0 = 0;
                 }
             }
         }

@@ -18,6 +18,10 @@ ADC clock:
 
 					Data pins:
 					-Load cells [3:0] use RD[4:7] (Pins 27-30) respectively
+					
+Board Layout (Top View):	1---F---2
+							|		|
+							3---B---4
 
 *******************************************************************************/
 #include <stdbool.h>
@@ -27,7 +31,6 @@ ADC clock:
 
 //PWM output pin (RB0) setup definitions
 #define ADC_CLK_TRIS TRISBbits.TRISB0 
-#define ADC_CLK_ANSEL ANSELBbits.ANSELB0 
 #define ADC_CLK_SLR SLRCONBbits.SLRB0
 #define ADC_CLK_PPS RB0PPS 
 #define PWM1_P1_OUT 0x18 //PWM1_P2 output source identifier

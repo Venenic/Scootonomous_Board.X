@@ -17,6 +17,9 @@ This file contains defines for various register level hardware values.
 #define INPUT_PIN 1
 #define OUTPUT_PIN 0
 
+#define INPUT_PORT 1
+#define OUTPUT_PORT 0
+
 #define DIGITAL_INPUT_PIN 0
 #define ANALOG_INPUT_PIN 1 
 
@@ -28,5 +31,6 @@ This file contains defines for various register level hardware values.
 
 #define MAX_SLEW_RATE 0
 #define LIMITED_SLEW_RATE 1
+
 
 #endif	/* HARDWAREDEFINITIONS_H */

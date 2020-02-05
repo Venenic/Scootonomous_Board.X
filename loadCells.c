@@ -18,6 +18,11 @@ ADC clock:
 
 					Data pins:
 					-Load cells [3:0] use RD[4:7] (Pins 27-30) respectively
+					
+Board Layout (Top View):	1---F---2
+							|		|
+							3---B---4
+				
 
 *******************************************************************************/
 
@@ -78,7 +83,6 @@ void initializeLoadCells(void)
 {
 	//Output pin configuration
 	ADC_CLK_TRIS = OUTPUT_PIN;
-	ADC_CLK_ANSEL = DIGITAL_INPUT_PIN;
 	ADC_CLK_PPS = PWM1_P1_OUT; //PWM1_P2 output PPS configuration
 	ADC_CLK_SLR = MAX_SLEW_RATE;
 	
@@ -94,7 +98,7 @@ void initializeLoadCells(void)
     //Period register
     //300 Clock cycles per PWM period. F = 64MHz/300 = 200kHz 
     PWM1PRHbits.PRH = 1;  // [15:8] High byte (299+1)
-    PWM1PRLbits.PRL = 63; // [7:0] Lower byte
+    PWM1PRLbits.PRL = 43; // [7:0] Lower byte
 	
 	//Clock Prescaler Register (Prescaler divides clock signal))
     PWM1CPREbits.CPRE = 0; //[7:0] no prescaler (division of 0+1 = 1)
@@ -205,7 +209,8 @@ bool pollLoadCells(loadCellData *currentSample)
 		dataReady = false;
 		return true;
 	}
-    else if(LOADCELL_1_DATA_IN == 0 && LOADCELL_2_DATA_IN == 0){
+    else if(LOADCELL_1_DATA_IN == 0 && LOADCELL_2_DATA_IN == 0 
+			&& LOADCELL_3_DATA_IN == 0 && LOADCELL_4_DATA_IN == 0){
 		//Start reading data from ADC
         enableADC_CLK();
 	}
