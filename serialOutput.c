@@ -47,9 +47,10 @@ volatile unsigned char queueLength;
 
 void __interrupt(low_priority,irq(U1TX),base(8)) serialOutput_ISR()
 {
-	U1TXB = outputBuffer[txIndex];
+	char currentChar = outputBuffer[txIndex];
+	U1TXB = currentChar;
 	
-    if(outputBuffer[txIndex] == '\0'){
+    if(currentChar == '\0'){
         queueLength -= 1;
 		if(queueLength == 0){
             //Peripheral Interrupt Enable Register 4
