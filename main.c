@@ -2,7 +2,7 @@
 File:			loadCells.h
 Authors:		Kyle Hedges
 Date:			Jan 27, 2020
-Last Modified:	Feb 04, 2020
+Last Modified:	Feb 14, 2020
 (c) 2020 Lakehead University
 
 TARGET DEVICE:PIC18F45K22

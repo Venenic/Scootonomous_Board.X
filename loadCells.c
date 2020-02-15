@@ -13,7 +13,7 @@ center of gravity on the board's surface.
 ADC clock:
 					-RB0 (Pin 33)
 					-PWM1 module
-					-500kHz, 0.25us ton, 1.75us toff
+					-250kHz, 0.25us ton, 3.75us toff
 					-High priority intterupt at end of ton
 
 					Data pins:
@@ -51,7 +51,13 @@ volatile uint32_t rawData4;
 void __interrupt(high_priority,irq(PWM1),base(8)) loadCell_ISR()
 {
 	pulseCount++;
-
+	
+	if(pulseCount == NUMBER_OF_PULSES){
+		PWM1CONbits.EN = 0; //[7] Disable the PWM module
+        dataReady = true;
+		pulseCount = 0;
+	}
+	
     rawData1 <<= 1;
     rawData1 += LOAD_CELL_1_DATA_IN;
     rawData2 <<= 1;
@@ -60,12 +66,7 @@ void __interrupt(high_priority,irq(PWM1),base(8)) loadCell_ISR()
     rawData3 += LOAD_CELL_3_DATA_IN;
     rawData4 <<= 1;
     rawData4 += LOAD_CELL_4_DATA_IN;
-
-    if(pulseCount == NUMBER_OF_PULSES){
-        dataReady = true;
-		PWM1CONbits.EN = 0; //[7] Disable the PWM module
-		pulseCount = 0;
-	}
+    
     PWM1GIRbits.S1P1IF = 0; // [0] Clear P1 interrupt flag
 }
 
@@ -84,6 +85,10 @@ void __interrupt(high_priority,irq(PWM1),base(8)) loadCell_ISR()
 //------------------------------------------------------------------------------
 void initializeLoadCells(void)
 {
+	TRISEbits.TRISE0 = OUTPUT_PIN;
+	
+	
+	
 	//Output pin configuration
 	ADC_CLK_TRIS = OUTPUT_PIN;
 	ADC_CLK_PPS = PWM1_P1_OUT; //PWM1_P2 output PPS configuration
@@ -99,9 +104,9 @@ void initializeLoadCells(void)
     PWM1CLKbits.CLK = 0b00011; // [4:0] HFINTOSC source
 
     //Period register
-    //300 Clock cycles per PWM period. F = 64MHz/300 = 200kHz 
-    PWM1PRHbits.PRH = 1;  // [15:8] High byte (299+1)
-    PWM1PRLbits.PRL = 43; // [7:0] Lower byte
+    //250 Clock cycles per PWM period. F = 64MHz/(255+1) = 250kHz 
+    PWM1PRHbits.PRH = 0;  // [15:8] High byte 
+    PWM1PRLbits.PRL = 255; // [7:0] Lower byte
 	
 	//Clock Prescaler Register (Prescaler divides clock signal))
     PWM1CPREbits.CPRE = 0; //[7:0] no prescaler (division of 0+1 = 1)
