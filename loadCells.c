@@ -2,7 +2,7 @@
 File:			loadCells.h
 Authors:		Kyle Hedges
 Date:			Jan 31, 2020
-Last Modified:	Feb 4, 2020
+Last Modified:	Feb 14, 2020
 (c) 2020 Lakehead University
 
 TARGET DEVICE:PIC18F45K22
@@ -13,8 +13,8 @@ center of gravity on the board's surface.
 ADC clock:
 					-RB0 (Pin 33)
 					-PWM1 module
-					-500kHz, 0.25us ton
-					-Low priority intterupt at end of ton
+					-500kHz, 0.25us ton, 1.75us toff
+					-High priority intterupt at end of ton
 
 					Data pins:
 					-Load cells [3:0] use RD[4:7] (Pins 27-30) respectively
@@ -34,7 +34,10 @@ Board Layout (Top View):	1---F---2
 volatile unsigned char pulseCount;
 volatile __int24 inData1 = 0;
 volatile bool dataReady;
-volatile loadCellData rawData;
+volatile uint32_t rawData1;
+volatile uint32_t rawData2;
+volatile uint32_t rawData3;
+volatile uint32_t rawData4;
 
 //so loadCell_ISR: ------------------------------------------------------
 // Parameters:		low_priority: It is a low priority interrupt
@@ -49,14 +52,14 @@ void __interrupt(high_priority,irq(PWM1),base(8)) loadCell_ISR()
 {
 	pulseCount++;
 
-    rawData.cellData1 <<= 1;
-    rawData.cellData1 += LOADCELL_1_DATA_IN;
-    rawData.cellData2 <<= 1;
-    rawData.cellData2 += LOADCELL_2_DATA_IN;
-    rawData.cellData3 <<= 1;
-    rawData.cellData3 += LOADCELL_3_DATA_IN;
-    rawData.cellData4 <<= 1;
-    rawData.cellData4 += LOADCELL_4_DATA_IN;
+    rawData1 <<= 1;
+    rawData1 += LOAD_CELL_1_DATA_IN;
+    rawData2 <<= 1;
+    rawData2 += LOAD_CELL_2_DATA_IN;
+    rawData3 <<= 1;
+    rawData3 += LOAD_CELL_3_DATA_IN;
+    rawData4 <<= 1;
+    rawData4 += LOAD_CELL_4_DATA_IN;
 
     if(pulseCount == NUMBER_OF_PULSES){
         dataReady = true;
@@ -158,15 +161,15 @@ void initializeLoadCells(void)
 	pulseCount = 0;
 	dataReady = 0;
     
-    LOADCELL_1_DATA_TRIS = INPUT_PIN;
-    LOADCELL_2_DATA_TRIS = INPUT_PIN;
-    LOADCELL_3_DATA_TRIS = INPUT_PIN;
-    LOADCELL_4_DATA_TRIS = INPUT_PIN;
+    LOAD_CELL_1_DATA_TRIS = INPUT_PIN;
+    LOAD_CELL_2_DATA_TRIS = INPUT_PIN;
+    LOAD_CELL_3_DATA_TRIS = INPUT_PIN;
+    LOAD_CELL_4_DATA_TRIS = INPUT_PIN;
     
-    LOADCELL_1_DATA_ANSEL = DIGITAL_INPUT_PIN;
-    LOADCELL_2_DATA_ANSEL = DIGITAL_INPUT_PIN;
-    LOADCELL_3_DATA_ANSEL = DIGITAL_INPUT_PIN;
-    LOADCELL_4_DATA_ANSEL = DIGITAL_INPUT_PIN;
+    LOAD_CELL_1_DATA_ANSEL = DIGITAL_INPUT_PIN;
+    LOAD_CELL_2_DATA_ANSEL = DIGITAL_INPUT_PIN;
+    LOAD_CELL_3_DATA_ANSEL = DIGITAL_INPUT_PIN;
+    LOAD_CELL_4_DATA_ANSEL = DIGITAL_INPUT_PIN;
 }
 
 
@@ -192,25 +195,24 @@ void disableADC_CLK(void)
 	PWM1CONbits.EN = 0; //[7] Disable the PWM module
 }
 
-bool pollLoadCells(loadCellData *currentSample)
+bool pollLoadCells(loadCell *currentSample)
 {
 	if(dataReady){
 		//Write data to struct
         //Shift all the way to the left, then back to maintain sign extension
-        rawData.cellData1 <<= (32-NUMBER_OF_PULSES);
-        rawData.cellData1 >>= 8;
-        currentSample -> cellData1 = rawData.cellData1;
-        rawData.cellData2 <<= (32-NUMBER_OF_PULSES);
-        currentSample -> cellData2 = rawData.cellData2 >> 8; 
-        rawData.cellData3 <<= (32-NUMBER_OF_PULSES);
-        currentSample -> cellData3 = rawData.cellData3 >> 8; 
-        rawData.cellData4 <<= (32-NUMBER_OF_PULSES);
-        currentSample -> cellData4 = rawData.cellData4 >> 8; 
+        rawData1 <<= (32-NUMBER_OF_PULSES);
+        currentSample[0].rawData = rawData1 >> 8;
+        rawData2 <<= (32-NUMBER_OF_PULSES);
+        currentSample[1].rawData = rawData2 >> 8; 
+        rawData3 <<= (32-NUMBER_OF_PULSES);
+        currentSample[2].rawData = rawData3 >> 8; 
+        rawData4 <<= (32-NUMBER_OF_PULSES);
+        currentSample[3].rawData = rawData4 >> 8; 
 		dataReady = false;
 		return true;
 	}
-    else if(LOADCELL_1_DATA_IN == 0 && LOADCELL_2_DATA_IN == 0 
-			&& LOADCELL_3_DATA_IN == 0 && LOADCELL_4_DATA_IN == 0){
+    else if(LOAD_CELL_1_DATA_IN == 0 && LOAD_CELL_2_DATA_IN == 0 
+			&& LOAD_CELL_3_DATA_IN == 0 && LOAD_CELL_4_DATA_IN == 0){
 		//Start reading data from ADC
         enableADC_CLK();
 	}

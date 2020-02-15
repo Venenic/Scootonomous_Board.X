@@ -2,7 +2,7 @@
 File:			loadCells.h
 Authors:		Kyle Hedges
 Date:			Jan 27, 2020
-Last Modified:	Feb 4, 2020
+Last Modified:	Feb 04, 2020
 (c) 2020 Lakehead University
 
 TARGET DEVICE:PIC18F45K22
@@ -13,7 +13,6 @@ TODO:Insert description here
 
 #include <xc.h>
 #include <stdbool.h>
-#include <stdint.h>
 
 #include "device_config.h"
 #include "initializeHardware.h"
@@ -28,7 +27,7 @@ TODO:Insert description here
 
 volatile bool transmitString = false;
 volatile uint16_t transmitTimer = 0;
-volatile uint16_t sampleTimer;
+volatile unsigned int sampleTimer;
 
 //D0 is only being used as a test output for the system tick
 
@@ -56,131 +55,40 @@ void __interrupt(low_priority, irq(default), base(8)) Default()
 void main(void) {   
     
     initializeHardware(); 
+     
+    sendString("Dummy string\r\n"); //Excel doesn't parse the first message
+    sendString("CLEARSHEET\r\n");
+    sendString("LABEL,Sample Time,Cell 1,Cell 2,Cell 3,Cell 4\r\n");
+   
+    sendString("Hello World \r\n");
+
+	//Load cell data variables
+    sampleTimer = 0; 
+    loadCell loadCellData[NUMBER_OF_LOAD_CELLS];
+
  
-	sampleTimer =0;
-    sendString("Hello World \n\n");
-    
-    loadCellData cellData[10];
-    uint8_t dataIndex = 0;
-    
-    int32_t dataAverage1 = 0;
-    int32_t dataAverage2 = 0;
-    int32_t dataAverage3 = 0;
-    int32_t dataAverage4 = 0;
-    uint32_t elapsedTime = 0;
-    
-    int32_t zeroOffset1 = 0;
-    int32_t zeroOffset2 = 0;
-    int32_t zeroOffset3 = 0;
-    int32_t zeroOffset4 = 0;
-    
-    uint8_t mode = ZEROING;
-    bool zeroed = true;
-    sendString("Zeroing\n");
     while(1)                                               
     {
-        //sendString(hello_world);
-        if(pollLoadCells(&cellData[dataIndex]))
+        if(pollLoadCells(&loadCellData))
         {
-            if(mode == ZEROING)
-            {
-                cellData[dataIndex].sampleTime = sampleTimer;
-                sampleTimer = 0;
-                
-                dataAverage1 += cellData[dataIndex].cellData1;
-                dataAverage2 += cellData[dataIndex].cellData2;
-                dataAverage3 += cellData[dataIndex].cellData3;
-                dataAverage4 += cellData[dataIndex].cellData4;
-                
-                //Ensure that all four measurements are steady
-                if(cellData[dataIndex].cellData1 > zeroOffset1 +125 || cellData[dataIndex].cellData1 < zeroOffset1 -125) zeroed = false;
-                if(cellData[dataIndex].cellData2 > zeroOffset2 +125 || cellData[dataIndex].cellData2 < zeroOffset2 -125) zeroed = false;
-                if(cellData[dataIndex].cellData3 > zeroOffset3 +125 || cellData[dataIndex].cellData3 < zeroOffset3 -125) zeroed = false;
-                if(cellData[dataIndex].cellData4 > zeroOffset4 +125 || cellData[dataIndex].cellData4 < zeroOffset4 -125) zeroed = false;
-                
-                dataIndex++;
-                if(dataIndex == 10)
-                {
-                    dataIndex = 0;
-                
-                    zeroOffset1 = dataAverage1  / 10;
-                    zeroOffset2 = dataAverage2  / 10;
-                    zeroOffset3 = dataAverage3  / 10;
-                    zeroOffset4 = dataAverage4  / 10;
-                    
-                    if(zeroed == true){
-                        mode = MEASURING;
-                        sendString("Sensors have been zeroed");
-                    } else sendString("Zeroing\n");
-                    zeroed = true;
-                    
-                     dataAverage1  = 0;
-                    dataAverage2  = 0;
-                    dataAverage3  = 0;
-                    dataAverage4  = 0;
-                    elapsedTime = 0;
-                }
-                
-               
-            }else{
-                cellData[dataIndex].sampleTime = sampleTimer;
-                sampleTimer = 0;
-
-                dataAverage1 += cellData[dataIndex].cellData1 - zeroOffset1;
-                dataAverage2 += cellData[dataIndex].cellData2 - zeroOffset2;
-                dataAverage3 += cellData[dataIndex].cellData3 - zeroOffset3;
-                dataAverage4 += cellData[dataIndex].cellData4 - zeroOffset4;
-                elapsedTime += cellData[dataIndex].sampleTime;
-
-                dataIndex++;
-
-
-                if(dataIndex == 10)
-                {
-                    dataIndex = 0;
-
-                    dataAverage1  /= 10;
-                    dataAverage2  /= 10;
-                    dataAverage3  /= 10;
-                    dataAverage4  /= 10;
-
-                    int24String dataString = "SXXXXXXX"; 
-
-                    sendString("Time since last sample: ") ;    
-                    convert24Bit(elapsedTime, dataString);
-                    sendString(dataString);
-                    sendString("\n");
-
-                    convert24Bit(dataAverage1, dataString);
-                    sendString("1: ");
-                    sendString(dataString);
-                    sendString("\n");
-
-                    convert24Bit(dataAverage2, dataString);
-                    sendString("2: ");
-                    sendString(dataString);
-                    sendString("\n");
-
-                    convert24Bit(dataAverage3, dataString);
-                    sendString("3: ");
-                    sendString(dataString);
-                    sendString("\n");
-
-                    convert24Bit(dataAverage4, dataString);
-                    sendString("4: ");
-                    sendString(dataString);
-                    sendString("\n");
-
-                    sendString("\n");
-
-                    dataAverage1  = 0;
-                    dataAverage2  = 0;
-                    dataAverage3  = 0;
-                    dataAverage4  = 0;
-                    elapsedTime = 0;
-
-                }
-            }
+			int24String dataString = "SXXXXXXX"; 
+			  
+			sendString("DATA,"); //Excel command
+			
+			convert24Bit(sampleTimer, dataString);
+			sendString(dataString);
+			sampleTimer = 0;
+			
+			sendString(",");
+			
+			for(char i = 0; i < NUMBER_OF_LOAD_CELLS; i++)
+			{
+				convert24Bit(loadCellData[i].rawData, dataString);
+				sendString(dataString);
+				sendString(",");
+			}
+			
+			sendString("\r\n");
         }
          /*  
         if(transmitString)

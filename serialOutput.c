@@ -2,7 +2,7 @@
 File:			serialOutput.h
 Authors:		Kyle Hedges
 Date:			Feb 1, 2020
-Last Modified:	Feb 3, 2020
+Last Modified:	Feb 14, 2020
 (c) 2020 Lakehead University
 
 TARGET DEVICE:PIC18F45K22
@@ -23,7 +23,7 @@ Serial Settings:
 #include "serialOutput.h"
 #include "hardwareDefinitions.h"
  
-#define BUFFER_INDEX_MASK 127 //Buffer size is 128 (127+1))
+#define BUFFER_INDEX_MASK 255 //Buffer size is 128 (127+1))
 
 volatile unsigned char txIndex;
 unsigned char storeIndex;
@@ -48,7 +48,6 @@ volatile unsigned char queueLength;
 void __interrupt(low_priority,irq(U1TX),base(8)) serialOutput_ISR()
 {
 	char currentChar = outputBuffer[txIndex];
-	U1TXB = currentChar;
 	
     if(currentChar == '\0'){
         queueLength -= 1;
@@ -56,7 +55,7 @@ void __interrupt(low_priority,irq(U1TX),base(8)) serialOutput_ISR()
             //Peripheral Interrupt Enable Register 4
             PIE4bits.U1TXIE = DISABLE_INTERRUPT; // [1] Disable transmit interrutpt
         }      
-    }
+    } else U1TXB = currentChar;
 	
 
 	txIndex = (txIndex+1)&BUFFER_INDEX_MASK; //buffer length of 8 max

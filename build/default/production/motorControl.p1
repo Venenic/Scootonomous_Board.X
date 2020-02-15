@@ -1,4 +1,308 @@
 Version 4.0 HI-TECH Software Intermediate Code
+"60 motorControl.c
+[; ;motorControl.c: 60: void initializePWM2(void);
+[v _initializePWM2 `(v ~T0 @X0 0 ef ]
+"61
+[; ;motorControl.c: 61: void initializePWM3(void);
+[v _initializePWM3 `(v ~T0 @X0 0 ef ]
+"62
+[; ;motorControl.c: 62: void enableMotors(void);
+[v _enableMotors `(v ~T0 @X0 0 ef ]
+"46978 C:\Program Files (x86)\Microchip\xc8\v2.10\pic\include\pic18f47q43.h
+[; ;C:\Program Files (x86)\Microchip\xc8\v2.10\pic\include\pic18f47q43.h: 46978:     struct {
+[s S2205 :1 `uc 1 :1 `uc 1 :1 `uc 1 :1 `uc 1 :1 `uc 1 :1 `uc 1 :1 `uc 1 :1 `uc 1 ]
+[n S2205 . TRISD0 TRISD1 TRISD2 TRISD3 TRISD4 TRISD5 TRISD6 TRISD7 ]
+"46977
+[; ;C:\Program Files (x86)\Microchip\xc8\v2.10\pic\include\pic18f47q43.h: 46977: typedef union {
+[u S2204 `S2205 1 ]
+[n S2204 . . ]
+"46989
+[; ;C:\Program Files (x86)\Microchip\xc8\v2.10\pic\include\pic18f47q43.h: 46989: extern volatile TRISDbits_t TRISDbits __attribute__((address(0x4C9)));
+[v _TRISDbits `VS2204 ~T0 @X0 0 e@1225 ]
+"9992
+[; ;C:\Program Files (x86)\Microchip\xc8\v2.10\pic\include\pic18f47q43.h: 9992: extern volatile unsigned char RD0PPS __attribute__((address(0x219)));
+[v _RD0PPS `Vuc ~T0 @X0 0 e@537 ]
+"10048
+[; ;C:\Program Files (x86)\Microchip\xc8\v2.10\pic\include\pic18f47q43.h: 10048: extern volatile unsigned char RD1PPS __attribute__((address(0x21A)));
+[v _RD1PPS `Vuc ~T0 @X0 0 e@538 ]
+"44117
+[; ;C:\Program Files (x86)\Microchip\xc8\v2.10\pic\include\pic18f47q43.h: 44117:     struct {
+[s S2077 :1 `uc 1 :1 `uc 1 :1 `uc 1 :4 `uc 1 :1 `uc 1 ]
+[n S2077 . ERSNOW ERSPOL LD . EN ]
+"44116
+[; ;C:\Program Files (x86)\Microchip\xc8\v2.10\pic\include\pic18f47q43.h: 44116: typedef union {
+[u S2076 `S2077 1 ]
+[n S2076 . . ]
+"44125
+[; ;C:\Program Files (x86)\Microchip\xc8\v2.10\pic\include\pic18f47q43.h: 44125: extern volatile PWM2CONbits_t PWM2CONbits __attribute__((address(0x478)));
+[v _PWM2CONbits `VS2076 ~T0 @X0 0 e@1144 ]
+"43938
+[; ;C:\Program Files (x86)\Microchip\xc8\v2.10\pic\include\pic18f47q43.h: 43938:     struct {
+[s S2061 :8 `uc 1 ]
+[n S2061 . CLK ]
+"43937
+[; ;C:\Program Files (x86)\Microchip\xc8\v2.10\pic\include\pic18f47q43.h: 43937: typedef union {
+[u S2060 `S2061 1 ]
+[n S2060 . . ]
+"43942
+[; ;C:\Program Files (x86)\Microchip\xc8\v2.10\pic\include\pic18f47q43.h: 43942: extern volatile PWM2CLKbits_t PWM2CLKbits __attribute__((address(0x470)));
+[v _PWM2CLKbits `VS2060 ~T0 @X0 0 e@1136 ]
+"44005
+[; ;C:\Program Files (x86)\Microchip\xc8\v2.10\pic\include\pic18f47q43.h: 44005:     struct {
+[s S2067 :8 `uc 1 ]
+[n S2067 . PRH ]
+"44004
+[; ;C:\Program Files (x86)\Microchip\xc8\v2.10\pic\include\pic18f47q43.h: 44004: typedef union {
+[u S2066 `S2067 1 ]
+[n S2066 . . ]
+"44009
+[; ;C:\Program Files (x86)\Microchip\xc8\v2.10\pic\include\pic18f47q43.h: 44009: extern volatile PWM2PRHbits_t PWM2PRHbits __attribute__((address(0x473)));
+[v _PWM2PRHbits `VS2066 ~T0 @X0 0 e@1139 ]
+"43985
+[; ;C:\Program Files (x86)\Microchip\xc8\v2.10\pic\include\pic18f47q43.h: 43985:     struct {
+[s S2065 :8 `uc 1 ]
+[n S2065 . PRL ]
+"43984
+[; ;C:\Program Files (x86)\Microchip\xc8\v2.10\pic\include\pic18f47q43.h: 43984: typedef union {
+[u S2064 `S2065 1 ]
+[n S2064 . . ]
+"43989
+[; ;C:\Program Files (x86)\Microchip\xc8\v2.10\pic\include\pic18f47q43.h: 43989: extern volatile PWM2PRLbits_t PWM2PRLbits __attribute__((address(0x472)));
+[v _PWM2PRLbits `VS2064 ~T0 @X0 0 e@1138 ]
+"44025
+[; ;C:\Program Files (x86)\Microchip\xc8\v2.10\pic\include\pic18f47q43.h: 44025:     struct {
+[s S2069 :8 `uc 1 ]
+[n S2069 . CPRE ]
+"44024
+[; ;C:\Program Files (x86)\Microchip\xc8\v2.10\pic\include\pic18f47q43.h: 44024: typedef union {
+[u S2068 `S2069 1 ]
+[n S2068 . . ]
+"44029
+[; ;C:\Program Files (x86)\Microchip\xc8\v2.10\pic\include\pic18f47q43.h: 44029: extern volatile PWM2CPREbits_t PWM2CPREbits __attribute__((address(0x474)));
+[v _PWM2CPREbits `VS2068 ~T0 @X0 0 e@1140 ]
+"44065
+[; ;C:\Program Files (x86)\Microchip\xc8\v2.10\pic\include\pic18f47q43.h: 44065:     struct {
+[s S2073 :1 `uc 1 :1 `uc 1 ]
+[n S2073 . S1P1IF S1P2IF ]
+"44064
+[; ;C:\Program Files (x86)\Microchip\xc8\v2.10\pic\include\pic18f47q43.h: 44064: typedef union {
+[u S2072 `S2073 1 ]
+[n S2072 . . ]
+"44070
+[; ;C:\Program Files (x86)\Microchip\xc8\v2.10\pic\include\pic18f47q43.h: 44070: extern volatile PWM2GIRbits_t PWM2GIRbits __attribute__((address(0x476)));
+[v _PWM2GIRbits `VS2072 ~T0 @X0 0 e@1142 ]
+"44091
+[; ;C:\Program Files (x86)\Microchip\xc8\v2.10\pic\include\pic18f47q43.h: 44091:     struct {
+[s S2075 :1 `uc 1 :1 `uc 1 ]
+[n S2075 . S1P1IE S1P2IE ]
+"44090
+[; ;C:\Program Files (x86)\Microchip\xc8\v2.10\pic\include\pic18f47q43.h: 44090: typedef union {
+[u S2074 `S2075 1 ]
+[n S2074 . . ]
+"44096
+[; ;C:\Program Files (x86)\Microchip\xc8\v2.10\pic\include\pic18f47q43.h: 44096: extern volatile PWM2GIEbits_t PWM2GIEbits __attribute__((address(0x477)));
+[v _PWM2GIEbits `VS2074 ~T0 @X0 0 e@1143 ]
+"44156
+[; ;C:\Program Files (x86)\Microchip\xc8\v2.10\pic\include\pic18f47q43.h: 44156:     struct {
+[s S2079 :3 `uc 1 :1 `uc 1 :2 `uc 1 :1 `uc 1 :1 `uc 1 ]
+[n S2079 . MODE PPEN . POL1 POL2 ]
+"44163
+[; ;C:\Program Files (x86)\Microchip\xc8\v2.10\pic\include\pic18f47q43.h: 44163:     struct {
+[s S2080 :1 `uc 1 :1 `uc 1 :1 `uc 1 ]
+[n S2080 . MODE0 MODE1 MODE2 ]
+"44155
+[; ;C:\Program Files (x86)\Microchip\xc8\v2.10\pic\include\pic18f47q43.h: 44155: typedef union {
+[u S2078 `S2079 1 `S2080 1 ]
+[n S2078 . . . ]
+"44169
+[; ;C:\Program Files (x86)\Microchip\xc8\v2.10\pic\include\pic18f47q43.h: 44169: extern volatile PWM2S1CFGbits_t PWM2S1CFGbits __attribute__((address(0x479)));
+[v _PWM2S1CFGbits `VS2078 ~T0 @X0 0 e@1145 ]
+"44242
+[; ;C:\Program Files (x86)\Microchip\xc8\v2.10\pic\include\pic18f47q43.h: 44242:     struct {
+[s S2084 :8 `uc 1 ]
+[n S2084 . S1P1H ]
+"44241
+[; ;C:\Program Files (x86)\Microchip\xc8\v2.10\pic\include\pic18f47q43.h: 44241: typedef union {
+[u S2083 `S2084 1 ]
+[n S2083 . . ]
+"44246
+[; ;C:\Program Files (x86)\Microchip\xc8\v2.10\pic\include\pic18f47q43.h: 44246: extern volatile PWM2S1P1Hbits_t PWM2S1P1Hbits __attribute__((address(0x47B)));
+[v _PWM2S1P1Hbits `VS2083 ~T0 @X0 0 e@1147 ]
+"44222
+[; ;C:\Program Files (x86)\Microchip\xc8\v2.10\pic\include\pic18f47q43.h: 44222:     struct {
+[s S2082 :8 `uc 1 ]
+[n S2082 . S1P1L ]
+"44221
+[; ;C:\Program Files (x86)\Microchip\xc8\v2.10\pic\include\pic18f47q43.h: 44221: typedef union {
+[u S2081 `S2082 1 ]
+[n S2081 . . ]
+"44226
+[; ;C:\Program Files (x86)\Microchip\xc8\v2.10\pic\include\pic18f47q43.h: 44226: extern volatile PWM2S1P1Lbits_t PWM2S1P1Lbits __attribute__((address(0x47A)));
+[v _PWM2S1P1Lbits `VS2081 ~T0 @X0 0 e@1146 ]
+"44289
+[; ;C:\Program Files (x86)\Microchip\xc8\v2.10\pic\include\pic18f47q43.h: 44289:     struct {
+[s S2088 :8 `uc 1 ]
+[n S2088 . S1P2H ]
+"44288
+[; ;C:\Program Files (x86)\Microchip\xc8\v2.10\pic\include\pic18f47q43.h: 44288: typedef union {
+[u S2087 `S2088 1 ]
+[n S2087 . . ]
+"44293
+[; ;C:\Program Files (x86)\Microchip\xc8\v2.10\pic\include\pic18f47q43.h: 44293: extern volatile PWM2S1P2Hbits_t PWM2S1P2Hbits __attribute__((address(0x47D)));
+[v _PWM2S1P2Hbits `VS2087 ~T0 @X0 0 e@1149 ]
+"44269
+[; ;C:\Program Files (x86)\Microchip\xc8\v2.10\pic\include\pic18f47q43.h: 44269:     struct {
+[s S2086 :8 `uc 1 ]
+[n S2086 . S1P2L ]
+"44268
+[; ;C:\Program Files (x86)\Microchip\xc8\v2.10\pic\include\pic18f47q43.h: 44268: typedef union {
+[u S2085 `S2086 1 ]
+[n S2085 . . ]
+"44273
+[; ;C:\Program Files (x86)\Microchip\xc8\v2.10\pic\include\pic18f47q43.h: 44273: extern volatile PWM2S1P2Lbits_t PWM2S1P2Lbits __attribute__((address(0x47C)));
+[v _PWM2S1P2Lbits `VS2085 ~T0 @X0 0 e@1148 ]
+"10104
+[; ;C:\Program Files (x86)\Microchip\xc8\v2.10\pic\include\pic18f47q43.h: 10104: extern volatile unsigned char RD2PPS __attribute__((address(0x21B)));
+[v _RD2PPS `Vuc ~T0 @X0 0 e@539 ]
+"10160
+[; ;C:\Program Files (x86)\Microchip\xc8\v2.10\pic\include\pic18f47q43.h: 10160: extern volatile unsigned char RD3PPS __attribute__((address(0x21C)));
+[v _RD3PPS `Vuc ~T0 @X0 0 e@540 ]
+"44508
+[; ;C:\Program Files (x86)\Microchip\xc8\v2.10\pic\include\pic18f47q43.h: 44508:     struct {
+[s S2108 :1 `uc 1 :1 `uc 1 :1 `uc 1 :4 `uc 1 :1 `uc 1 ]
+[n S2108 . ERSNOW ERSPOL LD . EN ]
+"44507
+[; ;C:\Program Files (x86)\Microchip\xc8\v2.10\pic\include\pic18f47q43.h: 44507: typedef union {
+[u S2107 `S2108 1 ]
+[n S2107 . . ]
+"44516
+[; ;C:\Program Files (x86)\Microchip\xc8\v2.10\pic\include\pic18f47q43.h: 44516: extern volatile PWM3CONbits_t PWM3CONbits __attribute__((address(0x487)));
+[v _PWM3CONbits `VS2107 ~T0 @X0 0 e@1159 ]
+"44329
+[; ;C:\Program Files (x86)\Microchip\xc8\v2.10\pic\include\pic18f47q43.h: 44329:     struct {
+[s S2092 :8 `uc 1 ]
+[n S2092 . CLK ]
+"44328
+[; ;C:\Program Files (x86)\Microchip\xc8\v2.10\pic\include\pic18f47q43.h: 44328: typedef union {
+[u S2091 `S2092 1 ]
+[n S2091 . . ]
+"44333
+[; ;C:\Program Files (x86)\Microchip\xc8\v2.10\pic\include\pic18f47q43.h: 44333: extern volatile PWM3CLKbits_t PWM3CLKbits __attribute__((address(0x47F)));
+[v _PWM3CLKbits `VS2091 ~T0 @X0 0 e@1151 ]
+"44396
+[; ;C:\Program Files (x86)\Microchip\xc8\v2.10\pic\include\pic18f47q43.h: 44396:     struct {
+[s S2098 :8 `uc 1 ]
+[n S2098 . PRH ]
+"44395
+[; ;C:\Program Files (x86)\Microchip\xc8\v2.10\pic\include\pic18f47q43.h: 44395: typedef union {
+[u S2097 `S2098 1 ]
+[n S2097 . . ]
+"44400
+[; ;C:\Program Files (x86)\Microchip\xc8\v2.10\pic\include\pic18f47q43.h: 44400: extern volatile PWM3PRHbits_t PWM3PRHbits __attribute__((address(0x482)));
+[v _PWM3PRHbits `VS2097 ~T0 @X0 0 e@1154 ]
+"44376
+[; ;C:\Program Files (x86)\Microchip\xc8\v2.10\pic\include\pic18f47q43.h: 44376:     struct {
+[s S2096 :8 `uc 1 ]
+[n S2096 . PRL ]
+"44375
+[; ;C:\Program Files (x86)\Microchip\xc8\v2.10\pic\include\pic18f47q43.h: 44375: typedef union {
+[u S2095 `S2096 1 ]
+[n S2095 . . ]
+"44380
+[; ;C:\Program Files (x86)\Microchip\xc8\v2.10\pic\include\pic18f47q43.h: 44380: extern volatile PWM3PRLbits_t PWM3PRLbits __attribute__((address(0x481)));
+[v _PWM3PRLbits `VS2095 ~T0 @X0 0 e@1153 ]
+"44416
+[; ;C:\Program Files (x86)\Microchip\xc8\v2.10\pic\include\pic18f47q43.h: 44416:     struct {
+[s S2100 :8 `uc 1 ]
+[n S2100 . CPRE ]
+"44415
+[; ;C:\Program Files (x86)\Microchip\xc8\v2.10\pic\include\pic18f47q43.h: 44415: typedef union {
+[u S2099 `S2100 1 ]
+[n S2099 . . ]
+"44420
+[; ;C:\Program Files (x86)\Microchip\xc8\v2.10\pic\include\pic18f47q43.h: 44420: extern volatile PWM3CPREbits_t PWM3CPREbits __attribute__((address(0x483)));
+[v _PWM3CPREbits `VS2099 ~T0 @X0 0 e@1155 ]
+"44456
+[; ;C:\Program Files (x86)\Microchip\xc8\v2.10\pic\include\pic18f47q43.h: 44456:     struct {
+[s S2104 :1 `uc 1 :1 `uc 1 ]
+[n S2104 . S1P1IF S1P2IF ]
+"44455
+[; ;C:\Program Files (x86)\Microchip\xc8\v2.10\pic\include\pic18f47q43.h: 44455: typedef union {
+[u S2103 `S2104 1 ]
+[n S2103 . . ]
+"44461
+[; ;C:\Program Files (x86)\Microchip\xc8\v2.10\pic\include\pic18f47q43.h: 44461: extern volatile PWM3GIRbits_t PWM3GIRbits __attribute__((address(0x485)));
+[v _PWM3GIRbits `VS2103 ~T0 @X0 0 e@1157 ]
+"44482
+[; ;C:\Program Files (x86)\Microchip\xc8\v2.10\pic\include\pic18f47q43.h: 44482:     struct {
+[s S2106 :1 `uc 1 :1 `uc 1 ]
+[n S2106 . S1P1IE S1P2IE ]
+"44481
+[; ;C:\Program Files (x86)\Microchip\xc8\v2.10\pic\include\pic18f47q43.h: 44481: typedef union {
+[u S2105 `S2106 1 ]
+[n S2105 . . ]
+"44487
+[; ;C:\Program Files (x86)\Microchip\xc8\v2.10\pic\include\pic18f47q43.h: 44487: extern volatile PWM3GIEbits_t PWM3GIEbits __attribute__((address(0x486)));
+[v _PWM3GIEbits `VS2105 ~T0 @X0 0 e@1158 ]
+"44547
+[; ;C:\Program Files (x86)\Microchip\xc8\v2.10\pic\include\pic18f47q43.h: 44547:     struct {
+[s S2110 :3 `uc 1 :1 `uc 1 :2 `uc 1 :1 `uc 1 :1 `uc 1 ]
+[n S2110 . MODE PPEN . POL1 POL2 ]
+"44554
+[; ;C:\Program Files (x86)\Microchip\xc8\v2.10\pic\include\pic18f47q43.h: 44554:     struct {
+[s S2111 :1 `uc 1 :1 `uc 1 :1 `uc 1 ]
+[n S2111 . MODE0 MODE1 MODE2 ]
+"44546
+[; ;C:\Program Files (x86)\Microchip\xc8\v2.10\pic\include\pic18f47q43.h: 44546: typedef union {
+[u S2109 `S2110 1 `S2111 1 ]
+[n S2109 . . . ]
+"44560
+[; ;C:\Program Files (x86)\Microchip\xc8\v2.10\pic\include\pic18f47q43.h: 44560: extern volatile PWM3S1CFGbits_t PWM3S1CFGbits __attribute__((address(0x488)));
+[v _PWM3S1CFGbits `VS2109 ~T0 @X0 0 e@1160 ]
+"44633
+[; ;C:\Program Files (x86)\Microchip\xc8\v2.10\pic\include\pic18f47q43.h: 44633:     struct {
+[s S2115 :8 `uc 1 ]
+[n S2115 . S1P1H ]
+"44632
+[; ;C:\Program Files (x86)\Microchip\xc8\v2.10\pic\include\pic18f47q43.h: 44632: typedef union {
+[u S2114 `S2115 1 ]
+[n S2114 . . ]
+"44637
+[; ;C:\Program Files (x86)\Microchip\xc8\v2.10\pic\include\pic18f47q43.h: 44637: extern volatile PWM3S1P1Hbits_t PWM3S1P1Hbits __attribute__((address(0x48A)));
+[v _PWM3S1P1Hbits `VS2114 ~T0 @X0 0 e@1162 ]
+"44613
+[; ;C:\Program Files (x86)\Microchip\xc8\v2.10\pic\include\pic18f47q43.h: 44613:     struct {
+[s S2113 :8 `uc 1 ]
+[n S2113 . S1P1L ]
+"44612
+[; ;C:\Program Files (x86)\Microchip\xc8\v2.10\pic\include\pic18f47q43.h: 44612: typedef union {
+[u S2112 `S2113 1 ]
+[n S2112 . . ]
+"44617
+[; ;C:\Program Files (x86)\Microchip\xc8\v2.10\pic\include\pic18f47q43.h: 44617: extern volatile PWM3S1P1Lbits_t PWM3S1P1Lbits __attribute__((address(0x489)));
+[v _PWM3S1P1Lbits `VS2112 ~T0 @X0 0 e@1161 ]
+"44680
+[; ;C:\Program Files (x86)\Microchip\xc8\v2.10\pic\include\pic18f47q43.h: 44680:     struct {
+[s S2119 :8 `uc 1 ]
+[n S2119 . S1P2H ]
+"44679
+[; ;C:\Program Files (x86)\Microchip\xc8\v2.10\pic\include\pic18f47q43.h: 44679: typedef union {
+[u S2118 `S2119 1 ]
+[n S2118 . . ]
+"44684
+[; ;C:\Program Files (x86)\Microchip\xc8\v2.10\pic\include\pic18f47q43.h: 44684: extern volatile PWM3S1P2Hbits_t PWM3S1P2Hbits __attribute__((address(0x48C)));
+[v _PWM3S1P2Hbits `VS2118 ~T0 @X0 0 e@1164 ]
+"44660
+[; ;C:\Program Files (x86)\Microchip\xc8\v2.10\pic\include\pic18f47q43.h: 44660:     struct {
+[s S2117 :8 `uc 1 ]
+[n S2117 . S1P2L ]
+"44659
+[; ;C:\Program Files (x86)\Microchip\xc8\v2.10\pic\include\pic18f47q43.h: 44659: typedef union {
+[u S2116 `S2117 1 ]
+[n S2116 . . ]
+"44664
+[; ;C:\Program Files (x86)\Microchip\xc8\v2.10\pic\include\pic18f47q43.h: 44664: extern volatile PWM3S1P2Lbits_t PWM3S1P2Lbits __attribute__((address(0x48B)));
+[v _PWM3S1P2Lbits `VS2116 ~T0 @X0 0 e@1163 ]
 "328 C:\Program Files (x86)\Microchip\xc8\v2.10\pic\include\pic18f47q43.h
 [; ;C:\Program Files (x86)\Microchip\xc8\v2.10\pic\include\pic18f47q43.h: 328: __asm("CLKRCON equ 039h");
 [; <" CLKRCON equ 039h ;# ">
@@ -2501,353 +2805,192 @@ Version 4.0 HI-TECH Software Intermediate Code
 "48630
 [; ;C:\Program Files (x86)\Microchip\xc8\v2.10\pic\include\pic18f47q43.h: 48630: __asm("TOSU equ 04FFh");
 [; <" TOSU equ 04FFh ;# ">
-"14 binaryToString.c
-[; ;binaryToString.c: 14: void convert24Bit(int32_t binInput, char* charAddr)
-[v _convert24Bit `(v ~T0 @X0 1 ef2`l`*uc ]
-"15
-[; ;binaryToString.c: 15: {
-{
-[e :U _convert24Bit ]
-"14
-[; ;binaryToString.c: 14: void convert24Bit(int32_t binInput, char* charAddr)
-[v _binInput `l ~T0 @X0 1 r1 ]
-[v _charAddr `*uc ~T0 @X0 1 r2 ]
-"15
-[; ;binaryToString.c: 15: {
-[f ]
-"17
-[; ;binaryToString.c: 17:  if(binInput & 0x800000)
-[e $ ! != & _binInput -> 8388608 `l -> -> 0 `i `l 2315  ]
-"18
-[; ;binaryToString.c: 18:  {
-{
-"20
-[; ;binaryToString.c: 20:   binInput = ~binInput;
-[e = _binInput ~ _binInput ]
-"21
-[; ;binaryToString.c: 21:   binInput += 1;
-[e =+ _binInput -> -> 1 `i `l ]
-"22
-[; ;binaryToString.c: 22:   *charAddr = '-';
-[e = *U _charAddr -> -> 45 `ui `uc ]
-"23
-[; ;binaryToString.c: 23:  } else *charAddr = '+';
-}
-[e $U 2316  ]
-[e :U 2315 ]
-[e = *U _charAddr -> -> 43 `ui `uc ]
-[e :U 2316 ]
-"28
-[; ;binaryToString.c: 28:     unsigned long bcdOutput = 0;
-[v _bcdOutput `ul ~T0 @X0 1 a ]
-[e = _bcdOutput -> -> -> 0 `i `l `ul ]
-"29
-[; ;binaryToString.c: 29:     unsigned char i = 0;
-[v _i `uc ~T0 @X0 1 a ]
-[e = _i -> -> 0 `i `uc ]
-"31
-[; ;binaryToString.c: 31:  for(i = 0; i < 4; i++)
-{
-[e = _i -> -> 0 `i `uc ]
-[e $ < -> _i `i -> 4 `i 2317  ]
-[e $U 2318  ]
-[e :U 2317 ]
-"32
-[; ;binaryToString.c: 32:  {
-{
-"33
-[; ;binaryToString.c: 33:   if(bcdOutput >= 5) bcdOutput += 3;
-[e $ ! >= _bcdOutput -> -> -> 5 `i `l `ul 2320  ]
-[e =+ _bcdOutput -> -> -> 3 `i `l `ul ]
-[e :U 2320 ]
-"35
-[; ;binaryToString.c: 35:   bcdOutput <<= 1;
-[e =<< _bcdOutput -> -> 1 `i `ul ]
-"37
-[; ;binaryToString.c: 37:   if(binInput & 0x800000) bcdOutput += 1;
-[e $ ! != & _binInput -> 8388608 `l -> -> 0 `i `l 2321  ]
-[e =+ _bcdOutput -> -> -> 1 `i `l `ul ]
-[e :U 2321 ]
-"38
-[; ;binaryToString.c: 38:   binInput <<= 1;
-[e =<< _binInput -> -> 1 `i `l ]
-"39
-[; ;binaryToString.c: 39:  }
-}
-[e ++ _i -> -> 1 `i `uc ]
-[e $ < -> _i `i -> 4 `i 2317  ]
-[e :U 2318 ]
-}
-"42
-[; ;binaryToString.c: 42:  for(i = 0; i < 4; i++)
-{
-[e = _i -> -> 0 `i `uc ]
-[e $ < -> _i `i -> 4 `i 2322  ]
-[e $U 2323  ]
-[e :U 2322 ]
-"43
-[; ;binaryToString.c: 43:  {
-{
-"44
-[; ;binaryToString.c: 44:   if((bcdOutput & 0x00000F) >= 0x000005) bcdOutput += 0x000003;
-[e $ ! >= & _bcdOutput -> -> -> 15 `i `l `ul -> -> -> 5 `i `l `ul 2325  ]
-[e =+ _bcdOutput -> -> -> 3 `i `l `ul ]
-[e :U 2325 ]
-"45
-[; ;binaryToString.c: 45:   if((bcdOutput & 0x0000F0) >= 0x000050) bcdOutput += 0x000030;
-[e $ ! >= & _bcdOutput -> -> -> 240 `i `l `ul -> -> -> 80 `i `l `ul 2326  ]
-[e =+ _bcdOutput -> -> -> 48 `i `l `ul ]
-[e :U 2326 ]
-"47
-[; ;binaryToString.c: 47:   bcdOutput <<= 1;
-[e =<< _bcdOutput -> -> 1 `i `ul ]
-"48
-[; ;binaryToString.c: 48:   if(binInput & 0x800000) bcdOutput += 1;
-[e $ ! != & _binInput -> 8388608 `l -> -> 0 `i `l 2327  ]
-[e =+ _bcdOutput -> -> -> 1 `i `l `ul ]
-[e :U 2327 ]
-"49
-[; ;binaryToString.c: 49:   binInput <<= 1;
-[e =<< _binInput -> -> 1 `i `l ]
-"50
-[; ;binaryToString.c: 50:  }
-}
-[e ++ _i -> -> 1 `i `uc ]
-[e $ < -> _i `i -> 4 `i 2322  ]
-[e :U 2323 ]
-}
-"53
-[; ;binaryToString.c: 53:  for(i = 0; i < 4; i++)
-{
-[e = _i -> -> 0 `i `uc ]
-[e $ < -> _i `i -> 4 `i 2328  ]
-[e $U 2329  ]
-[e :U 2328 ]
-"54
-[; ;binaryToString.c: 54:  {
-{
-"55
-[; ;binaryToString.c: 55:   if((bcdOutput & 0x00000F) >= 0x000005) bcdOutput += 0x000003;
-[e $ ! >= & _bcdOutput -> -> -> 15 `i `l `ul -> -> -> 5 `i `l `ul 2331  ]
-[e =+ _bcdOutput -> -> -> 3 `i `l `ul ]
-[e :U 2331 ]
-"56
-[; ;binaryToString.c: 56:   if((bcdOutput & 0x0000F0) >= 0x000050) bcdOutput += 0x000030;
-[e $ ! >= & _bcdOutput -> -> -> 240 `i `l `ul -> -> -> 80 `i `l `ul 2332  ]
-[e =+ _bcdOutput -> -> -> 48 `i `l `ul ]
-[e :U 2332 ]
-"57
-[; ;binaryToString.c: 57:   if((bcdOutput & 0x000F00) >= 0x000500) bcdOutput += 0x000300;
-[e $ ! >= & _bcdOutput -> -> -> 3840 `i `l `ul -> -> -> 1280 `i `l `ul 2333  ]
-[e =+ _bcdOutput -> -> -> 768 `i `l `ul ]
-[e :U 2333 ]
-"59
-[; ;binaryToString.c: 59:   bcdOutput <<= 1;
-[e =<< _bcdOutput -> -> 1 `i `ul ]
-"60
-[; ;binaryToString.c: 60:   if(binInput & 0x800000) bcdOutput += 1;
-[e $ ! != & _binInput -> 8388608 `l -> -> 0 `i `l 2334  ]
-[e =+ _bcdOutput -> -> -> 1 `i `l `ul ]
-[e :U 2334 ]
-"61
-[; ;binaryToString.c: 61:   binInput <<= 1;
-[e =<< _binInput -> -> 1 `i `l ]
-"62
-[; ;binaryToString.c: 62:  }
-}
-[e ++ _i -> -> 1 `i `uc ]
-[e $ < -> _i `i -> 4 `i 2328  ]
-[e :U 2329 ]
-}
-"65
-[; ;binaryToString.c: 65:  for(i = 0; i < 4; i++)
-{
-[e = _i -> -> 0 `i `uc ]
-[e $ < -> _i `i -> 4 `i 2335  ]
-[e $U 2336  ]
-[e :U 2335 ]
-"66
-[; ;binaryToString.c: 66:  {
-{
-"67
-[; ;binaryToString.c: 67:   if((bcdOutput & 0x00000F) >= 0x000005) bcdOutput += 0x000003;
-[e $ ! >= & _bcdOutput -> -> -> 15 `i `l `ul -> -> -> 5 `i `l `ul 2338  ]
-[e =+ _bcdOutput -> -> -> 3 `i `l `ul ]
-[e :U 2338 ]
-"68
-[; ;binaryToString.c: 68:   if((bcdOutput & 0x0000F0) >= 0x000050) bcdOutput += 0x000030;
-[e $ ! >= & _bcdOutput -> -> -> 240 `i `l `ul -> -> -> 80 `i `l `ul 2339  ]
-[e =+ _bcdOutput -> -> -> 48 `i `l `ul ]
-[e :U 2339 ]
-"69
-[; ;binaryToString.c: 69:   if((bcdOutput & 0x000F00) >= 0x000500) bcdOutput += 0x000300;
-[e $ ! >= & _bcdOutput -> -> -> 3840 `i `l `ul -> -> -> 1280 `i `l `ul 2340  ]
-[e =+ _bcdOutput -> -> -> 768 `i `l `ul ]
-[e :U 2340 ]
-"70
-[; ;binaryToString.c: 70:   if((bcdOutput & 0x00F000) >= 0x005000) bcdOutput += 0x003000;
-[e $ ! >= & _bcdOutput -> -> 61440 `ui `ul -> -> -> 20480 `i `l `ul 2341  ]
-[e =+ _bcdOutput -> -> -> 12288 `i `l `ul ]
-[e :U 2341 ]
-"72
-[; ;binaryToString.c: 72:   bcdOutput <<= 1;
-[e =<< _bcdOutput -> -> 1 `i `ul ]
+"72 motorControl.c
+[; ;motorControl.c: 72: void initializeMotorControl(void)
+[v _initializeMotorControl `(v ~T0 @X0 1 ef ]
 "73
-[; ;binaryToString.c: 73:   if(binInput & 0x800000) bcdOutput += 1;
-[e $ ! != & _binInput -> 8388608 `l -> -> 0 `i `l 2342  ]
-[e =+ _bcdOutput -> -> -> 1 `i `l `ul ]
-[e :U 2342 ]
+[; ;motorControl.c: 73: {
+{
+[e :U _initializeMotorControl ]
+[f ]
 "74
-[; ;binaryToString.c: 74:   binInput <<= 1;
-[e =<< _binInput -> -> 1 `i `l ]
+[; ;motorControl.c: 74:  initializePWM2();
+[e ( _initializePWM2 ..  ]
 "75
-[; ;binaryToString.c: 75:  }
-}
-[e ++ _i -> -> 1 `i `uc ]
-[e $ < -> _i `i -> 4 `i 2335  ]
-[e :U 2336 ]
-}
-"78
-[; ;binaryToString.c: 78:  for(i = 0; i < 4; i++)
-{
-[e = _i -> -> 0 `i `uc ]
-[e $ < -> _i `i -> 4 `i 2343  ]
-[e $U 2344  ]
-[e :U 2343 ]
-"79
-[; ;binaryToString.c: 79:  {
-{
-"80
-[; ;binaryToString.c: 80:   if((bcdOutput & 0x00000F) >= 0x000005) bcdOutput += 0x000003;
-[e $ ! >= & _bcdOutput -> -> -> 15 `i `l `ul -> -> -> 5 `i `l `ul 2346  ]
-[e =+ _bcdOutput -> -> -> 3 `i `l `ul ]
-[e :U 2346 ]
-"81
-[; ;binaryToString.c: 81:   if((bcdOutput & 0x0000F0) >= 0x000050) bcdOutput += 0x000030;
-[e $ ! >= & _bcdOutput -> -> -> 240 `i `l `ul -> -> -> 80 `i `l `ul 2347  ]
-[e =+ _bcdOutput -> -> -> 48 `i `l `ul ]
-[e :U 2347 ]
-"82
-[; ;binaryToString.c: 82:   if((bcdOutput & 0x000F00) >= 0x000500) bcdOutput += 0x000300;
-[e $ ! >= & _bcdOutput -> -> -> 3840 `i `l `ul -> -> -> 1280 `i `l `ul 2348  ]
-[e =+ _bcdOutput -> -> -> 768 `i `l `ul ]
-[e :U 2348 ]
-"83
-[; ;binaryToString.c: 83:   if((bcdOutput & 0x00F000) >= 0x005000) bcdOutput += 0x003000;
-[e $ ! >= & _bcdOutput -> -> 61440 `ui `ul -> -> -> 20480 `i `l `ul 2349  ]
-[e =+ _bcdOutput -> -> -> 12288 `i `l `ul ]
-[e :U 2349 ]
-"84
-[; ;binaryToString.c: 84:   if((bcdOutput & 0x0F0000) >= 0x050000) bcdOutput += 0x030000;
-[e $ ! >= & _bcdOutput -> -> 983040 `l `ul -> -> 327680 `l `ul 2350  ]
-[e =+ _bcdOutput -> -> 196608 `l `ul ]
-[e :U 2350 ]
-"86
-[; ;binaryToString.c: 86:   bcdOutput <<= 1;
-[e =<< _bcdOutput -> -> 1 `i `ul ]
-"87
-[; ;binaryToString.c: 87:   if(binInput & 0x800000) bcdOutput += 1;
-[e $ ! != & _binInput -> 8388608 `l -> -> 0 `i `l 2351  ]
-[e =+ _bcdOutput -> -> -> 1 `i `l `ul ]
-[e :U 2351 ]
-"88
-[; ;binaryToString.c: 88:   binInput <<= 1;
-[e =<< _binInput -> -> 1 `i `l ]
-"89
-[; ;binaryToString.c: 89:  }
-}
-[e ++ _i -> -> 1 `i `uc ]
-[e $ < -> _i `i -> 4 `i 2343  ]
-[e :U 2344 ]
-}
-"92
-[; ;binaryToString.c: 92:  for(i = 0; i < 4; i++)
-{
-[e = _i -> -> 0 `i `uc ]
-[e $ < -> _i `i -> 4 `i 2352  ]
-[e $U 2353  ]
-[e :U 2352 ]
-"93
-[; ;binaryToString.c: 93:  {
-{
-"94
-[; ;binaryToString.c: 94:   if((bcdOutput & 0x00000F) >= 0x000005) bcdOutput += 0x000003;
-[e $ ! >= & _bcdOutput -> -> -> 15 `i `l `ul -> -> -> 5 `i `l `ul 2355  ]
-[e =+ _bcdOutput -> -> -> 3 `i `l `ul ]
-[e :U 2355 ]
-"95
-[; ;binaryToString.c: 95:   if((bcdOutput & 0x0000F0) >= 0x000050) bcdOutput += 0x000030;
-[e $ ! >= & _bcdOutput -> -> -> 240 `i `l `ul -> -> -> 80 `i `l `ul 2356  ]
-[e =+ _bcdOutput -> -> -> 48 `i `l `ul ]
-[e :U 2356 ]
-"96
-[; ;binaryToString.c: 96:   if((bcdOutput & 0x000F00) >= 0x000500) bcdOutput += 0x000300;
-[e $ ! >= & _bcdOutput -> -> -> 3840 `i `l `ul -> -> -> 1280 `i `l `ul 2357  ]
-[e =+ _bcdOutput -> -> -> 768 `i `l `ul ]
-[e :U 2357 ]
-"97
-[; ;binaryToString.c: 97:   if((bcdOutput & 0x00F000) >= 0x005000) bcdOutput += 0x003000;
-[e $ ! >= & _bcdOutput -> -> 61440 `ui `ul -> -> -> 20480 `i `l `ul 2358  ]
-[e =+ _bcdOutput -> -> -> 12288 `i `l `ul ]
-[e :U 2358 ]
-"98
-[; ;binaryToString.c: 98:   if((bcdOutput & 0x0F0000) >= 0x050000) bcdOutput += 0x030000;
-[e $ ! >= & _bcdOutput -> -> 983040 `l `ul -> -> 327680 `l `ul 2359  ]
-[e =+ _bcdOutput -> -> 196608 `l `ul ]
-[e :U 2359 ]
-"99
-[; ;binaryToString.c: 99:   if((bcdOutput & 0xF00000) >= 0x500000) bcdOutput += 0x300000;
-[e $ ! >= & _bcdOutput -> -> 15728640 `l `ul -> -> 5242880 `l `ul 2360  ]
-[e =+ _bcdOutput -> -> 3145728 `l `ul ]
-[e :U 2360 ]
-"101
-[; ;binaryToString.c: 101:   bcdOutput <<= 1;
-[e =<< _bcdOutput -> -> 1 `i `ul ]
-"102
-[; ;binaryToString.c: 102:   if(binInput & 0x800000) bcdOutput += 1;
-[e $ ! != & _binInput -> 8388608 `l -> -> 0 `i `l 2361  ]
-[e =+ _bcdOutput -> -> -> 1 `i `l `ul ]
-[e :U 2361 ]
-"103
-[; ;binaryToString.c: 103:   binInput <<= 1;
-[e =<< _binInput -> -> 1 `i `l ]
-"104
-[; ;binaryToString.c: 104:  }
-}
-[e ++ _i -> -> 1 `i `uc ]
-[e $ < -> _i `i -> 4 `i 2352  ]
-[e :U 2353 ]
-}
-"107
-[; ;binaryToString.c: 107:  charAddr += 7;
-[e =+ _charAddr * -> -> 7 `i `x -> -> # *U _charAddr `i `x ]
-"108
-[; ;binaryToString.c: 108:  for(i = 0; i < 7; i++)
-{
-[e = _i -> -> 0 `i `uc ]
-[e $ < -> _i `i -> 7 `i 2362  ]
-[e $U 2363  ]
-[e :U 2362 ]
-"109
-[; ;binaryToString.c: 109:  {
-{
-"111
-[; ;binaryToString.c: 111:   *charAddr = '0' + ((char) bcdOutput & 0x0F);
-[e = *U _charAddr -> + -> 48 `ui -> & -> -> _bcdOutput `uc `i -> 15 `i `ui `uc ]
-"112
-[; ;binaryToString.c: 112:   charAddr -= 1;
-[e =- _charAddr * -> -> 1 `i `x -> -> # *U _charAddr `i `x ]
-"113
-[; ;binaryToString.c: 113:   bcdOutput >>= 4;
-[e =>> _bcdOutput -> -> 4 `i `ul ]
-"114
-[; ;binaryToString.c: 114:  }
-}
-[e ++ _i -> -> 1 `i `uc ]
-[e $ < -> _i `i -> 7 `i 2362  ]
-[e :U 2363 ]
-}
-"115
-[; ;binaryToString.c: 115: }
+[; ;motorControl.c: 75:  initializePWM3();
+[e ( _initializePWM3 ..  ]
+"76
+[; ;motorControl.c: 76:  enableMotors();
+[e ( _enableMotors ..  ]
+"77
+[; ;motorControl.c: 77: }
 [e :UE 2314 ]
+}
+"80
+[; ;motorControl.c: 80: void initializePWM2()
+[v _initializePWM2 `(v ~T0 @X0 1 ef ]
+"81
+[; ;motorControl.c: 81: {
+{
+[e :U _initializePWM2 ]
+[f ]
+"82
+[; ;motorControl.c: 82:  TRISDbits.TRISD0 = 0;
+[e = . . _TRISDbits 0 0 -> -> 0 `i `uc ]
+"83
+[; ;motorControl.c: 83:  RD0PPS = 0x1A;
+[e = _RD0PPS -> -> 26 `i `uc ]
+"85
+[; ;motorControl.c: 85:  TRISDbits.TRISD1 = 0;
+[e = . . _TRISDbits 0 1 -> -> 0 `i `uc ]
+"86
+[; ;motorControl.c: 86:  RD1PPS = 0x1B;
+[e = _RD1PPS -> -> 27 `i `uc ]
+"89
+[; ;motorControl.c: 89:     PWM2CONbits.EN = 0;
+[e = . . _PWM2CONbits 0 4 -> -> 0 `i `uc ]
+"90
+[; ;motorControl.c: 90:     PWM2CONbits.LD = 1;
+[e = . . _PWM2CONbits 0 2 -> -> 1 `i `uc ]
+"95
+[; ;motorControl.c: 95:     PWM2CLKbits.CLK = 0b00011;
+[e = . . _PWM2CLKbits 0 0 -> -> 3 `i `uc ]
+"99
+[; ;motorControl.c: 99:     PWM2PRHbits.PRH = 12;
+[e = . . _PWM2PRHbits 0 0 -> -> 12 `i `uc ]
+"100
+[; ;motorControl.c: 100:     PWM2PRLbits.PRL = 127;
+[e = . . _PWM2PRLbits 0 0 -> -> 127 `i `uc ]
+"103
+[; ;motorControl.c: 103:     PWM2CPREbits.CPRE = 0;
+[e = . . _PWM2CPREbits 0 0 -> -> 0 `i `uc ]
+"107
+[; ;motorControl.c: 107:     PWM2GIRbits.S1P1IF = 0;
+[e = . . _PWM2GIRbits 0 0 -> -> 0 `i `uc ]
+"110
+[; ;motorControl.c: 110:     PWM2GIEbits.S1P2IE = 0;
+[e = . . _PWM2GIEbits 0 1 -> -> 0 `i `uc ]
+"111
+[; ;motorControl.c: 111:     PWM2GIEbits.S1P1IE = 0;
+[e = . . _PWM2GIEbits 0 0 -> -> 0 `i `uc ]
+"115
+[; ;motorControl.c: 115:     PWM2S1CFGbits.POL1 = 0;
+[e = . . _PWM2S1CFGbits 0 3 -> -> 0 `i `uc ]
+"116
+[; ;motorControl.c: 116:     PWM2S1CFGbits.PPEN = 0;
+[e = . . _PWM2S1CFGbits 0 1 -> -> 0 `i `uc ]
+"117
+[; ;motorControl.c: 117:     PWM2S1CFGbits.MODE = 0b000;
+[e = . . _PWM2S1CFGbits 0 0 -> -> 0 `i `uc ]
+"123
+[; ;motorControl.c: 123:     PWM2S1P1Hbits.S1P1H = 0x03;
+[e = . . _PWM2S1P1Hbits 0 0 -> -> 3 `i `uc ]
+"124
+[; ;motorControl.c: 124:     PWM2S1P1Lbits.S1P1L = 0x20;
+[e = . . _PWM2S1P1Lbits 0 0 -> -> 32 `i `uc ]
+"125
+[; ;motorControl.c: 125:  PWM2S1P2Hbits.S1P2H = 0x03;
+[e = . . _PWM2S1P2Hbits 0 0 -> -> 3 `i `uc ]
+"126
+[; ;motorControl.c: 126:     PWM2S1P2Lbits.S1P2L = 0x20;
+[e = . . _PWM2S1P2Lbits 0 0 -> -> 32 `i `uc ]
+"128
+[; ;motorControl.c: 128:  PWM2CONbits.LD = 0;
+[e = . . _PWM2CONbits 0 2 -> -> 0 `i `uc ]
+"147
+[; ;motorControl.c: 147: }
+[e :UE 2315 ]
+}
+"149
+[; ;motorControl.c: 149: void initializePWM3()
+[v _initializePWM3 `(v ~T0 @X0 1 ef ]
+"150
+[; ;motorControl.c: 150: {
+{
+[e :U _initializePWM3 ]
+[f ]
+"151
+[; ;motorControl.c: 151:  TRISDbits.TRISD2 = 0;
+[e = . . _TRISDbits 0 2 -> -> 0 `i `uc ]
+"152
+[; ;motorControl.c: 152:  RD2PPS = 0x1C;
+[e = _RD2PPS -> -> 28 `i `uc ]
+"154
+[; ;motorControl.c: 154:  TRISDbits.TRISD3 = 0;
+[e = . . _TRISDbits 0 3 -> -> 0 `i `uc ]
+"155
+[; ;motorControl.c: 155:  RD3PPS = 0x1D;
+[e = _RD3PPS -> -> 29 `i `uc ]
+"158
+[; ;motorControl.c: 158:     PWM3CONbits.EN = 0;
+[e = . . _PWM3CONbits 0 4 -> -> 0 `i `uc ]
+"159
+[; ;motorControl.c: 159:     PWM3CONbits.LD = 1;
+[e = . . _PWM3CONbits 0 2 -> -> 1 `i `uc ]
+"164
+[; ;motorControl.c: 164:     PWM3CLKbits.CLK = 0b00011;
+[e = . . _PWM3CLKbits 0 0 -> -> 3 `i `uc ]
+"168
+[; ;motorControl.c: 168:     PWM3PRHbits.PRH = 12;
+[e = . . _PWM3PRHbits 0 0 -> -> 12 `i `uc ]
+"169
+[; ;motorControl.c: 169:     PWM3PRLbits.PRL = 127;
+[e = . . _PWM3PRLbits 0 0 -> -> 127 `i `uc ]
+"172
+[; ;motorControl.c: 172:     PWM3CPREbits.CPRE = 0;
+[e = . . _PWM3CPREbits 0 0 -> -> 0 `i `uc ]
+"176
+[; ;motorControl.c: 176:     PWM3GIRbits.S1P1IF = 0;
+[e = . . _PWM3GIRbits 0 0 -> -> 0 `i `uc ]
+"179
+[; ;motorControl.c: 179:     PWM3GIEbits.S1P2IE = 0;
+[e = . . _PWM3GIEbits 0 1 -> -> 0 `i `uc ]
+"180
+[; ;motorControl.c: 180:     PWM3GIEbits.S1P1IE = 0;
+[e = . . _PWM3GIEbits 0 0 -> -> 0 `i `uc ]
+"185
+[; ;motorControl.c: 185:     PWM3S1CFGbits.POL1 = 0;
+[e = . . _PWM3S1CFGbits 0 3 -> -> 0 `i `uc ]
+"186
+[; ;motorControl.c: 186:     PWM3S1CFGbits.PPEN = 0;
+[e = . . _PWM3S1CFGbits 0 1 -> -> 0 `i `uc ]
+"187
+[; ;motorControl.c: 187:     PWM3S1CFGbits.MODE = 0b000;
+[e = . . _PWM3S1CFGbits 0 0 -> -> 0 `i `uc ]
+"193
+[; ;motorControl.c: 193:     PWM3S1P1Hbits.S1P1H = 0x03;
+[e = . . _PWM3S1P1Hbits 0 0 -> -> 3 `i `uc ]
+"194
+[; ;motorControl.c: 194:     PWM3S1P1Lbits.S1P1L = 0x20;
+[e = . . _PWM3S1P1Lbits 0 0 -> -> 32 `i `uc ]
+"195
+[; ;motorControl.c: 195:  PWM3S1P2Hbits.S1P2H = 0x03;
+[e = . . _PWM3S1P2Hbits 0 0 -> -> 3 `i `uc ]
+"196
+[; ;motorControl.c: 196:     PWM3S1P2Lbits.S1P2L = 0x20;
+[e = . . _PWM3S1P2Lbits 0 0 -> -> 32 `i `uc ]
+"198
+[; ;motorControl.c: 198:  PWM3CONbits.LD = 0;
+[e = . . _PWM3CONbits 0 2 -> -> 0 `i `uc ]
+"217
+[; ;motorControl.c: 217: }
+[e :UE 2316 ]
+}
+"219
+[; ;motorControl.c: 219: void enableMotors(void)
+[v _enableMotors `(v ~T0 @X0 1 ef ]
+"220
+[; ;motorControl.c: 220: {
+{
+[e :U _enableMotors ]
+[f ]
+"221
+[; ;motorControl.c: 221:  PWM2CONbits.EN = 1;
+[e = . . _PWM2CONbits 0 4 -> -> 1 `i `uc ]
+"222
+[; ;motorControl.c: 222:  PWM3CONbits.EN = 1;
+[e = . . _PWM3CONbits 0 4 -> -> 1 `i `uc ]
+"223
+[; ;motorControl.c: 223: }
+[e :UE 2317 ]
 }

@@ -2,7 +2,7 @@
 File:			loadCells.h
 Authors:		Kyle Hedges
 Date:			Jan 31, 2020
-Last Modified:	Feb 4, 2020
+Last Modified:	Feb 14, 2020
 (c) 2020 Lakehead University
 
 TARGET DEVICE:PIC18F45K22
@@ -13,7 +13,7 @@ center of gravity on the board's surface.
 ADC clock:
 					-RB0 (Pin 33)
 					-PWM1 module
-					-500kHz, 50% DC
+					-500kHz, 0.25us on, 1.75us off
 					-Low priority intterupt at end of ton
 
 					Data pins:
@@ -24,10 +24,11 @@ Board Layout (Top View):	1---F---2
 							3---B---4
 
 *******************************************************************************/
-#include <stdbool.h>
-
 #ifndef LOADCELLS_H
 #define	LOADCELLS_H
+
+#include <stdint.h>
+#include <stdbool.h>
 
 //PWM output pin (RB0) setup definitions
 #define ADC_CLK_TRIS TRISBbits.TRISB0 
@@ -35,33 +36,32 @@ Board Layout (Top View):	1---F---2
 #define ADC_CLK_PPS RB0PPS 
 #define PWM1_P1_OUT 0x18 //PWM1_P2 output source identifier
 
-#define LOADCELL_1_DATA_TRIS TRISDbits.TRISD4
-#define LOADCELL_2_DATA_TRIS TRISDbits.TRISD5
-#define LOADCELL_3_DATA_TRIS TRISDbits.TRISD6
-#define LOADCELL_4_DATA_TRIS TRISDbits.TRISD7
-
-#define LOADCELL_1_DATA_ANSEL ANSELDbits.ANSELD4
-#define LOADCELL_2_DATA_ANSEL ANSELDbits.ANSELD5
-#define LOADCELL_3_DATA_ANSEL ANSELDbits.ANSELD6
-#define LOADCELL_4_DATA_ANSEL ANSELDbits.ANSELD7
-
-#define LOADCELL_1_DATA_IN PORTDbits.RD4
-#define LOADCELL_2_DATA_IN PORTDbits.RD5
-#define LOADCELL_3_DATA_IN PORTDbits.RD6
-#define LOADCELL_4_DATA_IN PORTDbits.RD7
-
 #define NUMBER_OF_PULSES 25
 //25 -> Gain of 128
 //27 -> Gain of 64
 
+//Load cell IO pins 
+#define LOAD_CELL_1_DATA_TRIS TRISDbits.TRISD4
+#define LOAD_CELL_2_DATA_TRIS TRISDbits.TRISD5
+#define LOAD_CELL_3_DATA_TRIS TRISDbits.TRISD6
+#define LOAD_CELL_4_DATA_TRIS TRISDbits.TRISD7
+
+#define LOAD_CELL_1_DATA_ANSEL ANSELDbits.ANSELD4
+#define LOAD_CELL_2_DATA_ANSEL ANSELDbits.ANSELD5
+#define LOAD_CELL_3_DATA_ANSEL ANSELDbits.ANSELD6
+#define LOAD_CELL_4_DATA_ANSEL ANSELDbits.ANSELD7
+
+#define LOAD_CELL_1_DATA_IN PORTDbits.RD4
+#define LOAD_CELL_2_DATA_IN PORTDbits.RD5
+#define LOAD_CELL_3_DATA_IN PORTDbits.RD6
+#define LOAD_CELL_4_DATA_IN PORTDbits.RD7
+
+#define NUMBER_OF_LOAD_CELLS 4
+
 //Will only hold 24 bits, but that's slower than using 32 for some reason
-typedef struct loadCellData {
-	unsigned long cellData1;
-	unsigned long cellData2;
-	unsigned long cellData3;
-	unsigned long cellData4;
-	unsigned char sampleTime; //Time since last sample in ms
-} loadCellData;
+typedef struct loadCell {
+	uint32_t rawData;
+} loadCell;
 	
 
 //so initializeLoadCells: ------------------------------------------------------
@@ -83,14 +83,14 @@ void initializeLoadCells(void);
 void enableADC_CLK(void);
 
 //so disableADC_CLK: ------------------------------------------------------
-// Parameters:		void
+// Parameters:		void (Lol)
 // Returns:			void 
 //
 // Description: 	Disables the PWM module
 //------------------------------------------------------------------------------
 void disableADC_CLK(void);
 
-bool pollLoadCells(loadCellData*);
+bool pollLoadCells(loadCell*);
 bool isDataReady(void);
 __int24 getData(void);
 
