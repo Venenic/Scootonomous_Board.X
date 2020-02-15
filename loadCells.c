@@ -2,7 +2,7 @@
 File:			loadCells.h
 Authors:		Kyle Hedges
 Date:			Jan 31, 2020
-Last Modified:	Feb 14, 2020
+Last Modified:	Feb 15, 2020
 (c) 2020 Lakehead University
 
 TARGET DEVICE:PIC18F45K22
@@ -85,10 +85,6 @@ void __interrupt(high_priority,irq(PWM1),base(8)) loadCell_ISR()
 //------------------------------------------------------------------------------
 void initializeLoadCells(void)
 {
-	TRISEbits.TRISE0 = OUTPUT_PIN;
-	
-	
-	
 	//Output pin configuration
 	ADC_CLK_TRIS = OUTPUT_PIN;
 	ADC_CLK_PPS = PWM1_P1_OUT; //PWM1_P2 output PPS configuration
@@ -187,17 +183,6 @@ void initializeLoadCells(void)
 void enableADC_CLK(void)
 {
 	PWM1CONbits.EN = 1; //[7] Enable the PWM module
-}
-
-//so disableADC_CLK: ------------------------------------------------------
-// Parameters:		void
-// Returns:			void 
-//
-// Description: 	Disables the PWM module
-//------------------------------------------------------------------------------
-void disableADC_CLK(void)
-{
-	PWM1CONbits.EN = 0; //[7] Disable the PWM module
 }
 
 bool pollLoadCells(loadCell *currentSample)
