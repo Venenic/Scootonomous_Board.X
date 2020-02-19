@@ -96,8 +96,8 @@ void main(void) {
 			
 			for(char i = 0; i < 1; i++)
 			{
-				convert24Bit(motorData[i].pulseTime, dataString24);
-				sendString(dataString24);
+				convert16Bit(motorData[i].pulseTime, dataString16);
+				sendString(dataString16);
 				sendString(",");
 			}
 			
