@@ -27734,27 +27734,39 @@ extern __attribute__((nonreentrant)) void _delay3(unsigned char);
 
 # 1 "./hardwareDefinitions.h" 1
 # 39 "motorControl.c" 2
-# 60 "motorControl.c"
+# 73 "motorControl.c"
 void initializePWM2(void);
 void initializePWM3(void);
+void initializeTimers(void);
 void enableMotors(void);
-# 72 "motorControl.c"
+void initializeMotors(void);
+
+void __attribute__((picinterrupt(("low_priority, irq(IOC), base(8)")))) hallEffectPulse()
+{
+ if(IOCAFbits.IOCAF0)
+ {
+
+  IOCAFbits.IOCAF0 = 0;
+ }
+}
+
+void __attribute__((picinterrupt(("low_priority, irq(TMR0), base(8)")))) pulseOverflow_1()
+{
+ PIR3bits.TMR0IF = 0;
+}
+# 101 "motorControl.c"
 void initializeMotorControl(void)
 {
  initializePWM2();
  initializePWM3();
+ initializeTimers();
+ initializeMotors();
  enableMotors();
 }
 
 
 void initializePWM2()
 {
- TRISDbits.TRISD0 = 0;
- RD0PPS = 0x1A;
-
- TRISDbits.TRISD1 = 0;
- RD1PPS = 0x1B;
-
 
     PWM2CONbits.EN = 0;
     PWM2CONbits.LD = 1;
@@ -27796,7 +27808,7 @@ void initializePWM2()
     PWM2S1P2Lbits.S1P2L = 0x20;
 
  PWM2CONbits.LD = 0;
-# 147 "motorControl.c"
+# 172 "motorControl.c"
 }
 
 void initializePWM3()
@@ -27849,8 +27861,63 @@ void initializePWM3()
     PWM3S1P2Lbits.S1P2L = 0x20;
 
  PWM3CONbits.LD = 0;
-# 217 "motorControl.c"
+# 242 "motorControl.c"
 }
+
+void initializeTimers(void)
+{
+
+
+ T0CON0bits.EN = 0;
+ T0CON0bits.MD16 = 1;
+ T0CON0bits.OUTPS = 0b0000;
+
+
+ T0CON1bits.CS = 0b011;
+ T0CON1bits.ASYNC = 1;
+ T0CON1bits.CKPS = 0b0001;
+
+
+
+
+
+
+ PIE3bits.TMR0IE = 1;
+
+
+ IPR3bits.TMR0IP = 0;
+
+ T0CON0bits.EN = 1;
+}
+
+
+void initializeMotors(void)
+{
+ TRISDbits.TRISD0 = 0;
+ RD0PPS = 0x1A;
+ TRISCbits.TRISC0 = 0;
+ TRISCbits.TRISC1 = 0;
+
+ TRISAbits.TRISA0 = 1;
+ ANSELAbits.ANSELA0 = 0;
+ TRISAbits.TRISA1 = 1;
+ ANSELAbits.ANSELA1 = 0;
+ IOCAPbits.IOCAP0 = 1;
+
+
+
+
+ IPR0bits.IOCIP = 0;
+
+
+ PIE0bits.IOCIE = 1;
+
+
+
+
+}
+
+
 
 void enableMotors(void)
 {

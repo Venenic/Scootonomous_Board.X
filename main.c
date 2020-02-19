@@ -2,7 +2,7 @@
 File:			loadCells.h
 Authors:		Kyle Hedges
 Date:			Jan 27, 2020
-Last Modified:	Feb 14, 2020
+Last Modified:	Feb 19, 2020
 (c) 2020 Lakehead University
 
 TARGET DEVICE:PIC18F45K22
@@ -21,6 +21,7 @@ TODO:Insert description here
 #include "initializeSysTick.h" 
 #include "hardwareDefinitions.h"
 #include "binaryToString.h"
+#include "motorControl.h"
 
 #define ZEROING 0
 #define MEASURING 1
@@ -65,31 +66,59 @@ void main(void) {
 	//Load cell data variables
     sampleTimer = 0; 
     loadCell loadCellData[NUMBER_OF_LOAD_CELLS];
+	motor motorData[4];
+    
+    TRISEbits.TRISE0 = OUTPUT_PIN;
+    LATEbits.LATE0 = 0;
 
- 
     while(1)                                               
-    {
-        if(pollLoadCells(&loadCellData))
+    { 
+        if(pollLoadCells(loadCellData))
         {
-			int24String dataString = "SXXXXXXX"; 
-			  
+            LATEbits.LATE0 = 1;
+			int24String dataString24 = "SXXXXXXX";
+            int16String dataString16 = "SXXXXX";
+			
 			sendString("DATA,"); //Excel command
 			
-			convert24Bit(sampleTimer, dataString);
-			sendString(dataString);
+			convert24Bit(sampleTimer, dataString24);
+			sendString(dataString24);
 			sampleTimer = 0;
 			
 			sendString(",");
 			
 			for(char i = 0; i < NUMBER_OF_LOAD_CELLS; i++)
 			{
-				convert24Bit(loadCellData[i].rawData, dataString);
-				sendString(dataString);
+				convert24Bit(loadCellData[i].rawData, dataString24);
+				sendString(dataString24);
+				sendString(",");
+			}
+			
+			for(char i = 0; i < 1; i++)
+			{
+				convert24Bit(motorData[i].pulseTime, dataString24);
+				sendString(dataString24);
 				sendString(",");
 			}
 			
 			sendString("\r\n");
+            
+            LATEbits.LATE0 = 0;
         }
+		
+		for(char i = 0; i < 1; i++)
+		{
+
+			if(pollEncoder(&motorData[i],i))
+			{
+				int j = 0;
+				int k = j + 1;
+				//Do math here
+			}				
+		}
+         
+		
+		
          /*  
         if(transmitString)
         {

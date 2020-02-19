@@ -2,7 +2,7 @@
 File:			loadCells.h
 Authors:		Kyle Hedges
 Date:			Jan 31, 2020
-Last Modified:	Feb 14, 2020
+Last Modified:	Feb 15, 2020
 (c) 2020 Lakehead University
 
 TARGET DEVICE:PIC18F45K22
@@ -90,7 +90,7 @@ void enableADC_CLK(void);
 //------------------------------------------------------------------------------
 void disableADC_CLK(void);
 
-bool pollLoadCells(loadCell*);
+bool pollLoadCells(loadCell *);
 bool isDataReady(void);
 __int24 getData(void);
 

@@ -2,7 +2,7 @@
 File:			motorControl.c
 Authors:		Kyle Hedges
 Date:			Feb 4, 2020
-Last Modified:	Feb 4, 2020
+Last Modified:	Feb 16, 2020
 (c) 2020 Lakehead University
 
 TARGET DEVICE:PIC18F45K22
@@ -36,11 +36,28 @@ Board Layout (Top View):	1---F---2
 *******************************************************************************/ 
 
 #include <xc.h>
+#include <stdbool.h>
+#include <stdint.h>
 #include "hardwareDefinitions.h"
+#include "motorControl.h"
 
-#define M1_TRIS TRISDbits.TRISD0
-#define M1_PPS RD0PPS 
-#define PWM2_P1_OUT 0x1A //PWM2_P1 output source identifier
+//Motor 1 pinout
+#define M1_PWM_TRIS TRISDbits.TRISD0
+#define M1_PWM_PPS RD0PPS //Pin RD0 PPS
+#define PWM2_P1_OUT 0x1A //PWM2_P1 PPS output source identifier
+#define M1_CONTROL1_TRIS TRISCbits.TRISC0
+#define M1_CONTROL2_TRIS TRISCbits.TRISC1
+
+#define	M1_SPEED_TRIS TRISAbits.TRISA0
+#define M1_SPEED_ANSEL ANSELAbits.ANSELA0
+#define M1_POS_IOC IOCAPbits.IOCAP0
+
+#define M1_DIR_TRIS TRISAbits.TRISA1 
+#define M1_DIR_ANSEL ANSELAbits.ANSELA1
+#define M1_DIR_INPUT PORTAbits.RA1
+
+
+
 
 #define M2_TRIS TRISDbits.TRISD1
 #define M2_PPS RD1PPS 
@@ -59,7 +76,64 @@ Board Layout (Top View):	1---F---2
 
 void initializePWM2(void);
 void initializePWM3(void);
+void initializeTimers(void);
 void enableMotors(void);
+void initializeMotors(void);
+
+
+#define TIMER_HIGH_BYTE 1
+#define TIMER_LOW_BYTE 0
+
+typedef union timerCount {
+	uint16_t value;
+	char byte[2];
+} timerCount;
+
+//Maybe should throw these in a structure
+volatile timerCount pulsePeriod[4];
+volatile bool datasReady[4];
+volatile char direction[4];
+volatile bool overflow[4];
+
+void __interrupt(low_priority, irq(IOC), base(8)) hallEffectPulse()
+{
+	if(IOCAFbits.IOCAF0)
+	{
+		//Motor 1 interrupt
+		T0CON0bits.EN = 0;
+		
+		//Timer values need to be read/written low byte first
+		pulsePeriod[0].byte[TIMER_LOW_BYTE] = TMR0L;
+		pulsePeriod[0].byte[TIMER_HIGH_BYTE] = TMR0H;
+		if(overflow[0]){
+			pulsePeriod[0].value = 0xFFFF;
+			overflow[0] = false;
+		}
+		
+		TMR0L = 0;
+		TMR0H = 0;
+		T0CON0bits.EN = 1;
+		
+		direction[0] = M1_DIR_INPUT;
+		
+		datasReady[0] = 1;
+		IOCAFbits.IOCAF0 = 0; //Clear interrupt flag
+	}
+	
+	if(IOCAFbits.IOCAF1)
+	{
+		
+	}
+	
+		
+}
+
+void __interrupt(low_priority, irq(TMR0), base(8)) pulseOverflow_1()
+{
+	//Time between pulses has overflowed (Moving very slow)
+	overflow[0] = true;
+	PIR3bits.TMR0IF = 0; // [7] Clear interrupt flag
+}
 
 //so initializeMotorControl: --------------------------------------------------------
 // Parameters:		void
@@ -73,18 +147,14 @@ void initializeMotorControl(void)
 {
 	initializePWM2();
 	initializePWM3();
+	initializeTimers();
+	initializeMotors();
 	enableMotors();
 }
 
 
 void initializePWM2()
 {
-	M1_TRIS = OUTPUT_PIN;
-	M1_PPS = PWM2_P1_OUT;
-	
-	M2_TRIS = OUTPUT_PIN;
-	M2_PPS = PWM2_P2_OUT;
-	
 	//PRM Control Register
     PWM2CONbits.EN = 0; //[7] PWM module is disabled
     PWM2CONbits.LD = 1; //[2] Period and duty cycle load is enabled (Redundant)
@@ -216,9 +286,85 @@ void initializePWM3()
 	*/
 }
 
+void initializeTimers(void)
+{
+	//Timer 0 setup:
+	//Timer0 Control Register 0 
+	T0CON0bits.EN = 0; // [7] Disable Timer 0 for setup;
+	T0CON0bits.MD16 = 1; // [4] Configured as a 16 bit timer0
+	T0CON0bits.OUTPS = 0b0000; // [3:0] 1:1 Postscaler
+	
+	//Timer0 Control Register 1
+	T0CON1bits.CS = 0b011; // [7:5] HFINTOSC (64MHz) clock source
+	T0CON1bits.ASYNC = 1; // [4] Operate in asynchronous mode
+	T0CON1bits.CKPS = 0b0010; // [3:0] 1:2 prescaler for 32MHz steps
+	
+	//Timer0 Period/Count High/Low Registers
+	//TMRR0H = 0; // [7:0]
+	//TMRR0L = 0; // [7:0]
+	
+	//Peripheral Interrupt Priority Register 3
+	IPR3bits.TMR0IP = LOW_PRIORITY; // [7] Set timer overflow to low priority
+	
+	//Peripheral Interrupt Enable Register 3
+	PIE3bits.TMR0IE = ENABLE_INTERRUPT; // [7] Enable overflow interrupt
+	
+	T0CON0bits.EN = 1; //Enable Timer0
+}
+
+//Yes this is hard coded, but whatever.
+void initializeMotors(void)
+{
+	M1_PWM_TRIS = OUTPUT_PIN;
+	M1_PWM_PPS = PWM2_P1_OUT;
+	M1_CONTROL1_TRIS = OUTPUT_PIN;
+	M1_CONTROL2_TRIS = OUTPUT_PIN;
+	
+	M1_SPEED_TRIS = INPUT_PIN;
+	M1_SPEED_ANSEL = DIGITAL_INPUT_PIN;
+	M1_DIR_TRIS = INPUT_PIN;
+	M1_DIR_ANSEL = DIGITAL_INPUT_PIN;
+	M1_POS_IOC = 1; // Enable rising edge interrupt for pin C0
+	
+	
+	
+	//Peripheral Interrupt Request Register 0
+	IPR0bits.IOCIP = LOW_PRIORITY; // [7] IOC set to low priority
+	
+	//Peripheral Interrupt Enable Register 0
+	PIE0bits.IOCIE = ENABLE_INTERRUPT; //[7] Enable IOC interrupts
+	
+	//Initialize
+	for(char i = 0; i < 4; i++)
+	{
+		datasReady[i] = false;
+	}
+	
+	
+	//TODO: configure timer0
+	//		Test
+	//		Copy and past for other four motors
+}					
+
 void enableMotors(void)
 {
 	PWM2CONbits.EN = 1; //[7] Enable the PWM module
 	PWM3CONbits.EN = 1; //[7] Enable the PWM module
+}
+
+bool pollEncoder(motor *motorData, char encoderNum)
+{	
+	if(datasReady[encoderNum])
+	{
+		
+		motorData -> pulseTime = pulsePeriod[encoderNum].value;
+		
+		datasReady[encoderNum] = false;
+		
+		return true;
+		
+	}
+	
+	return false;
 }
 

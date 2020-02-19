@@ -1,31 +1,45 @@
 Version 4.0 HI-TECH Software Intermediate Code
-"60 motorControl.c
-[; ;motorControl.c: 60: void initializePWM2(void);
+[t ~ __interrupt . k ]
+[t T1 __interrupt low_priority irq ( IOC ) base ( 8 ) ]
+"38977 C:\Program Files (x86)\Microchip\xc8\v2.10\pic\include\pic18f47q43.h
+[; ;C:\Program Files (x86)\Microchip\xc8\v2.10\pic\include\pic18f47q43.h: 38977:     struct {
+[s S1840 :1 `uc 1 :1 `uc 1 :1 `uc 1 :1 `uc 1 :1 `uc 1 :1 `uc 1 :1 `uc 1 :1 `uc 1 ]
+[n S1840 . IOCAF0 IOCAF1 IOCAF2 IOCAF3 IOCAF4 IOCAF5 IOCAF6 IOCAF7 ]
+"38976
+[; ;C:\Program Files (x86)\Microchip\xc8\v2.10\pic\include\pic18f47q43.h: 38976: typedef union {
+[u S1839 `S1840 1 ]
+[n S1839 . . ]
+"38988
+[; ;C:\Program Files (x86)\Microchip\xc8\v2.10\pic\include\pic18f47q43.h: 38988: extern volatile IOCAFbits_t IOCAFbits __attribute__((address(0x407)));
+[v _IOCAFbits `VS1839 ~T0 @X0 0 e@1031 ]
+[t T2 __interrupt low_priority irq ( TMR0 ) base ( 8 ) ]
+"45797
+[; ;C:\Program Files (x86)\Microchip\xc8\v2.10\pic\include\pic18f47q43.h: 45797:     struct {
+[s S2163 :1 `uc 1 :1 `uc 1 :1 `uc 1 :1 `uc 1 :1 `uc 1 :1 `uc 1 :1 `uc 1 :1 `uc 1 ]
+[n S2163 . SPI1RXIF SPI1TXIF SPI1IF TMR2IF TMR1IF TMR1GIF CCP1IF TMR0IF ]
+"45796
+[; ;C:\Program Files (x86)\Microchip\xc8\v2.10\pic\include\pic18f47q43.h: 45796: typedef union {
+[u S2162 `S2163 1 ]
+[n S2162 . . ]
+"45808
+[; ;C:\Program Files (x86)\Microchip\xc8\v2.10\pic\include\pic18f47q43.h: 45808: extern volatile PIR3bits_t PIR3bits __attribute__((address(0x4B1)));
+[v _PIR3bits `VS2162 ~T0 @X0 0 e@1201 ]
+"73 motorControl.c
+[; ;motorControl.c: 73: void initializePWM2(void);
 [v _initializePWM2 `(v ~T0 @X0 0 ef ]
-"61
-[; ;motorControl.c: 61: void initializePWM3(void);
+"74
+[; ;motorControl.c: 74: void initializePWM3(void);
 [v _initializePWM3 `(v ~T0 @X0 0 ef ]
-"62
-[; ;motorControl.c: 62: void enableMotors(void);
+"75
+[; ;motorControl.c: 75: void initializeTimers(void);
+[v _initializeTimers `(v ~T0 @X0 0 ef ]
+"77
+[; ;motorControl.c: 77: void initializeMotors(void);
+[v _initializeMotors `(v ~T0 @X0 0 ef ]
+"76
+[; ;motorControl.c: 76: void enableMotors(void);
 [v _enableMotors `(v ~T0 @X0 0 ef ]
-"46978 C:\Program Files (x86)\Microchip\xc8\v2.10\pic\include\pic18f47q43.h
-[; ;C:\Program Files (x86)\Microchip\xc8\v2.10\pic\include\pic18f47q43.h: 46978:     struct {
-[s S2205 :1 `uc 1 :1 `uc 1 :1 `uc 1 :1 `uc 1 :1 `uc 1 :1 `uc 1 :1 `uc 1 :1 `uc 1 ]
-[n S2205 . TRISD0 TRISD1 TRISD2 TRISD3 TRISD4 TRISD5 TRISD6 TRISD7 ]
-"46977
-[; ;C:\Program Files (x86)\Microchip\xc8\v2.10\pic\include\pic18f47q43.h: 46977: typedef union {
-[u S2204 `S2205 1 ]
-[n S2204 . . ]
-"46989
-[; ;C:\Program Files (x86)\Microchip\xc8\v2.10\pic\include\pic18f47q43.h: 46989: extern volatile TRISDbits_t TRISDbits __attribute__((address(0x4C9)));
-[v _TRISDbits `VS2204 ~T0 @X0 0 e@1225 ]
-"9992
-[; ;C:\Program Files (x86)\Microchip\xc8\v2.10\pic\include\pic18f47q43.h: 9992: extern volatile unsigned char RD0PPS __attribute__((address(0x219)));
-[v _RD0PPS `Vuc ~T0 @X0 0 e@537 ]
-"10048
-[; ;C:\Program Files (x86)\Microchip\xc8\v2.10\pic\include\pic18f47q43.h: 10048: extern volatile unsigned char RD1PPS __attribute__((address(0x21A)));
-[v _RD1PPS `Vuc ~T0 @X0 0 e@538 ]
-"44117
+"44117 C:\Program Files (x86)\Microchip\xc8\v2.10\pic\include\pic18f47q43.h
 [; ;C:\Program Files (x86)\Microchip\xc8\v2.10\pic\include\pic18f47q43.h: 44117:     struct {
 [s S2077 :1 `uc 1 :1 `uc 1 :1 `uc 1 :4 `uc 1 :1 `uc 1 ]
 [n S2077 . ERSNOW ERSPOL LD . EN ]
@@ -161,6 +175,17 @@ Version 4.0 HI-TECH Software Intermediate Code
 "44273
 [; ;C:\Program Files (x86)\Microchip\xc8\v2.10\pic\include\pic18f47q43.h: 44273: extern volatile PWM2S1P2Lbits_t PWM2S1P2Lbits __attribute__((address(0x47C)));
 [v _PWM2S1P2Lbits `VS2085 ~T0 @X0 0 e@1148 ]
+"46978
+[; ;C:\Program Files (x86)\Microchip\xc8\v2.10\pic\include\pic18f47q43.h: 46978:     struct {
+[s S2205 :1 `uc 1 :1 `uc 1 :1 `uc 1 :1 `uc 1 :1 `uc 1 :1 `uc 1 :1 `uc 1 :1 `uc 1 ]
+[n S2205 . TRISD0 TRISD1 TRISD2 TRISD3 TRISD4 TRISD5 TRISD6 TRISD7 ]
+"46977
+[; ;C:\Program Files (x86)\Microchip\xc8\v2.10\pic\include\pic18f47q43.h: 46977: typedef union {
+[u S2204 `S2205 1 ]
+[n S2204 . . ]
+"46989
+[; ;C:\Program Files (x86)\Microchip\xc8\v2.10\pic\include\pic18f47q43.h: 46989: extern volatile TRISDbits_t TRISDbits __attribute__((address(0x4C9)));
+[v _TRISDbits `VS2204 ~T0 @X0 0 e@1225 ]
 "10104
 [; ;C:\Program Files (x86)\Microchip\xc8\v2.10\pic\include\pic18f47q43.h: 10104: extern volatile unsigned char RD2PPS __attribute__((address(0x21B)));
 [v _RD2PPS `Vuc ~T0 @X0 0 e@539 ]
@@ -303,6 +328,139 @@ Version 4.0 HI-TECH Software Intermediate Code
 "44664
 [; ;C:\Program Files (x86)\Microchip\xc8\v2.10\pic\include\pic18f47q43.h: 44664: extern volatile PWM3S1P2Lbits_t PWM3S1P2Lbits __attribute__((address(0x48B)));
 [v _PWM3S1P2Lbits `VS2116 ~T0 @X0 0 e@1163 ]
+"23252
+[; ;C:\Program Files (x86)\Microchip\xc8\v2.10\pic\include\pic18f47q43.h: 23252:     struct {
+[s S1121 :4 `uc 1 :1 `uc 1 :1 `uc 1 :1 `uc 1 :1 `uc 1 ]
+[n S1121 . OUTPS MD16 OUT . EN ]
+"23259
+[; ;C:\Program Files (x86)\Microchip\xc8\v2.10\pic\include\pic18f47q43.h: 23259:     struct {
+[s S1122 :4 `uc 1 :1 `uc 1 :1 `uc 1 :1 `uc 1 :1 `uc 1 ]
+[n S1122 . T0OUTPS T0MD16 T0OUT . T0EN ]
+"23266
+[; ;C:\Program Files (x86)\Microchip\xc8\v2.10\pic\include\pic18f47q43.h: 23266:     struct {
+[s S1123 :1 `uc 1 :1 `uc 1 :1 `uc 1 :1 `uc 1 :1 `uc 1 ]
+[n S1123 . OUTPS0 OUTPS1 OUTPS2 OUTPS3 T016BIT ]
+"23251
+[; ;C:\Program Files (x86)\Microchip\xc8\v2.10\pic\include\pic18f47q43.h: 23251: typedef union {
+[u S1120 `S1121 1 `S1122 1 `S1123 1 ]
+[n S1120 . . . . ]
+"23274
+[; ;C:\Program Files (x86)\Microchip\xc8\v2.10\pic\include\pic18f47q43.h: 23274: extern volatile T0CON0bits_t T0CON0bits __attribute__((address(0x31A)));
+[v _T0CON0bits `VS1120 ~T0 @X0 0 e@794 ]
+"23350
+[; ;C:\Program Files (x86)\Microchip\xc8\v2.10\pic\include\pic18f47q43.h: 23350:     struct {
+[s S1125 :4 `uc 1 :1 `uc 1 :3 `uc 1 ]
+[n S1125 . CKPS ASYNC CS ]
+"23355
+[; ;C:\Program Files (x86)\Microchip\xc8\v2.10\pic\include\pic18f47q43.h: 23355:     struct {
+[s S1126 :1 `uc 1 :1 `uc 1 :1 `uc 1 :1 `uc 1 :1 `uc 1 :1 `uc 1 :1 `uc 1 :1 `uc 1 ]
+[n S1126 . CKPS0 CKPS1 CKPS2 CKPS3 T0ASYNC CS0 CS1 CS2 ]
+"23365
+[; ;C:\Program Files (x86)\Microchip\xc8\v2.10\pic\include\pic18f47q43.h: 23365:     struct {
+[s S1127 :4 `uc 1 :1 `uc 1 :3 `uc 1 ]
+[n S1127 . T0CKPS . T0CS ]
+"23370
+[; ;C:\Program Files (x86)\Microchip\xc8\v2.10\pic\include\pic18f47q43.h: 23370:     struct {
+[s S1128 :1 `uc 1 :1 `uc 1 :1 `uc 1 :1 `uc 1 :1 `uc 1 :1 `uc 1 :1 `uc 1 :1 `uc 1 ]
+[n S1128 . T0CKPS0 T0CKPS1 T0CKPS2 T0CKPS3 . T0CS0 T0CS1 T0CS2 ]
+"23349
+[; ;C:\Program Files (x86)\Microchip\xc8\v2.10\pic\include\pic18f47q43.h: 23349: typedef union {
+[u S1124 `S1125 1 `S1126 1 `S1127 1 `S1128 1 ]
+[n S1124 . . . . . ]
+"23381
+[; ;C:\Program Files (x86)\Microchip\xc8\v2.10\pic\include\pic18f47q43.h: 23381: extern volatile T0CON1bits_t T0CON1bits __attribute__((address(0x31B)));
+[v _T0CON1bits `VS1124 ~T0 @X0 0 e@795 ]
+"44923
+[; ;C:\Program Files (x86)\Microchip\xc8\v2.10\pic\include\pic18f47q43.h: 44923:     struct {
+[s S2131 :1 `uc 1 :1 `uc 1 :1 `uc 1 :1 `uc 1 :1 `uc 1 :1 `uc 1 :1 `uc 1 :1 `uc 1 ]
+[n S2131 . SPI1RXIE SPI1TXIE SPI1IE TMR2IE TMR1IE TMR1GIE CCP1IE TMR0IE ]
+"44922
+[; ;C:\Program Files (x86)\Microchip\xc8\v2.10\pic\include\pic18f47q43.h: 44922: typedef union {
+[u S2130 `S2131 1 ]
+[n S2130 . . ]
+"44934
+[; ;C:\Program Files (x86)\Microchip\xc8\v2.10\pic\include\pic18f47q43.h: 44934: extern volatile PIE3bits_t PIE3bits __attribute__((address(0x4A1)));
+[v _PIE3bits `VS2130 ~T0 @X0 0 e@1185 ]
+"30712
+[; ;C:\Program Files (x86)\Microchip\xc8\v2.10\pic\include\pic18f47q43.h: 30712:     struct {
+[s S1468 :1 `uc 1 :1 `uc 1 :1 `uc 1 :1 `uc 1 :1 `uc 1 :1 `uc 1 :1 `uc 1 :1 `uc 1 ]
+[n S1468 . SPI1RXIP SPI1TXIP SPI1IP TMR2IP TMR1IP TMR1GIP CCP1IP TMR0IP ]
+"30711
+[; ;C:\Program Files (x86)\Microchip\xc8\v2.10\pic\include\pic18f47q43.h: 30711: typedef union {
+[u S1467 `S1468 1 ]
+[n S1467 . . ]
+"30723
+[; ;C:\Program Files (x86)\Microchip\xc8\v2.10\pic\include\pic18f47q43.h: 30723: extern volatile IPR3bits_t IPR3bits __attribute__((address(0x365)));
+[v _IPR3bits `VS1467 ~T0 @X0 0 e@869 ]
+"9992
+[; ;C:\Program Files (x86)\Microchip\xc8\v2.10\pic\include\pic18f47q43.h: 9992: extern volatile unsigned char RD0PPS __attribute__((address(0x219)));
+[v _RD0PPS `Vuc ~T0 @X0 0 e@537 ]
+"46916
+[; ;C:\Program Files (x86)\Microchip\xc8\v2.10\pic\include\pic18f47q43.h: 46916:     struct {
+[s S2203 :1 `uc 1 :1 `uc 1 :1 `uc 1 :1 `uc 1 :1 `uc 1 :1 `uc 1 :1 `uc 1 :1 `uc 1 ]
+[n S2203 . TRISC0 TRISC1 TRISC2 TRISC3 TRISC4 TRISC5 TRISC6 TRISC7 ]
+"46915
+[; ;C:\Program Files (x86)\Microchip\xc8\v2.10\pic\include\pic18f47q43.h: 46915: typedef union {
+[u S2202 `S2203 1 ]
+[n S2202 . . ]
+"46927
+[; ;C:\Program Files (x86)\Microchip\xc8\v2.10\pic\include\pic18f47q43.h: 46927: extern volatile TRISCbits_t TRISCbits __attribute__((address(0x4C8)));
+[v _TRISCbits `VS2202 ~T0 @X0 0 e@1224 ]
+"46792
+[; ;C:\Program Files (x86)\Microchip\xc8\v2.10\pic\include\pic18f47q43.h: 46792:     struct {
+[s S2199 :1 `uc 1 :1 `uc 1 :1 `uc 1 :1 `uc 1 :1 `uc 1 :1 `uc 1 :1 `uc 1 :1 `uc 1 ]
+[n S2199 . TRISA0 TRISA1 TRISA2 TRISA3 TRISA4 TRISA5 TRISA6 TRISA7 ]
+"46791
+[; ;C:\Program Files (x86)\Microchip\xc8\v2.10\pic\include\pic18f47q43.h: 46791: typedef union {
+[u S2198 `S2199 1 ]
+[n S2198 . . ]
+"46803
+[; ;C:\Program Files (x86)\Microchip\xc8\v2.10\pic\include\pic18f47q43.h: 46803: extern volatile TRISAbits_t TRISAbits __attribute__((address(0x4C6)));
+[v _TRISAbits `VS2198 ~T0 @X0 0 e@1222 ]
+"38543
+[; ;C:\Program Files (x86)\Microchip\xc8\v2.10\pic\include\pic18f47q43.h: 38543:     struct {
+[s S1826 :1 `uc 1 :1 `uc 1 :1 `uc 1 :1 `uc 1 :1 `uc 1 :1 `uc 1 :1 `uc 1 :1 `uc 1 ]
+[n S1826 . ANSELA0 ANSELA1 ANSELA2 ANSELA3 ANSELA4 ANSELA5 ANSELA6 ANSELA7 ]
+"38542
+[; ;C:\Program Files (x86)\Microchip\xc8\v2.10\pic\include\pic18f47q43.h: 38542: typedef union {
+[u S1825 `S1826 1 ]
+[n S1825 . . ]
+"38554
+[; ;C:\Program Files (x86)\Microchip\xc8\v2.10\pic\include\pic18f47q43.h: 38554: extern volatile ANSELAbits_t ANSELAbits __attribute__((address(0x400)));
+[v _ANSELAbits `VS1825 ~T0 @X0 0 e@1024 ]
+"38853
+[; ;C:\Program Files (x86)\Microchip\xc8\v2.10\pic\include\pic18f47q43.h: 38853:     struct {
+[s S1836 :1 `uc 1 :1 `uc 1 :1 `uc 1 :1 `uc 1 :1 `uc 1 :1 `uc 1 :1 `uc 1 :1 `uc 1 ]
+[n S1836 . IOCAP0 IOCAP1 IOCAP2 IOCAP3 IOCAP4 IOCAP5 IOCAP6 IOCAP7 ]
+"38852
+[; ;C:\Program Files (x86)\Microchip\xc8\v2.10\pic\include\pic18f47q43.h: 38852: typedef union {
+[u S1835 `S1836 1 ]
+[n S1835 . . ]
+"38864
+[; ;C:\Program Files (x86)\Microchip\xc8\v2.10\pic\include\pic18f47q43.h: 38864: extern volatile IOCAPbits_t IOCAPbits __attribute__((address(0x405)));
+[v _IOCAPbits `VS1835 ~T0 @X0 0 e@1029 ]
+"30553
+[; ;C:\Program Files (x86)\Microchip\xc8\v2.10\pic\include\pic18f47q43.h: 30553:     struct {
+[s S1462 :1 `uc 1 :1 `uc 1 :1 `uc 1 :1 `uc 1 :1 `uc 1 :1 `uc 1 :1 `uc 1 :1 `uc 1 ]
+[n S1462 . SWIP HLVDIP OSFIP CSWIP . CLC1IP . IOCIP ]
+"30552
+[; ;C:\Program Files (x86)\Microchip\xc8\v2.10\pic\include\pic18f47q43.h: 30552: typedef union {
+[u S1461 `S1462 1 ]
+[n S1461 . . ]
+"30564
+[; ;C:\Program Files (x86)\Microchip\xc8\v2.10\pic\include\pic18f47q43.h: 30564: extern volatile IPR0bits_t IPR0bits __attribute__((address(0x362)));
+[v _IPR0bits `VS1461 ~T0 @X0 0 e@866 ]
+"44764
+[; ;C:\Program Files (x86)\Microchip\xc8\v2.10\pic\include\pic18f47q43.h: 44764:     struct {
+[s S2125 :1 `uc 1 :1 `uc 1 :1 `uc 1 :1 `uc 1 :1 `uc 1 :1 `uc 1 :1 `uc 1 :1 `uc 1 ]
+[n S2125 . SWIE HLVDIE OSFIE CSWIE . CLC1IE . IOCIE ]
+"44763
+[; ;C:\Program Files (x86)\Microchip\xc8\v2.10\pic\include\pic18f47q43.h: 44763: typedef union {
+[u S2124 `S2125 1 ]
+[n S2124 . . ]
+"44775
+[; ;C:\Program Files (x86)\Microchip\xc8\v2.10\pic\include\pic18f47q43.h: 44775: extern volatile PIE0bits_t PIE0bits __attribute__((address(0x49E)));
+[v _PIE0bits `VS2124 ~T0 @X0 0 e@1182 ]
 "328 C:\Program Files (x86)\Microchip\xc8\v2.10\pic\include\pic18f47q43.h
 [; ;C:\Program Files (x86)\Microchip\xc8\v2.10\pic\include\pic18f47q43.h: 328: __asm("CLKRCON equ 039h");
 [; <" CLKRCON equ 039h ;# ">
@@ -2805,192 +2963,312 @@ Version 4.0 HI-TECH Software Intermediate Code
 "48630
 [; ;C:\Program Files (x86)\Microchip\xc8\v2.10\pic\include\pic18f47q43.h: 48630: __asm("TOSU equ 04FFh");
 [; <" TOSU equ 04FFh ;# ">
-"72 motorControl.c
-[; ;motorControl.c: 72: void initializeMotorControl(void)
+[v $root$_hallEffectPulse `(v ~T0 @X0 0 e ]
+"79 motorControl.c
+[; ;motorControl.c: 79: void __attribute__((picinterrupt(("low_priority, irq(IOC), base(8)")))) hallEffectPulse()
+[v _hallEffectPulse `(v ~T1 @X0 1 ef ]
+"80
+[; ;motorControl.c: 80: {
+{
+[e :U _hallEffectPulse ]
+[f ]
+"81
+[; ;motorControl.c: 81:  if(IOCAFbits.IOCAF0)
+[e $ ! != -> . . _IOCAFbits 0 0 `i -> 0 `i 2315  ]
+"82
+[; ;motorControl.c: 82:  {
+{
+"84
+[; ;motorControl.c: 84:   IOCAFbits.IOCAF0 = 0;
+[e = . . _IOCAFbits 0 0 -> -> 0 `i `uc ]
+"85
+[; ;motorControl.c: 85:  }
+}
+[e :U 2315 ]
+"86
+[; ;motorControl.c: 86: }
+[e :UE 2314 ]
+}
+[v $root$_pulseOverflow_1 `(v ~T0 @X0 0 e ]
+"88
+[; ;motorControl.c: 88: void __attribute__((picinterrupt(("low_priority, irq(TMR0), base(8)")))) pulseOverflow_1()
+[v _pulseOverflow_1 `(v ~T2 @X0 1 ef ]
+"89
+[; ;motorControl.c: 89: {
+{
+[e :U _pulseOverflow_1 ]
+[f ]
+"90
+[; ;motorControl.c: 90:  PIR3bits.TMR0IF = 0;
+[e = . . _PIR3bits 0 7 -> -> 0 `i `uc ]
+"91
+[; ;motorControl.c: 91: }
+[e :UE 2316 ]
+}
+"101
+[; ;motorControl.c: 101: void initializeMotorControl(void)
 [v _initializeMotorControl `(v ~T0 @X0 1 ef ]
-"73
-[; ;motorControl.c: 73: {
+"102
+[; ;motorControl.c: 102: {
 {
 [e :U _initializeMotorControl ]
 [f ]
-"74
-[; ;motorControl.c: 74:  initializePWM2();
+"103
+[; ;motorControl.c: 103:  initializePWM2();
 [e ( _initializePWM2 ..  ]
-"75
-[; ;motorControl.c: 75:  initializePWM3();
+"104
+[; ;motorControl.c: 104:  initializePWM3();
 [e ( _initializePWM3 ..  ]
-"76
-[; ;motorControl.c: 76:  enableMotors();
+"105
+[; ;motorControl.c: 105:  initializeTimers();
+[e ( _initializeTimers ..  ]
+"106
+[; ;motorControl.c: 106:  initializeMotors();
+[e ( _initializeMotors ..  ]
+"107
+[; ;motorControl.c: 107:  enableMotors();
 [e ( _enableMotors ..  ]
-"77
-[; ;motorControl.c: 77: }
-[e :UE 2314 ]
+"108
+[; ;motorControl.c: 108: }
+[e :UE 2317 ]
 }
-"80
-[; ;motorControl.c: 80: void initializePWM2()
+"111
+[; ;motorControl.c: 111: void initializePWM2()
 [v _initializePWM2 `(v ~T0 @X0 1 ef ]
-"81
-[; ;motorControl.c: 81: {
+"112
+[; ;motorControl.c: 112: {
 {
 [e :U _initializePWM2 ]
 [f ]
-"82
-[; ;motorControl.c: 82:  TRISDbits.TRISD0 = 0;
-[e = . . _TRISDbits 0 0 -> -> 0 `i `uc ]
-"83
-[; ;motorControl.c: 83:  RD0PPS = 0x1A;
-[e = _RD0PPS -> -> 26 `i `uc ]
-"85
-[; ;motorControl.c: 85:  TRISDbits.TRISD1 = 0;
-[e = . . _TRISDbits 0 1 -> -> 0 `i `uc ]
-"86
-[; ;motorControl.c: 86:  RD1PPS = 0x1B;
-[e = _RD1PPS -> -> 27 `i `uc ]
-"89
-[; ;motorControl.c: 89:     PWM2CONbits.EN = 0;
+"114
+[; ;motorControl.c: 114:     PWM2CONbits.EN = 0;
 [e = . . _PWM2CONbits 0 4 -> -> 0 `i `uc ]
-"90
-[; ;motorControl.c: 90:     PWM2CONbits.LD = 1;
-[e = . . _PWM2CONbits 0 2 -> -> 1 `i `uc ]
-"95
-[; ;motorControl.c: 95:     PWM2CLKbits.CLK = 0b00011;
-[e = . . _PWM2CLKbits 0 0 -> -> 3 `i `uc ]
-"99
-[; ;motorControl.c: 99:     PWM2PRHbits.PRH = 12;
-[e = . . _PWM2PRHbits 0 0 -> -> 12 `i `uc ]
-"100
-[; ;motorControl.c: 100:     PWM2PRLbits.PRL = 127;
-[e = . . _PWM2PRLbits 0 0 -> -> 127 `i `uc ]
-"103
-[; ;motorControl.c: 103:     PWM2CPREbits.CPRE = 0;
-[e = . . _PWM2CPREbits 0 0 -> -> 0 `i `uc ]
-"107
-[; ;motorControl.c: 107:     PWM2GIRbits.S1P1IF = 0;
-[e = . . _PWM2GIRbits 0 0 -> -> 0 `i `uc ]
-"110
-[; ;motorControl.c: 110:     PWM2GIEbits.S1P2IE = 0;
-[e = . . _PWM2GIEbits 0 1 -> -> 0 `i `uc ]
-"111
-[; ;motorControl.c: 111:     PWM2GIEbits.S1P1IE = 0;
-[e = . . _PWM2GIEbits 0 0 -> -> 0 `i `uc ]
 "115
-[; ;motorControl.c: 115:     PWM2S1CFGbits.POL1 = 0;
-[e = . . _PWM2S1CFGbits 0 3 -> -> 0 `i `uc ]
-"116
-[; ;motorControl.c: 116:     PWM2S1CFGbits.PPEN = 0;
-[e = . . _PWM2S1CFGbits 0 1 -> -> 0 `i `uc ]
-"117
-[; ;motorControl.c: 117:     PWM2S1CFGbits.MODE = 0b000;
-[e = . . _PWM2S1CFGbits 0 0 -> -> 0 `i `uc ]
-"123
-[; ;motorControl.c: 123:     PWM2S1P1Hbits.S1P1H = 0x03;
-[e = . . _PWM2S1P1Hbits 0 0 -> -> 3 `i `uc ]
+[; ;motorControl.c: 115:     PWM2CONbits.LD = 1;
+[e = . . _PWM2CONbits 0 2 -> -> 1 `i `uc ]
+"120
+[; ;motorControl.c: 120:     PWM2CLKbits.CLK = 0b00011;
+[e = . . _PWM2CLKbits 0 0 -> -> 3 `i `uc ]
 "124
-[; ;motorControl.c: 124:     PWM2S1P1Lbits.S1P1L = 0x20;
-[e = . . _PWM2S1P1Lbits 0 0 -> -> 32 `i `uc ]
+[; ;motorControl.c: 124:     PWM2PRHbits.PRH = 12;
+[e = . . _PWM2PRHbits 0 0 -> -> 12 `i `uc ]
 "125
-[; ;motorControl.c: 125:  PWM2S1P2Hbits.S1P2H = 0x03;
-[e = . . _PWM2S1P2Hbits 0 0 -> -> 3 `i `uc ]
-"126
-[; ;motorControl.c: 126:     PWM2S1P2Lbits.S1P2L = 0x20;
-[e = . . _PWM2S1P2Lbits 0 0 -> -> 32 `i `uc ]
+[; ;motorControl.c: 125:     PWM2PRLbits.PRL = 127;
+[e = . . _PWM2PRLbits 0 0 -> -> 127 `i `uc ]
 "128
-[; ;motorControl.c: 128:  PWM2CONbits.LD = 0;
-[e = . . _PWM2CONbits 0 2 -> -> 0 `i `uc ]
-"147
-[; ;motorControl.c: 147: }
-[e :UE 2315 ]
-}
+[; ;motorControl.c: 128:     PWM2CPREbits.CPRE = 0;
+[e = . . _PWM2CPREbits 0 0 -> -> 0 `i `uc ]
+"132
+[; ;motorControl.c: 132:     PWM2GIRbits.S1P1IF = 0;
+[e = . . _PWM2GIRbits 0 0 -> -> 0 `i `uc ]
+"135
+[; ;motorControl.c: 135:     PWM2GIEbits.S1P2IE = 0;
+[e = . . _PWM2GIEbits 0 1 -> -> 0 `i `uc ]
+"136
+[; ;motorControl.c: 136:     PWM2GIEbits.S1P1IE = 0;
+[e = . . _PWM2GIEbits 0 0 -> -> 0 `i `uc ]
+"140
+[; ;motorControl.c: 140:     PWM2S1CFGbits.POL1 = 0;
+[e = . . _PWM2S1CFGbits 0 3 -> -> 0 `i `uc ]
+"141
+[; ;motorControl.c: 141:     PWM2S1CFGbits.PPEN = 0;
+[e = . . _PWM2S1CFGbits 0 1 -> -> 0 `i `uc ]
+"142
+[; ;motorControl.c: 142:     PWM2S1CFGbits.MODE = 0b000;
+[e = . . _PWM2S1CFGbits 0 0 -> -> 0 `i `uc ]
+"148
+[; ;motorControl.c: 148:     PWM2S1P1Hbits.S1P1H = 0x03;
+[e = . . _PWM2S1P1Hbits 0 0 -> -> 3 `i `uc ]
 "149
-[; ;motorControl.c: 149: void initializePWM3()
-[v _initializePWM3 `(v ~T0 @X0 1 ef ]
+[; ;motorControl.c: 149:     PWM2S1P1Lbits.S1P1L = 0x20;
+[e = . . _PWM2S1P1Lbits 0 0 -> -> 32 `i `uc ]
 "150
-[; ;motorControl.c: 150: {
+[; ;motorControl.c: 150:  PWM2S1P2Hbits.S1P2H = 0x03;
+[e = . . _PWM2S1P2Hbits 0 0 -> -> 3 `i `uc ]
+"151
+[; ;motorControl.c: 151:     PWM2S1P2Lbits.S1P2L = 0x20;
+[e = . . _PWM2S1P2Lbits 0 0 -> -> 32 `i `uc ]
+"153
+[; ;motorControl.c: 153:  PWM2CONbits.LD = 0;
+[e = . . _PWM2CONbits 0 2 -> -> 0 `i `uc ]
+"172
+[; ;motorControl.c: 172: }
+[e :UE 2318 ]
+}
+"174
+[; ;motorControl.c: 174: void initializePWM3()
+[v _initializePWM3 `(v ~T0 @X0 1 ef ]
+"175
+[; ;motorControl.c: 175: {
 {
 [e :U _initializePWM3 ]
 [f ]
-"151
-[; ;motorControl.c: 151:  TRISDbits.TRISD2 = 0;
-[e = . . _TRISDbits 0 2 -> -> 0 `i `uc ]
-"152
-[; ;motorControl.c: 152:  RD2PPS = 0x1C;
-[e = _RD2PPS -> -> 28 `i `uc ]
-"154
-[; ;motorControl.c: 154:  TRISDbits.TRISD3 = 0;
-[e = . . _TRISDbits 0 3 -> -> 0 `i `uc ]
-"155
-[; ;motorControl.c: 155:  RD3PPS = 0x1D;
-[e = _RD3PPS -> -> 29 `i `uc ]
-"158
-[; ;motorControl.c: 158:     PWM3CONbits.EN = 0;
-[e = . . _PWM3CONbits 0 4 -> -> 0 `i `uc ]
-"159
-[; ;motorControl.c: 159:     PWM3CONbits.LD = 1;
-[e = . . _PWM3CONbits 0 2 -> -> 1 `i `uc ]
-"164
-[; ;motorControl.c: 164:     PWM3CLKbits.CLK = 0b00011;
-[e = . . _PWM3CLKbits 0 0 -> -> 3 `i `uc ]
-"168
-[; ;motorControl.c: 168:     PWM3PRHbits.PRH = 12;
-[e = . . _PWM3PRHbits 0 0 -> -> 12 `i `uc ]
-"169
-[; ;motorControl.c: 169:     PWM3PRLbits.PRL = 127;
-[e = . . _PWM3PRLbits 0 0 -> -> 127 `i `uc ]
-"172
-[; ;motorControl.c: 172:     PWM3CPREbits.CPRE = 0;
-[e = . . _PWM3CPREbits 0 0 -> -> 0 `i `uc ]
 "176
-[; ;motorControl.c: 176:     PWM3GIRbits.S1P1IF = 0;
-[e = . . _PWM3GIRbits 0 0 -> -> 0 `i `uc ]
+[; ;motorControl.c: 176:  TRISDbits.TRISD2 = 0;
+[e = . . _TRISDbits 0 2 -> -> 0 `i `uc ]
+"177
+[; ;motorControl.c: 177:  RD2PPS = 0x1C;
+[e = _RD2PPS -> -> 28 `i `uc ]
 "179
-[; ;motorControl.c: 179:     PWM3GIEbits.S1P2IE = 0;
-[e = . . _PWM3GIEbits 0 1 -> -> 0 `i `uc ]
+[; ;motorControl.c: 179:  TRISDbits.TRISD3 = 0;
+[e = . . _TRISDbits 0 3 -> -> 0 `i `uc ]
 "180
-[; ;motorControl.c: 180:     PWM3GIEbits.S1P1IE = 0;
-[e = . . _PWM3GIEbits 0 0 -> -> 0 `i `uc ]
-"185
-[; ;motorControl.c: 185:     PWM3S1CFGbits.POL1 = 0;
-[e = . . _PWM3S1CFGbits 0 3 -> -> 0 `i `uc ]
-"186
-[; ;motorControl.c: 186:     PWM3S1CFGbits.PPEN = 0;
-[e = . . _PWM3S1CFGbits 0 1 -> -> 0 `i `uc ]
-"187
-[; ;motorControl.c: 187:     PWM3S1CFGbits.MODE = 0b000;
-[e = . . _PWM3S1CFGbits 0 0 -> -> 0 `i `uc ]
+[; ;motorControl.c: 180:  RD3PPS = 0x1D;
+[e = _RD3PPS -> -> 29 `i `uc ]
+"183
+[; ;motorControl.c: 183:     PWM3CONbits.EN = 0;
+[e = . . _PWM3CONbits 0 4 -> -> 0 `i `uc ]
+"184
+[; ;motorControl.c: 184:     PWM3CONbits.LD = 1;
+[e = . . _PWM3CONbits 0 2 -> -> 1 `i `uc ]
+"189
+[; ;motorControl.c: 189:     PWM3CLKbits.CLK = 0b00011;
+[e = . . _PWM3CLKbits 0 0 -> -> 3 `i `uc ]
 "193
-[; ;motorControl.c: 193:     PWM3S1P1Hbits.S1P1H = 0x03;
-[e = . . _PWM3S1P1Hbits 0 0 -> -> 3 `i `uc ]
+[; ;motorControl.c: 193:     PWM3PRHbits.PRH = 12;
+[e = . . _PWM3PRHbits 0 0 -> -> 12 `i `uc ]
 "194
-[; ;motorControl.c: 194:     PWM3S1P1Lbits.S1P1L = 0x20;
-[e = . . _PWM3S1P1Lbits 0 0 -> -> 32 `i `uc ]
-"195
-[; ;motorControl.c: 195:  PWM3S1P2Hbits.S1P2H = 0x03;
-[e = . . _PWM3S1P2Hbits 0 0 -> -> 3 `i `uc ]
-"196
-[; ;motorControl.c: 196:     PWM3S1P2Lbits.S1P2L = 0x20;
-[e = . . _PWM3S1P2Lbits 0 0 -> -> 32 `i `uc ]
-"198
-[; ;motorControl.c: 198:  PWM3CONbits.LD = 0;
-[e = . . _PWM3CONbits 0 2 -> -> 0 `i `uc ]
-"217
-[; ;motorControl.c: 217: }
-[e :UE 2316 ]
-}
+[; ;motorControl.c: 194:     PWM3PRLbits.PRL = 127;
+[e = . . _PWM3PRLbits 0 0 -> -> 127 `i `uc ]
+"197
+[; ;motorControl.c: 197:     PWM3CPREbits.CPRE = 0;
+[e = . . _PWM3CPREbits 0 0 -> -> 0 `i `uc ]
+"201
+[; ;motorControl.c: 201:     PWM3GIRbits.S1P1IF = 0;
+[e = . . _PWM3GIRbits 0 0 -> -> 0 `i `uc ]
+"204
+[; ;motorControl.c: 204:     PWM3GIEbits.S1P2IE = 0;
+[e = . . _PWM3GIEbits 0 1 -> -> 0 `i `uc ]
+"205
+[; ;motorControl.c: 205:     PWM3GIEbits.S1P1IE = 0;
+[e = . . _PWM3GIEbits 0 0 -> -> 0 `i `uc ]
+"210
+[; ;motorControl.c: 210:     PWM3S1CFGbits.POL1 = 0;
+[e = . . _PWM3S1CFGbits 0 3 -> -> 0 `i `uc ]
+"211
+[; ;motorControl.c: 211:     PWM3S1CFGbits.PPEN = 0;
+[e = . . _PWM3S1CFGbits 0 1 -> -> 0 `i `uc ]
+"212
+[; ;motorControl.c: 212:     PWM3S1CFGbits.MODE = 0b000;
+[e = . . _PWM3S1CFGbits 0 0 -> -> 0 `i `uc ]
+"218
+[; ;motorControl.c: 218:     PWM3S1P1Hbits.S1P1H = 0x03;
+[e = . . _PWM3S1P1Hbits 0 0 -> -> 3 `i `uc ]
 "219
-[; ;motorControl.c: 219: void enableMotors(void)
-[v _enableMotors `(v ~T0 @X0 1 ef ]
+[; ;motorControl.c: 219:     PWM3S1P1Lbits.S1P1L = 0x20;
+[e = . . _PWM3S1P1Lbits 0 0 -> -> 32 `i `uc ]
 "220
-[; ;motorControl.c: 220: {
+[; ;motorControl.c: 220:  PWM3S1P2Hbits.S1P2H = 0x03;
+[e = . . _PWM3S1P2Hbits 0 0 -> -> 3 `i `uc ]
+"221
+[; ;motorControl.c: 221:     PWM3S1P2Lbits.S1P2L = 0x20;
+[e = . . _PWM3S1P2Lbits 0 0 -> -> 32 `i `uc ]
+"223
+[; ;motorControl.c: 223:  PWM3CONbits.LD = 0;
+[e = . . _PWM3CONbits 0 2 -> -> 0 `i `uc ]
+"242
+[; ;motorControl.c: 242: }
+[e :UE 2319 ]
+}
+"244
+[; ;motorControl.c: 244: void initializeTimers(void)
+[v _initializeTimers `(v ~T0 @X0 1 ef ]
+"245
+[; ;motorControl.c: 245: {
+{
+[e :U _initializeTimers ]
+[f ]
+"248
+[; ;motorControl.c: 248:  T0CON0bits.EN = 0;
+[e = . . _T0CON0bits 0 4 -> -> 0 `i `uc ]
+"249
+[; ;motorControl.c: 249:  T0CON0bits.MD16 = 1;
+[e = . . _T0CON0bits 0 1 -> -> 1 `i `uc ]
+"250
+[; ;motorControl.c: 250:  T0CON0bits.OUTPS = 0b0000;
+[e = . . _T0CON0bits 0 0 -> -> 0 `i `uc ]
+"253
+[; ;motorControl.c: 253:  T0CON1bits.CS = 0b011;
+[e = . . _T0CON1bits 0 2 -> -> 3 `i `uc ]
+"254
+[; ;motorControl.c: 254:  T0CON1bits.ASYNC = 1;
+[e = . . _T0CON1bits 0 1 -> -> 1 `i `uc ]
+"255
+[; ;motorControl.c: 255:  T0CON1bits.CKPS = 0b0001;
+[e = . . _T0CON1bits 0 0 -> -> 1 `i `uc ]
+"262
+[; ;motorControl.c: 262:  PIE3bits.TMR0IE = 1;
+[e = . . _PIE3bits 0 7 -> -> 1 `i `uc ]
+"265
+[; ;motorControl.c: 265:  IPR3bits.TMR0IP = 0;
+[e = . . _IPR3bits 0 7 -> -> 0 `i `uc ]
+"267
+[; ;motorControl.c: 267:  T0CON0bits.EN = 1;
+[e = . . _T0CON0bits 0 4 -> -> 1 `i `uc ]
+"268
+[; ;motorControl.c: 268: }
+[e :UE 2320 ]
+}
+"271
+[; ;motorControl.c: 271: void initializeMotors(void)
+[v _initializeMotors `(v ~T0 @X0 1 ef ]
+"272
+[; ;motorControl.c: 272: {
+{
+[e :U _initializeMotors ]
+[f ]
+"273
+[; ;motorControl.c: 273:  TRISDbits.TRISD0 = 0;
+[e = . . _TRISDbits 0 0 -> -> 0 `i `uc ]
+"274
+[; ;motorControl.c: 274:  RD0PPS = 0x1A;
+[e = _RD0PPS -> -> 26 `i `uc ]
+"275
+[; ;motorControl.c: 275:  TRISCbits.TRISC0 = 0;
+[e = . . _TRISCbits 0 0 -> -> 0 `i `uc ]
+"276
+[; ;motorControl.c: 276:  TRISCbits.TRISC1 = 0;
+[e = . . _TRISCbits 0 1 -> -> 0 `i `uc ]
+"278
+[; ;motorControl.c: 278:  TRISAbits.TRISA0 = 1;
+[e = . . _TRISAbits 0 0 -> -> 1 `i `uc ]
+"279
+[; ;motorControl.c: 279:  ANSELAbits.ANSELA0 = 0;
+[e = . . _ANSELAbits 0 0 -> -> 0 `i `uc ]
+"280
+[; ;motorControl.c: 280:  TRISAbits.TRISA1 = 1;
+[e = . . _TRISAbits 0 1 -> -> 1 `i `uc ]
+"281
+[; ;motorControl.c: 281:  ANSELAbits.ANSELA1 = 0;
+[e = . . _ANSELAbits 0 1 -> -> 0 `i `uc ]
+"282
+[; ;motorControl.c: 282:  IOCAPbits.IOCAP0 = 1;
+[e = . . _IOCAPbits 0 0 -> -> 1 `i `uc ]
+"287
+[; ;motorControl.c: 287:  IPR0bits.IOCIP = 0;
+[e = . . _IPR0bits 0 7 -> -> 0 `i `uc ]
+"290
+[; ;motorControl.c: 290:  PIE0bits.IOCIE = 1;
+[e = . . _PIE0bits 0 7 -> -> 1 `i `uc ]
+"295
+[; ;motorControl.c: 295: }
+[e :UE 2321 ]
+}
+"299
+[; ;motorControl.c: 299: void enableMotors(void)
+[v _enableMotors `(v ~T0 @X0 1 ef ]
+"300
+[; ;motorControl.c: 300: {
 {
 [e :U _enableMotors ]
 [f ]
-"221
-[; ;motorControl.c: 221:  PWM2CONbits.EN = 1;
+"301
+[; ;motorControl.c: 301:  PWM2CONbits.EN = 1;
 [e = . . _PWM2CONbits 0 4 -> -> 1 `i `uc ]
-"222
-[; ;motorControl.c: 222:  PWM3CONbits.EN = 1;
+"302
+[; ;motorControl.c: 302:  PWM3CONbits.EN = 1;
 [e = . . _PWM3CONbits 0 4 -> -> 1 `i `uc ]
-"223
-[; ;motorControl.c: 223: }
-[e :UE 2317 ]
+"303
+[; ;motorControl.c: 303: }
+[e :UE 2322 ]
 }
