@@ -81,8 +81,8 @@ void main(void) {
 			
 			sendString("DATA,"); //Excel command
 			
-			convert24Bit(sampleTimer, dataString24);
-			sendString(dataString24);
+			convert16Bit(sampleTimer, dataString16);
+			sendString(dataString16);
 			sampleTimer = 0;
 			
 			sendString(",");
