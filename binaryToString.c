@@ -1,10 +1,17 @@
-/**************************************************************
-Created by: Kyle Hedges
-Last Modified: Feb 19, 2020
+/*******************************************************************************
+File: 			binaryToString.cabs
+Authors:		Kyle Hedges
+Created:		Feb. 2, 2020
+Last Modified:	Feb. 19, 2020
+(c) 2020 Lakehead University
 
-***************************************************************/
+Intended for 8 bit PIC microcontrollers
 
-//Range of 24 bit signed value is -8,388,608 to 8,388,607
+Description: 	This file contains functions to convert a signed binary number
+				to a string of characters representing it in decimal form.		
+*******************************************************************************/
+
+
 //stringOut is 9 long to hold 1 sign, 7 numbers, null character
 
 //Divided 16/24 bits into seperate functions for effeciency
@@ -12,8 +19,20 @@ Last Modified: Feb 19, 2020
 #include "binaryToString.h"
 #include "xc.h"
 
+
+//so conver24Bit: ---------------------------------------------------
+// Parameters:	binInput: The 24 bit binary number to be converted
+//				charAddr: Location of resulting string. Should hold 9 characters
+// Returns:		void
+//
+// Description:	Converts a signed 24 bit binary number to a 7 digit number.
+//				The resulting string is 9 characters long. One sign character,
+//				7 numerical digits and a null termination.
+// Last Modified:	Feb 19, 2020
+//------------------------------------------------------------------------------
 void convert24Bit(int32_t binInput, char* charAddr)
 {
+	//Range of 24 bit signed value is -8,388,608 to 8,388,607
 	unsigned char bcdOutput[4];
 	bcdOutput[0] = 0;
 	bcdOutput[1] = 0;
@@ -70,7 +89,7 @@ void convert24Bit(int32_t binInput, char* charAddr)
 		binInput <<= 1;
 	}
 	
-	//16 bits
+	//16 MSB bits
 	for(i = 0; i < 4; i++)
 	{
 		if((bcdOutput[0] & 0x0F) >= 0x05) bcdOutput[0] += 0x03;	//Add 3 to ones
@@ -86,7 +105,7 @@ void convert24Bit(int32_t binInput, char* charAddr)
 		binInput <<= 1;
 	}
 	
-	//20 bits
+	//20 MSB bits
 	for(i = 0; i < 4; i++)
 	{
 		if((bcdOutput[0] & 0x0F) >= 0x05) bcdOutput[0] += 0x03;	//Add 3 to ones
@@ -104,7 +123,7 @@ void convert24Bit(int32_t binInput, char* charAddr)
 		binInput <<= 1;
 	}
 	
-	//All bits
+	//24 bits
 	for(i = 0; i < 4; i++)
 	{
 		if((bcdOutput[0] & 0x0F) >= 0x05) bcdOutput[0] += 0x03;	//Add 3 to ones
@@ -125,6 +144,7 @@ void convert24Bit(int32_t binInput, char* charAddr)
 	}
 	
 	//Backfill the seven digits
+	//Yes, this is a lot of copy paste. No, a for loop would not be nicer.
 	charAddr += 7;
 	
 	// +/-,_,_,_,_,_,_,_,'\0.
@@ -147,14 +167,22 @@ void convert24Bit(int32_t binInput, char* charAddr)
 	charAddr -= 1;
 	
 	*charAddr = '0' + (bcdOutput[3] & 0x0F);
-}
+}//eo convert24Bit--------------------------------------------------------------
 
 
-
-
-
+//so conver16Bit: ---------------------------------------------------
+// Parameters:	binInput: The 16 bit binary number to be converted
+//				charAddr: Location of resulting string. Should hold 9 characters
+// Returns:		void
+//
+// Description:	Converts a signed 24 bit binary number to a 7 digit number.
+//				The resulting string is 9 characters long. One sign character,
+//				7 numerical digits and a null termination.
+// Last Modified:	Feb 19, 2020
+//------------------------------------------------------------------------------
 void convert16Bit(int16_t binInput, char* charAddr)
 {
+	//Range of 16 bit signed value is -65,535 to 65,536
 	unsigned char bcdOutput[3];
 	bcdOutput[0] = 0;
 	bcdOutput[1] = 0;
@@ -190,6 +218,7 @@ void convert16Bit(int16_t binInput, char* charAddr)
 		if((bcdOutput[0] & 0x0F) >= 0x05) bcdOutput[0] += 0x03;	//Add 3 to ones
 		if((bcdOutput[0] & 0xF0) >= 0x50) bcdOutput[0] += 0x30;	//Add 3 to tens
 		
+		//Shift all the bits left
 		if(bcdOutput[0] & 0x80) bcdOutput[1] += 1;
 		bcdOutput[0] <<= 1;
 		if(binInput & 0x8000) bcdOutput[0] += 1; //Shift binary in
@@ -210,7 +239,7 @@ void convert16Bit(int16_t binInput, char* charAddr)
 		binInput <<= 1;
 	}
 	
-	//16 bits
+	//16 MSB bits of binary number
 	for(i = 0; i < 4; i++)
 	{
 		if((bcdOutput[0] & 0x0F) >= 0x05) bcdOutput[0] += 0x03;	//Add 3 to ones
@@ -244,4 +273,4 @@ void convert16Bit(int16_t binInput, char* charAddr)
 	charAddr -= 1;
 	
 	*charAddr = '0' + (bcdOutput[2] & 0x0F);
-}
+}//eo convert16Bit--------------------------------------------------------------
