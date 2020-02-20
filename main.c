@@ -56,6 +56,9 @@ void __interrupt(low_priority, irq(default), base(8)) Default()
 void main(void) {   
     
     initializeHardware(); 
+	
+	int24String dataString24 = "SXXXXXXX";
+    int16String dataString16 = "SXXXXX";
      
     sendString("Dummy string\r\n"); //Excel doesn't parse the first message
     sendString("CLEARSHEET\r\n");
@@ -73,15 +76,14 @@ void main(void) {
 
     while(1)                                               
     { 
+
         if(pollLoadCells(loadCellData))
         {
             LATEbits.LATE0 = 1;
-			int24String dataString24 = "SXXXXXXX";
-            int16String dataString16 = "SXXXXX";
-			
+		
 			sendString("DATA,"); //Excel command
 			
-			convert16Bit(sampleTimer, dataString16);
+			convert16Bit(sampleTimer, dataString16, UNSIGNED);
 			sendString(dataString16);
 			sampleTimer = 0;
 			
@@ -89,14 +91,14 @@ void main(void) {
 			
 			for(char i = 0; i < NUMBER_OF_LOAD_CELLS; i++)
 			{
-				convert24Bit(loadCellData[i].rawData, dataString24);
+				convert24Bit(loadCellData[i].rawData, dataString24, SIGNED);
 				sendString(dataString24);
 				sendString(",");
 			}
 			
 			for(char i = 0; i < 1; i++)
 			{
-				convert16Bit(motorData[i].pulseTime, dataString16);
+				convert16Bit(motorData[i].pulseTime, dataString16, UNSIGNED);
 				sendString(dataString16);
 				sendString(",");
 			}
@@ -111,9 +113,8 @@ void main(void) {
 
 			if(pollEncoder(&motorData[i],i))
 			{
-				int j = 0;
-				int k = j + 1;
-				//Do math here
+				int k = 0;
+				int j = k+1;
 			}				
 		}
          

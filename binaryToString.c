@@ -23,6 +23,7 @@ Description: 	This file contains functions to convert a signed binary number
 //so conver24Bit: ---------------------------------------------------
 // Parameters:	binInput: The 24 bit binary number to be converted
 //				charAddr: Location of resulting string. Should hold 9 characters
+//				sign:	  Indicates if binInput is a signed or unsigned value
 // Returns:		void
 //
 // Description:	Converts a signed 24 bit binary number to a 7 digit number.
@@ -30,7 +31,7 @@ Description: 	This file contains functions to convert a signed binary number
 //				7 numerical digits and a null termination.
 // Last Modified:	Feb 19, 2020
 //------------------------------------------------------------------------------
-void convert24Bit(int32_t binInput, char* charAddr)
+void convert24Bit(int32_t binInput, char* charAddr, char sign)
 {
 	//Range of 24 bit signed value is -8,388,608 to 8,388,607
 	unsigned char bcdOutput[4];
@@ -40,7 +41,7 @@ void convert24Bit(int32_t binInput, char* charAddr)
 	bcdOutput[3] = 0;
 	
 	//Check sign 
-	if(binInput & 0x800000)
+	if((binInput & 0x800000) && (sign == SIGNED))
 	{
 		//Negative. Take two's compliment
 		binInput = ~binInput;
@@ -69,6 +70,7 @@ void convert24Bit(int32_t binInput, char* charAddr)
 		if((bcdOutput[0] & 0x0F) >= 0x05) bcdOutput[0] += 0x03;	//Add 3 to ones
 		if((bcdOutput[0] & 0xF0) >= 0x50) bcdOutput[0] += 0x30;	//Add 3 to tens
 		
+		bcdOutput[1] <<= 1;
 		if(bcdOutput[0] & 0x80) bcdOutput[1] += 1;
 		bcdOutput[0] <<= 1;
 		if(binInput & 0x800000) bcdOutput[0] += 1; //Shift binary in
@@ -97,6 +99,7 @@ void convert24Bit(int32_t binInput, char* charAddr)
 		if((bcdOutput[1] & 0x0F) >= 0x05) bcdOutput[1] += 0x03;	//Add 3 to hundreds
 		if((bcdOutput[1] & 0xF0) >= 0x50) bcdOutput[1] += 0x30;	//Add 3 to thousands
 		
+		bcdOutput[2] <<= 1;
 		if(bcdOutput[1] & 0x80) bcdOutput[2] += 1;
 		bcdOutput[1] <<= 1; 
 		if(bcdOutput[0] & 0x80) bcdOutput[1] += 1;
@@ -133,6 +136,7 @@ void convert24Bit(int32_t binInput, char* charAddr)
 		if((bcdOutput[2] & 0x0F) >= 0x05) bcdOutput[2] += 0x03;	//Add 3 to hundred thousands
 		if((bcdOutput[2] & 0xF0) >= 0x50) bcdOutput[2] += 0x30;	//Add 3 to millions
 		
+		bcdOutput[3] <<= 1;
 		if(bcdOutput[2] & 0x80) bcdOutput[3] += 1;
 		bcdOutput[2] <<= 1; 
 		if(bcdOutput[1] & 0x80) bcdOutput[2] += 1;
@@ -173,6 +177,7 @@ void convert24Bit(int32_t binInput, char* charAddr)
 //so conver16Bit: ---------------------------------------------------
 // Parameters:	binInput: The 16 bit binary number to be converted
 //				charAddr: Location of resulting string. Should hold 9 characters
+//				sign:	  Indicates if binInput is a signed or unsigned value
 // Returns:		void
 //
 // Description:	Converts a signed 24 bit binary number to a 7 digit number.
@@ -180,7 +185,7 @@ void convert24Bit(int32_t binInput, char* charAddr)
 //				7 numerical digits and a null termination.
 // Last Modified:	Feb 19, 2020
 //------------------------------------------------------------------------------
-void convert16Bit(int16_t binInput, char* charAddr)
+void convert16Bit(int16_t binInput, char* charAddr, char sign)
 {
 	//Range of 16 bit signed value is -65,535 to 65,536
 	unsigned char bcdOutput[3];
@@ -189,7 +194,7 @@ void convert16Bit(int16_t binInput, char* charAddr)
 	bcdOutput[2] = 0;
 
 	//Check sign 
-	if(binInput & 0x8000)
+	if((binInput & 0x8000) && (sign == SIGNED))
 	{
 		//Negative. Take two's compliment
 		binInput = ~binInput;
@@ -219,6 +224,7 @@ void convert16Bit(int16_t binInput, char* charAddr)
 		if((bcdOutput[0] & 0xF0) >= 0x50) bcdOutput[0] += 0x30;	//Add 3 to tens
 		
 		//Shift all the bits left
+        bcdOutput[1] <<= 1;
 		if(bcdOutput[0] & 0x80) bcdOutput[1] += 1;
 		bcdOutput[0] <<= 1;
 		if(binInput & 0x8000) bcdOutput[0] += 1; //Shift binary in
@@ -247,6 +253,7 @@ void convert16Bit(int16_t binInput, char* charAddr)
 		if((bcdOutput[1] & 0x0F) >= 0x05) bcdOutput[1] += 0x03;	//Add 3 to hundreds
 		if((bcdOutput[1] & 0xF0) >= 0x50) bcdOutput[1] += 0x30;	//Add 3 to thousands
 		
+        bcdOutput[2] <<= 1;
 		if(bcdOutput[1] & 0x80) bcdOutput[2] += 1;
 		bcdOutput[1] <<= 1; 
 		if(bcdOutput[0] & 0x80) bcdOutput[1] += 1;

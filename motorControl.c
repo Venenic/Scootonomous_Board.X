@@ -97,9 +97,12 @@ volatile bool overflow[4];
 
 void __interrupt(low_priority, irq(IOC), base(8)) hallEffectPulse()
 {
+	
 	if(IOCAFbits.IOCAF0)
 	{
+		LATEbits.LATE0 = 1;
 		//Motor 1 interrupt
+		
 		T0CON0bits.EN = 0;
 		
 		//Timer values need to be read/written low byte first
@@ -118,6 +121,7 @@ void __interrupt(low_priority, irq(IOC), base(8)) hallEffectPulse()
 		
 		datasReady[0] = 1;
 		IOCAFbits.IOCAF0 = 0; //Clear interrupt flag
+		LATEbits.LATE0 = 0;
 	}
 	
 	if(IOCAFbits.IOCAF1)

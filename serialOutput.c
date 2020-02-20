@@ -1,7 +1,7 @@
 /*******************************************************************************
 File:			serialOutput.c
 Authors:		Kyle Hedges
-Date:			Feb 1, 2020
+Date Created:	Feb 1, 2020
 Last Modified:	Feb 19, 2020
 (c) 2020 Lakehead University
 
