@@ -2,7 +2,7 @@
 File:			motorControl.h
 Authors:		Kyle Hedges
 Date:			Feb 4, 2020
-Last Modified:	Feb 16, 2020
+Last Modified:	Feb 20, 2020
 (c) 2020 Lakehead University
 
 TARGET DEVICE:PIC18F45K22
@@ -21,14 +21,14 @@ Board Layout (Top View):	1---F---2
 #include <stdint.h>
 
 //May need to change based on physical implementation
-#define FORWARD 1
-#define REVERSE 0
+#define M_FORWARD 0
+#define M_REVERSE 1
+#define M_BRAKE 2
+#define M_STOP 3
 
 typedef struct motor {
-	uint16_t pulseTime;
-	unsigned char direction;
-	uint16_t dutyCyle;
-		
+	unsigned char dutyCycle;
+	char mode;		
 } motor;
 
 //so initializeSysTick: --------------------------------------------------------
@@ -38,11 +38,7 @@ typedef struct motor {
 // Description:	Initializes
 //------------------------------------------------------------------------------
 void initializeMotorControl(void);
-
-bool pollEncoder(motor *,char);
-
-
-	
+void updateMotorSpeed(motor*);
 
 #endif	/* MOTORCONTROL_H */
 

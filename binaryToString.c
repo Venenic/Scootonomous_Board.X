@@ -2,7 +2,7 @@
 File: 			binaryToString.cabs
 Authors:		Kyle Hedges
 Created:		Feb. 2, 2020
-Last Modified:	Feb. 19, 2020
+Last Modified:	Feb. 20, 2020
 (c) 2020 Lakehead University
 
 Intended for 8 bit PIC microcontrollers
@@ -53,7 +53,7 @@ void convert24Bit(int32_t binInput, char* charAddr, char sign)
 	//When any single bcd digit is above 5, 3 is added to it
 	
     unsigned char i = 0;
-	//4 MSB of binary number
+	//4 MSB of binary number. Max number: 16
 	for(i = 0; i < 4; i++)
 	{
 		if(bcdOutput[0] >= 5) bcdOutput[0] += 3; //Add 3 to ones for conversion
@@ -64,7 +64,7 @@ void convert24Bit(int32_t binInput, char* charAddr, char sign)
 		binInput <<= 1;
 	}
 	
-	//8 MSB of binary number
+	//8 MSB of binary number. Max number: 2,56
 	for(i = 0; i < 4; i++)
 	{
 		if((bcdOutput[0] & 0x0F) >= 0x05) bcdOutput[0] += 0x03;	//Add 3 to ones
@@ -77,7 +77,7 @@ void convert24Bit(int32_t binInput, char* charAddr, char sign)
 		binInput <<= 1;	
 	}
 	
-	//12 MSB of binary number
+	//12 MSB of binary number. Max number: 40,96
 	for(i = 0; i < 4; i++)
 	{
 		if((bcdOutput[0] & 0x0F) >= 0x05) bcdOutput[0] += 0x03;	//Add 3 to ones
@@ -91,7 +91,7 @@ void convert24Bit(int32_t binInput, char* charAddr, char sign)
 		binInput <<= 1;
 	}
 	
-	//16 MSB bits
+	//16 MSB bits of binary number. Max number: 6,55,36
 	for(i = 0; i < 4; i++)
 	{
 		if((bcdOutput[0] & 0x0F) >= 0x05) bcdOutput[0] += 0x03;	//Add 3 to ones
@@ -108,7 +108,7 @@ void convert24Bit(int32_t binInput, char* charAddr, char sign)
 		binInput <<= 1;
 	}
 	
-	//20 MSB bits
+	//20 MSB bits of binary number. Max number: 1,04,85,76
 	for(i = 0; i < 4; i++)
 	{
 		if((bcdOutput[0] & 0x0F) >= 0x05) bcdOutput[0] += 0x03;	//Add 3 to ones
@@ -116,7 +116,9 @@ void convert24Bit(int32_t binInput, char* charAddr, char sign)
 		if((bcdOutput[1] & 0x0F) >= 0x05) bcdOutput[1] += 0x03;	//Add 3 to hundreds
 		if((bcdOutput[1] & 0xF0) >= 0x50) bcdOutput[1] += 0x30;	//Add 3 to thousands
 		if((bcdOutput[2] & 0x0F) >= 0x05) bcdOutput[2] += 0x03;	//Add 3 to ten thousands
+		if((bcdOutput[2] & 0xF0) >= 0x50) bcdOutput[2] += 0x30;	//Add 3 to ten thousands
 		
+		if(bcdOutput[2] & 0x80) bcdOutput[3] += 1;
 		bcdOutput[2] <<= 1; 
 		if(bcdOutput[1] & 0x80) bcdOutput[2] += 1;
 		bcdOutput[1] <<= 1; 
@@ -126,15 +128,17 @@ void convert24Bit(int32_t binInput, char* charAddr, char sign)
 		binInput <<= 1;
 	}
 	
-	//24 bits
+	//24 MSB bits of binary number. Max number: 16,77,72,16
 	for(i = 0; i < 4; i++)
 	{
 		if((bcdOutput[0] & 0x0F) >= 0x05) bcdOutput[0] += 0x03;	//Add 3 to ones
 		if((bcdOutput[0] & 0xF0) >= 0x50) bcdOutput[0] += 0x30;	//Add 3 to tens
 		if((bcdOutput[1] & 0x0F) >= 0x05) bcdOutput[1] += 0x03;	//Add 3 to hundreds
 		if((bcdOutput[1] & 0xF0) >= 0x50) bcdOutput[1] += 0x30;	//Add 3 to thousands
-		if((bcdOutput[2] & 0x0F) >= 0x05) bcdOutput[2] += 0x03;	//Add 3 to hundred thousands
-		if((bcdOutput[2] & 0xF0) >= 0x50) bcdOutput[2] += 0x30;	//Add 3 to millions
+		if((bcdOutput[2] & 0x0F) >= 0x05) bcdOutput[2] += 0x03;	//Add 3 to ten thousands
+		if((bcdOutput[2] & 0xF0) >= 0x50) bcdOutput[2] += 0x30;	//Add 3 to hundred thousands
+		if((bcdOutput[3] & 0xF0) >= 0x50) bcdOutput[2] += 0x30;	//Add 3 to millions
+		
 		
 		bcdOutput[3] <<= 1;
 		if(bcdOutput[2] & 0x80) bcdOutput[3] += 1;
@@ -147,9 +151,10 @@ void convert24Bit(int32_t binInput, char* charAddr, char sign)
 		binInput <<= 1;
 	}
 	
-	//Backfill the seven digits
+	//Backfill the seven digits if signed, or 8 digits if unsigned
 	//Yes, this is a lot of copy paste. No, a for loop would not be nicer.
-	charAddr += 7;
+	if(sign == UNSIGNED) charAddr += 8;
+	else charAddr += 7;
 	
 	// +/-,_,_,_,_,_,_,_,'\0.
 	*charAddr = '0' + (bcdOutput[0] & 0x0F);
@@ -171,6 +176,11 @@ void convert24Bit(int32_t binInput, char* charAddr, char sign)
 	charAddr -= 1;
 	
 	*charAddr = '0' + (bcdOutput[3] & 0x0F);
+	
+	if(sign == UNSIGNED){
+		charAddr -= 1;
+		*charAddr = '0' + ((bcdOutput[3] & 0xF0) << 4);
+	}
 }//eo convert24Bit--------------------------------------------------------------
 
 
@@ -206,7 +216,7 @@ void convert16Bit(int16_t binInput, char* charAddr, char sign)
 	//When any single bcd digit is above 5, 3 is added to it
 	
     unsigned char i = 0;
-	//4 MSB of binary number
+	//4 MSB of binary number. Max number: 16
 	for(i = 0; i < 4; i++)
 	{
 		if(bcdOutput[0] >= 5) bcdOutput[0] += 3; //Add 3 to ones for conversion
@@ -217,7 +227,7 @@ void convert16Bit(int16_t binInput, char* charAddr, char sign)
 		binInput <<= 1;
 	}
 	
-	//8 MSB of binary number
+	//8 MSB of binary number. Max number: 2,56
 	for(i = 0; i < 4; i++)
 	{
 		if((bcdOutput[0] & 0x0F) >= 0x05) bcdOutput[0] += 0x03;	//Add 3 to ones
@@ -231,7 +241,7 @@ void convert16Bit(int16_t binInput, char* charAddr, char sign)
 		binInput <<= 1;	
 	}
 	
-	//12 MSB of binary number
+	//12 MSB of binary number. Max number: 40,96
 	for(i = 0; i < 4; i++)
 	{
 		if((bcdOutput[0] & 0x0F) >= 0x05) bcdOutput[0] += 0x03;	//Add 3 to ones
@@ -245,7 +255,7 @@ void convert16Bit(int16_t binInput, char* charAddr, char sign)
 		binInput <<= 1;
 	}
 	
-	//16 MSB bits of binary number
+	//16 MSB of binary number. Max number: 6,55,36
 	for(i = 0; i < 4; i++)
 	{
 		if((bcdOutput[0] & 0x0F) >= 0x05) bcdOutput[0] += 0x03;	//Add 3 to ones

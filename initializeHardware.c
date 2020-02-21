@@ -19,6 +19,7 @@ This file initializes the PIC hardware
 #include "serialOutput.h"
 #include "initializeSysTick.h"
 #include "motorControl.h"
+#include "motorEncoders.h"
 
 #include "device_config.h"
 
@@ -35,6 +36,7 @@ void initializeHardware(void)
     initializeSysTick();
     initializeInterrupts(); 
 	initializeMotorControl();
+	initializeEncoders();
 }
 
 void initializeInterrupts(void)

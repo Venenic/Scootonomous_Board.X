@@ -2,7 +2,7 @@
 File:			loadCells.h
 Authors:		Kyle Hedges
 Date:			Jan 27, 2020
-Last Modified:	Feb 19, 2020
+Last Modified:	Feb 20 2020
 (c) 2020 Lakehead University
 
 TARGET DEVICE:PIC18F45K22
@@ -22,6 +22,7 @@ TODO:Insert description here
 #include "hardwareDefinitions.h"
 #include "binaryToString.h"
 #include "motorControl.h"
+#include "motorEncoders.h"
 
 #define ZEROING 0
 #define MEASURING 1
@@ -62,25 +63,29 @@ void main(void) {
      
     sendString("Dummy string\r\n"); //Excel doesn't parse the first message
     sendString("CLEARSHEET\r\n");
-    sendString("LABEL,Sample Time,Cell 1,Cell 2,Cell 3,Cell 4\r\n");
+    sendString("LABEL,Sample Time,Cell 1,Cell 2,Cell 3,Cell 4,Speed 1, Direction 1 \r\n");
    
     sendString("Hello World \r\n");
 
 	//Load cell data variables
     sampleTimer = 0; 
     loadCell loadCellData[NUMBER_OF_LOAD_CELLS];
-	motor motorData[4];
+	encoderData encoderData[4];
     
     TRISEbits.TRISE0 = OUTPUT_PIN;
     LATEbits.LATE0 = 0;
+	
+	motor motor1;
+	motor1.mode = M_FORWARD;
+	motor1.dutyCycle = 100;
+	updateMotorSpeed(&motor1);
+    
+    //uint32_t testNum = 0;
 
     while(1)                                               
     { 
-
         if(pollLoadCells(loadCellData))
         {
-            LATEbits.LATE0 = 1;
-		
 			sendString("DATA,"); //Excel command
 			
 			convert16Bit(sampleTimer, dataString16, UNSIGNED);
@@ -98,39 +103,41 @@ void main(void) {
 			
 			for(char i = 0; i < 1; i++)
 			{
-				convert16Bit(motorData[i].pulseTime, dataString16, UNSIGNED);
+				convert16Bit(encoderData[i].pulsePeriod.value, dataString16, UNSIGNED);
 				sendString(dataString16);
+				sendString(",");
+				
+				if(encoderData[i].direction == FORWARD) sendString("F");
+				else sendString("R");
+				
 				sendString(",");
 			}
 			
-			sendString("\r\n");
-            
-            LATEbits.LATE0 = 0;
+			sendString("\r\n"); 
         }
 		
 		for(char i = 0; i < 1; i++)
 		{
-
-			if(pollEncoder(&motorData[i],i))
+			if(pollEncoder(encoderData))
 			{
 				int k = 0;
 				int j = k+1;
 			}				
 		}
-         
-		
-		
-         /*  
+
+        /* 
         if(transmitString)
         {
-            testNum++;
-            while(testOutputMessage[i] != ':') i++;
-            convert24Bit(testNum, &testOutputMessage[i+2]); //Write the number after the :
+            testNum+=5000;
+            convert24Bit(testNum, dataString24, UNSIGNED); //Write the number after the :
             
-            sendString(testOutputMessage);
+            sendString("DATA,"); //Excel command
+            sendString(dataString24);
+            sendString("\r\n");
             transmitString = false;
         }
-           */
+        */
+          
     }
     return;
 }
