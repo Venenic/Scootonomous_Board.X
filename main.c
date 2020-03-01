@@ -2,7 +2,7 @@
 File:			loadCells.h
 Authors:		Kyle Hedges
 Date:			Jan 27, 2020
-Last Modified:	Feb 20 2020
+Last Modified:	Feb 29 2020
 (c) 2020 Lakehead University
 
 TARGET DEVICE:PIC18F45K22
@@ -63,7 +63,7 @@ void main(void) {
      
     sendString("Dummy string\r\n"); //Excel doesn't parse the first message
     sendString("CLEARSHEET\r\n");
-    sendString("LABEL,Sample Time,Cell 1,Cell 2,Cell 3,Cell 4,Speed 1, Direction 1 \r\n");
+    sendString("LABEL,Sample Time,Cell 1,Cell 2,Cell 3,Cell 4,Speed 1, Speed 2 Direction 1 \r\n");
    
     sendString("Hello World \r\n");
 
@@ -72,14 +72,20 @@ void main(void) {
     loadCell loadCellData[NUMBER_OF_LOAD_CELLS];
 	encoderData encoderData[4];
     
+	//Sometimes used for debugging
     TRISEbits.TRISE0 = OUTPUT_PIN;
     LATEbits.LATE0 = 0;
 	
-	motor motor1;
-	motor1.mode = M_FORWARD;
-	motor1.dutyCycle = 100;
-	updateMotorSpeed(&motor1);
+	//Initialize motor speeds
+	motor motorsOut[2];
+	
+	motorsOut[0].mode = M_FORWARD;
+	motorsOut[0].dutyCycle = 255;
     
+	motorsOut[1].mode = M_FORWARD;
+	motorsOut[1].dutyCycle = 255;
+	
+	updateMotorSpeed(motorsOut);
     //uint32_t testNum = 0;
 
     while(1)                                               
@@ -101,7 +107,7 @@ void main(void) {
 				sendString(",");
 			}
 			
-			for(char i = 0; i < 1; i++)
+			for(char i = 0; i < 2; i++)
 			{
 				convert16Bit(encoderData[i].pulsePeriod.value, dataString16, UNSIGNED);
 				sendString(dataString16);

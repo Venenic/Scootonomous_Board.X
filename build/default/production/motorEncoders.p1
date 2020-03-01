@@ -2757,11 +2757,11 @@ Version 4.0 HI-TECH Software Intermediate Code
 [; ;motorEncoders.c: 99:   encoderData1.pulsePeriod.byte[1] = TMR0H;
 [e = *U + &U . . _encoderData1 0 1 * -> -> -> 1 `i `ui `ux -> -> # *U &U . . _encoderData1 0 1 `ui `ux -> _TMR0H `uc ]
 "100
-[; ;motorEncoders.c: 100:         TMR0H = 0;
-[e = _TMR0H -> -> 0 `i `uc ]
-"101
-[; ;motorEncoders.c: 101:   TMR0L = 0;
+[; ;motorEncoders.c: 100:   TMR0L = 0;
 [e = _TMR0L -> -> 0 `i `uc ]
+"101
+[; ;motorEncoders.c: 101:   TMR0H = 0;
+[e = _TMR0H -> -> 0 `i `uc ]
 "102
 [; ;motorEncoders.c: 102:   T0CON0bits.EN = 1;
 [e = . . _T0CON0bits 0 4 -> -> 1 `i `uc ]
@@ -2816,11 +2816,11 @@ Version 4.0 HI-TECH Software Intermediate Code
 [; ;motorEncoders.c: 126:   encoderData2.pulsePeriod.byte[1] = TMR1H;
 [e = *U + &U . . _encoderData2 0 1 * -> -> -> 1 `i `ui `ux -> -> # *U &U . . _encoderData2 0 1 `ui `ux -> _TMR1H `uc ]
 "127
-[; ;motorEncoders.c: 127:         TMR1H = 0;
-[e = _TMR1H -> -> 0 `i `uc ]
-"128
-[; ;motorEncoders.c: 128:   TMR1L = 0;
+[; ;motorEncoders.c: 127:   TMR1L = 0;
 [e = _TMR1L -> -> 0 `i `uc ]
+"128
+[; ;motorEncoders.c: 128:   TMR1H = 0;
+[e = _TMR1H -> -> 0 `i `uc ]
 "129
 [; ;motorEncoders.c: 129:   T1CONbits.ON = 1;
 [e = . . _T1CONbits 0 0 -> -> 1 `i `uc ]

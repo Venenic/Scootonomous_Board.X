@@ -1,4 +1,4 @@
-# 1 "motorEncoders.c"
+# 1 "motorControl.c"
 # 1 "<built-in>" 1
 # 1 "<built-in>" 3
 # 288 "<built-in>" 3
@@ -6,8 +6,8 @@
 # 1 "<built-in>" 2
 # 1 "C:\\Program Files (x86)\\Microchip\\xc8\\v2.10\\pic\\include\\language_support.h" 1 3
 # 2 "<built-in>" 2
-# 1 "motorEncoders.c" 2
-# 38 "motorEncoders.c"
+# 1 "motorControl.c" 2
+# 39 "motorControl.c"
 # 1 "C:\\Program Files (x86)\\Microchip\\xc8\\v2.10\\pic\\include\\xc.h" 1 3
 # 18 "C:\\Program Files (x86)\\Microchip\\xc8\\v2.10\\pic\\include\\xc.h" 3
 extern const char __xc8_OPTIM_SPEED;
@@ -27730,17 +27730,11 @@ extern __attribute__((nonreentrant)) void _delaywdt(unsigned long);
 #pragma intrinsic(_delay3)
 extern __attribute__((nonreentrant)) void _delay3(unsigned char);
 # 32 "C:\\Program Files (x86)\\Microchip\\xc8\\v2.10\\pic\\include\\xc.h" 2 3
-# 38 "motorEncoders.c" 2
+# 39 "motorControl.c" 2
 
 # 1 "C:\\Program Files (x86)\\Microchip\\xc8\\v2.10\\pic\\include\\c99\\stdbool.h" 1 3
-# 39 "motorEncoders.c" 2
+# 40 "motorControl.c" 2
 
-
-# 1 "./hardwareDefinitions.h" 1
-# 41 "motorEncoders.c" 2
-
-# 1 "./motorEncoders.h" 1
-# 41 "./motorEncoders.h"
 # 1 "C:\\Program Files (x86)\\Microchip\\xc8\\v2.10\\pic\\include\\c99\\stdint.h" 1 3
 # 22 "C:\\Program Files (x86)\\Microchip\\xc8\\v2.10\\pic\\include\\c99\\stdint.h" 3
 # 1 "C:\\Program Files (x86)\\Microchip\\xc8\\v2.10\\pic\\include\\c99\\bits/alltypes.h" 1 3
@@ -27824,234 +27818,194 @@ typedef int32_t int_fast32_t;
 typedef uint32_t uint_fast16_t;
 typedef uint32_t uint_fast32_t;
 # 139 "C:\\Program Files (x86)\\Microchip\\xc8\\v2.10\\pic\\include\\c99\\stdint.h" 2 3
-# 41 "./motorEncoders.h" 2
+# 41 "motorControl.c" 2
+
+# 1 "./hardwareDefinitions.h" 1
+# 42 "motorControl.c" 2
+
+# 1 "./motorControl.h" 1
+# 31 "./motorControl.h"
+typedef struct motor {
+ unsigned char dutyCycle;
+ char mode;
+} motor;
 
 
 
 
 
 
-typedef union timerCount {
- uint16_t value;
- char byte[2];
-} timerCount;
 
-typedef struct encoderData{
- timerCount pulsePeriod;
- char direction;
-} encoderData;
-
-void initializeEncoders(void);
-_Bool pollEncoder(encoderData*);
-# 42 "motorEncoders.c" 2
-# 67 "motorEncoders.c"
-typedef struct encoderDataRaw{
- timerCount pulsePeriod;
- _Bool dataReady;
- char direction;
- _Bool overflow;
-} encoderDataRaw;
-
-volatile encoderDataRaw encoderData1;
-volatile encoderDataRaw encoderData2;
-
-volatile timerCount pulsePeriod;
-# 88 "motorEncoders.c"
-void __attribute__((picinterrupt(("low_priority, irq(IOC), base(8)")))) encoderPulse_ISR()
+void initializeMotorControl(void);
+void updateMotorSpeed(motor*);
+# 43 "motorControl.c" 2
+# 74 "motorControl.c"
+void initializePWM2(void);
+void initializePWM3(void);
+void initializeTimers(void);
+void enableMotors(void);
+void initializeMotors(void);
+# 88 "motorControl.c"
+void initializeMotorControl(void)
 {
+ initializePWM2();
 
- if(IOCAFbits.IOCAF0)
- {
-
-
-
-  T0CON0bits.EN = 0;
-
-  encoderData1.pulsePeriod.byte[0] = TMR0L;
-  encoderData1.pulsePeriod.byte[1] = TMR0H;
-        TMR0H = 0;
-  TMR0L = 0;
-  T0CON0bits.EN = 1;
-
-  if(encoderData1.overflow){
-
-
-   encoderData1.pulsePeriod.value = 0xFFFF;
-   encoderData1.overflow = 0;
-  }
-  else{
-   encoderData1.dataReady = 1;
-  }
-
-  encoderData1.direction = PORTAbits.RA1;
-
-  IOCAFbits.IOCAF0 = 0;
- }
-
- if(IOCAFbits.IOCAF2)
- {
-
-
-  T1CONbits.ON = 0;
-
-  encoderData2.pulsePeriod.byte[0] = TMR1L;
-  encoderData2.pulsePeriod.byte[1] = TMR1H;
-        TMR1H = 0;
-  TMR1L = 0;
-  T1CONbits.ON = 1;
-
-  if(encoderData2.overflow){
-
-
-   encoderData2.pulsePeriod.value = 0xFFFF;
-   encoderData2.overflow = 0;
-  }
-  else{
-   encoderData2.dataReady = 1;
-  }
-
-  encoderData2.direction = PORTAbits.RA3;
-
-  IOCAFbits.IOCAF2 = 0;
- }
+ initializeMotors();
+ enableMotors();
 }
-# 155 "motorEncoders.c"
-void __attribute__((picinterrupt(("low_priority, irq(TMR0), base(8)")))) pulseOverflow_0()
+
+
+void initializePWM2()
 {
- T0CON0bits.EN = 0;
+
+    PWM2CONbits.EN = 0;
+    PWM2CONbits.LD = 1;
 
 
- encoderData1.pulsePeriod.value = 0xFFFF;
- encoderData1.dataReady = 1;
- encoderData1.overflow = 1;
 
 
- PIR3bits.TMR0IF = 0;
+    PWM2CLKbits.CLK = 0b00011;
 
- T0CON0bits.EN = 1;
+
+
+
+    PWM2PRHbits.PRH = 0;
+    PWM2PRLbits.PRL = 199;
+
+
+    PWM2CPREbits.CPRE = 15;
+
+
+
+    PWM2GIRbits.S1P1IF = 0;
+
+
+    PWM2GIEbits.S1P2IE = 0;
+    PWM2GIEbits.S1P1IE = 0;
+
+
+
+    PWM2S1CFGbits.POL1 = 0;
+    PWM2S1CFGbits.PPEN = 0;
+    PWM2S1CFGbits.MODE = 0b000;
+
+
+
+
+
+    PWM2S1P1Hbits.S1P1H = 0x00;
+    PWM2S1P1Lbits.S1P1L = 0x63;
+ PWM2S1P2Hbits.S1P2H = 0x00;
+    PWM2S1P2Lbits.S1P2L = 0x64;
+
+ PWM2CONbits.LD = 0;
+# 159 "motorControl.c"
 }
-# 178 "motorEncoders.c"
-void __attribute__((picinterrupt(("low_priority, irq(TMR1), base(8)")))) pulseOverflow_1()
+
+void initializePWM3()
 {
- T1CONbits.ON = 0;
+ TRISDbits.TRISD2 = 0;
+ RD2PPS = 0x1C;
+
+ TRISDbits.TRISD3 = 0;
+ RD3PPS = 0x1D;
 
 
- encoderData2.pulsePeriod.value = 0xFFFF;
- encoderData2.dataReady = 1;
- encoderData2.overflow = 1;
+    PWM3CONbits.EN = 0;
+    PWM3CONbits.LD = 1;
 
 
- PIR3bits.TMR1IF = 0;
 
- T1CONbits.ON = 1;
+
+    PWM3CLKbits.CLK = 0b00011;
+
+
+
+    PWM3PRHbits.PRH = 12;
+    PWM3PRLbits.PRL = 127;
+
+
+    PWM3CPREbits.CPRE = 0;
+
+
+
+    PWM3GIRbits.S1P1IF = 0;
+
+
+    PWM3GIEbits.S1P2IE = 0;
+    PWM3GIEbits.S1P1IE = 0;
+
+
+
+
+    PWM3S1CFGbits.POL1 = 0;
+    PWM3S1CFGbits.PPEN = 0;
+    PWM3S1CFGbits.MODE = 0b000;
+
+
+
+
+
+    PWM3S1P1Hbits.S1P1H = 0x03;
+    PWM3S1P1Lbits.S1P1L = 0x20;
+ PWM3S1P2Hbits.S1P2H = 0x03;
+    PWM3S1P2Lbits.S1P2L = 0x20;
+
+ PWM3CONbits.LD = 0;
+# 229 "motorControl.c"
 }
-# 201 "motorEncoders.c"
-void initializeEncoders(void)
+
+
+
+void initializeMotors(void)
 {
+ TRISDbits.TRISD0 = 0;
+ RD0PPS = 0x1A;
+ TRISCbits.TRISC0 = 0;
+ TRISCbits.TRISC1 = 0;
 
-
-
- T0CON0bits.EN = 0;
- T0CON0bits.MD16 = 1;
- T0CON0bits.OUTPS = 0b0000;
-
-
- T0CON1bits.CS = 0b011;
- T0CON1bits.ASYNC = 1;
- T0CON1bits.CKPS = 0b0111;
-
-
- TMR0L = 0;
- TMR0H = 0;
-
-
- IPR3bits.TMR0IP = 0;
-
-
- PIE3bits.TMR0IE = 1;
-
-
-
-
-
-
-
- T1CONbits.ON = 0;
-
-
-
- T1CONbits.CKPS = 0b00;
-
-
-
- T1CONbits.RD16 = 1;
-
-
-
-
- T1CLKbits.CS = 0b00101;
-
-
-
-
- IPR3bits.TMR1IP = 0;
-
-
- PIE3bits.TMR1IE = 1;
-
-
-
- TRISAbits.TRISA0 = 1;
- ANSELAbits.ANSELA0 = 0;
- TRISAbits.TRISA1 = 1;
- ANSELAbits.ANSELA1 = 0;
- IOCAPbits.IOCAP0 = 1;
-
- TRISAbits.TRISA2 = 1;
- ANSELAbits.ANSELA2 = 0;
- TRISAbits.TRISA3 = 1;
- ANSELAbits.ANSELA3 = 0;
- IOCAPbits.IOCAP2 = 1;
-
-
- IPR0bits.IOCIP = 0;
-
-
- encoderData1.dataReady = 0;
- encoderData2.dataReady = 0;
-
-
- PIE0bits.IOCIE = 1;
-
- T0CON0bits.EN = 1;
- T1CONbits.ON = 1;
+ TRISDbits.TRISD1 = 0;
+ RD1PPS = 0x1B;
+ TRISCbits.TRISC2 = 0;
+ TRISCbits.TRISC3 = 0;
 }
-# 290 "motorEncoders.c"
-_Bool pollEncoder(encoderData *currentEncoder)
-{
- _Bool dataUpdated = 0;
 
- if(encoderData1.dataReady)
+void enableMotors(void)
+{
+ PWM2CONbits.EN = 1;
+ PWM3CONbits.EN = 1;
+}
+
+void updateMotorSpeed(motor *currentMotor)
+{
+ PWM2S1P1Lbits.S1P1L = currentMotor[0].dutyCycle;
+ PWM2S1P2Lbits.S1P2L = currentMotor[1].dutyCycle;
+ PWM2CONbits.LD = 1;
+
+ for(char i = 0; i < 2; i++)
  {
-  currentEncoder[0].pulsePeriod.value = encoderData1.pulsePeriod.value;
-  currentEncoder[0].direction = encoderData1.direction;
+  switch(currentMotor[0].mode){
 
-  encoderData1.dataReady = 0;
+   case 0 :
+    LATCbits.LATC0 = 1;
+    LATCbits.LATC1 = 0;
+    break;
 
-  dataUpdated = 1;
+   case 1 :
+    LATCbits.LATC0 = 0;
+    LATCbits.LATC1 = 1;
+    break;
 
+   case 2 :
+    LATCbits.LATC0 = 1;
+    LATCbits.LATC1 = 1;
+    break;
+
+   case 3 :
+    LATCbits.LATC0 = 0;
+    LATCbits.LATC1 = 0;
+    break;
+
+  }
  }
-
- if(encoderData2.dataReady)
- {
-  currentEncoder[1].pulsePeriod.value = encoderData2.pulsePeriod.value;
-  currentEncoder[1].direction = encoderData2.direction;
-
-  encoderData2.dataReady = 0;
-
-  dataUpdated = 1;
-
- }
-
- return dataUpdated;
 }

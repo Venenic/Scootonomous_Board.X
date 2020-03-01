@@ -2,20 +2,27 @@
 File:			motorControl.c
 Authors:		Kyle Hedges
 Date:			Feb 4, 2020
-Last Modified:	Feb 16, 2020
+Last Modified:	Mar 1, 2020
 (c) 2020 Lakehead University
 
 TARGET DEVICE:PIC18F45K22
 
-Description: 
+Description: 	Controls all four motors
+				Duty cycle is 0-200
 
 Hardware Settings:
-					-Motor 1 PWM: RD0 (Pin 19)
-					-Uses PWM2, P1
+					-Motor 1 Pins: 	PWM: RD0 (Pin 19)
+									Control 1: C0 (Pin 15)
+									Control 2: C1 (Pin 16)
+									
+							Modules: PWM2, P1
+							
+					-Motor 2 Pins: 	PWM: RD1 (Pin 20)
+									Control 1: C2 (Pin 17)
+									Control 2: C3 (Pin 18)
+									
+							Modules: PWM2, P2
 
-					-Motor 2 PWM: RD1 (Pin 20)
-					-Uses PWM2, P2
-					
 					-Motor 3 PWM: RD2 (Pin 21)
 					-Uses PWM3, P1
 				
@@ -42,15 +49,22 @@ Board Layout (Top View):	1---F---2
 #define M1_CONTROL1 LATCbits.LATC0
 #define M1_CONTROL2 LATCbits.LATC1
 
-//Other motor pinouts
-#define M2_TRIS TRISDbits.TRISD1
+//Motor 2 pinout
+#define M2_PWM_TRIS TRISDbits.TRISD1
+#define M2_PWM_PPS RD1PPS //Pin RD0 PPS
 #define M2_PPS RD1PPS 
-#define PWM2_P2_OUT 0x1B //PWM2_P2 output source identifier
+#define PWM2_P2_OUT 0x1B //PWM2_P1 PPS output source identifier
+#define M2_CONTROL1_TRIS TRISCbits.TRISC2
+#define M2_CONTROL2_TRIS TRISCbits.TRISC3
+#define M2_CONTROL1 LATCbits.LATC2
+#define M2_CONTROL2 LATCbits.LATC3
 
+//Motor 3 pinout (Incomplete/Unused)
 #define M3_TRIS TRISDbits.TRISD2
 #define M3_PPS RD2PPS 
 #define PWM3_P1_OUT 0x1C //PWM3_P1 output source identifier
 
+//Motor 4 pinout (Incomplete/Unused)
 #define M4_TRIS TRISDbits.TRISD3
 #define M4_PPS RD3PPS 
 #define PWM3_P2_OUT 0x1D //PWM3_P2 output source identifier
@@ -72,7 +86,7 @@ void initializeMotors(void);
 void initializeMotorControl(void)
 {
 	initializePWM2();
-	initializePWM3();
+	//initializePWM3(); Motor 3 and 4 are unused right now
 	initializeMotors();
 	enableMotors();
 }
@@ -218,8 +232,18 @@ void initializeMotors(void)
 {
 	M1_PWM_TRIS = OUTPUT_PIN;
 	M1_PWM_PPS = PWM2_P1_OUT;
+	M1_CONTROL1 = 0; //Initialize to stop
+	M1_CONTROL2 = 0;
 	M1_CONTROL1_TRIS = OUTPUT_PIN;
 	M1_CONTROL2_TRIS = OUTPUT_PIN;
+	
+	M2_PWM_TRIS = OUTPUT_PIN;
+	M2_PWM_PPS = PWM2_P2_OUT;
+	M2_CONTROL1 = 0; //Initialize to stop
+	M2_CONTROL2 = 0;
+	M2_CONTROL1_TRIS = OUTPUT_PIN;
+	M2_CONTROL2_TRIS = OUTPUT_PIN;
+	
 }					
 
 void enableMotors(void)
@@ -230,9 +254,11 @@ void enableMotors(void)
 
 void updateMotorSpeed(motor *currentMotor)
 {
-	PWM2CONbits.LD = 1; //[2] Period and duty cycle load is enabled 	
 	PWM2S1P1Lbits.S1P1L = currentMotor[0].dutyCycle;
+	PWM2S1P2Lbits.S1P2L = currentMotor[1].dutyCycle;
+	PWM2CONbits.LD = 1; //[2] Period and duty cycle load is enabled 	
 	
+	//Motor 1 mode
 	switch(currentMotor[0].mode){
 		
 		case M_FORWARD :
@@ -253,6 +279,31 @@ void updateMotorSpeed(motor *currentMotor)
 		case M_STOP :
 			M1_CONTROL1 = 0;
 			M1_CONTROL2 = 0;
+			break;
+ 
+	}
+	
+	//Motor 2 mode
+	switch(currentMotor[1].mode){
+		
+		case M_FORWARD :
+			M2_CONTROL1 = 1;
+			M2_CONTROL2 = 0;
+			break;
+			
+		case M_REVERSE :
+			M2_CONTROL1 = 0;
+			M2_CONTROL2 = 1;
+			break;
+		
+		case M_BRAKE :
+			M2_CONTROL1 = 1;
+			M2_CONTROL2 = 1;
+			break;
+			
+		case M_STOP :
+			M2_CONTROL1 = 0;
+			M2_CONTROL2 = 0;
 			break;
  
 	}

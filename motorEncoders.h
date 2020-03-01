@@ -2,7 +2,7 @@
 File: 			motorEnocders.cabs
 Authors:		Kyle Hedges
 Created:		Feb. 20, 2020
-Last Modified:	Feb. 20, 2020
+Last Modified:	Feb. 29, 2020
 (c) 2020 Lakehead University
 
 TARGET DEVICE:PIC18F45K22
@@ -43,14 +43,6 @@ Board Layout (Top View):	1---F---2
 //May need to change based on physical implementation
 #define FORWARD 1
 #define REVERSE -1
-
-#define	M1_ENCODER_TRIS TRISAbits.TRISA0
-#define M1_ENCODER_ANSEL ANSELAbits.ANSELA0
-#define M1_POS_IOC IOCAPbits.IOCAP0
-
-#define M1_DIR_TRIS TRISAbits.TRISA1 
-#define M1_DIR_ANSEL ANSELAbits.ANSELA1
-#define M1_DIR_INPUT PORTAbits.RA1
 
 typedef union timerCount {
 	uint16_t value;

@@ -27869,8 +27869,8 @@ void __attribute__((picinterrupt(("low_priority, irq(IOC), base(8)")))) encoderP
 
   encoderData1.pulsePeriod.byte[0] = TMR0L;
   encoderData1.pulsePeriod.byte[1] = TMR0H;
-        TMR0H = 0;
   TMR0L = 0;
+  TMR0H = 0;
   T0CON0bits.EN = 1;
 
   if(encoderData1.overflow){
@@ -27896,8 +27896,8 @@ void __attribute__((picinterrupt(("low_priority, irq(IOC), base(8)")))) encoderP
 
   encoderData2.pulsePeriod.byte[0] = TMR1L;
   encoderData2.pulsePeriod.byte[1] = TMR1H;
-        TMR1H = 0;
   TMR1L = 0;
+  TMR1H = 0;
   T1CONbits.ON = 1;
 
   if(encoderData2.overflow){
