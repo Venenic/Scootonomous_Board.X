@@ -2,7 +2,7 @@
 File: 			binaryToString.cabs
 Authors:		Kyle Hedges
 Created:		Feb. 2, 2020
-Last Modified:	Feb. 20, 2020
+Last Modified:	Mar. 1, 2020
 (c) 2020 Lakehead University
 
 Intended for 8 bit PIC microcontrollers
@@ -153,9 +153,8 @@ void convert24Bit(int32_t binInput, char* charAddr, char sign)
 	
 	//Backfill the seven digits if signed, or 8 digits if unsigned
 	//Yes, this is a lot of copy paste. No, a for loop would not be nicer.
-	if(sign == UNSIGNED) charAddr += 8;
-	else charAddr += 7;
-	
+	charAddr += 8;
+
 	// +/-,_,_,_,_,_,_,_,'\0.
 	*charAddr = '0' + (bcdOutput[0] & 0x0F);
 	charAddr -= 1;
@@ -176,11 +175,10 @@ void convert24Bit(int32_t binInput, char* charAddr, char sign)
 	charAddr -= 1;
 	
 	*charAddr = '0' + (bcdOutput[3] & 0x0F);
+	charAddr -= 1;
+		
+	*charAddr = '0' + ((bcdOutput[3] & 0xF0) >> 4);
 	
-	if(sign == UNSIGNED){
-		charAddr -= 1;
-		*charAddr = '0' + ((bcdOutput[3] & 0xF0) << 4);
-	}
 }//eo convert24Bit--------------------------------------------------------------
 
 

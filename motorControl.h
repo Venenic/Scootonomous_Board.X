@@ -2,7 +2,7 @@
 File:			motorControl.h
 Authors:		Kyle Hedges
 Date:			Feb 4, 2020
-Last Modified:	Feb 25, 2020
+Last Modified:	Mar. 1, 2020
 (c) 2020 Lakehead University
 
 TARGET DEVICE:PIC18F45K22

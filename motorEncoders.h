@@ -50,7 +50,7 @@ typedef union timerCount {
 } timerCount;
 
 typedef struct encoderData{
-	timerCount pulsePeriod;
+	uint32_t pulsePeriod;
 	char direction;
 } encoderData;
 

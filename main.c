@@ -24,8 +24,10 @@ TODO:Insert description here
 #include "motorControl.h"
 #include "motorEncoders.h"
 
-#define ZEROING 0
-#define MEASURING 1
+//Different modes
+#define STOPPED 0
+#define ZEROING 1
+#define RUNNING 2
 
 volatile bool transmitString = false;
 volatile uint16_t transmitTimer = 0;
@@ -38,7 +40,7 @@ void __interrupt(low_priority, irq(TMR2), base(8)) sysTick()
 {
     transmitTimer ++;
 	sampleTimer++;
-    if(transmitTimer == 1000){
+    if(transmitTimer == 100){
         transmitString = true;
         transmitTimer = 0;
     }
@@ -58,12 +60,11 @@ void main(void) {
     
     initializeHardware(); 
 	
-	int24String dataString24 = "SXXXXXXX";
+	int24String dataString24 = "SXXXXXXXX";
     int16String dataString16 = "SXXXXX";
      
-    sendString("Dummy string\r\n"); //Excel doesn't parse the first message
-    sendString("CLEARSHEET\r\n");
-    sendString("LABEL,Sample Time,Cell 1,Cell 2,Cell 3,Cell 4,Speed 1, Speed 2 Direction 1 \r\n");
+    sendString("\r\nCLEARSHEET\r\n");
+    sendString("LABEL,Sample Time,Cell 1,Cell 2,Cell 3,Cell 4,Speed 1,Dir 1,Speed 2,Dir 2\r\n");
    
     sendString("Hello World \r\n");
 
@@ -80,26 +81,36 @@ void main(void) {
 	motor motorsOut[2];
 	
 	motorsOut[0].mode = M_FORWARD;
-	motorsOut[0].dutyCycle = 255;
+	motorsOut[0].dutyCycle = 200;
     
 	motorsOut[1].mode = M_FORWARD;
-	motorsOut[1].dutyCycle = 255;
+	motorsOut[1].dutyCycle = 200;
 	
 	updateMotorSpeed(motorsOut);
+    
+    char mode = STOPPED;
     //uint32_t testNum = 0;
 
     while(1)                                               
     { 
         if(pollLoadCells(loadCellData))
         {
-			sendString("DATA,"); //Excel command
-			
-			convert16Bit(sampleTimer, dataString16, UNSIGNED);
-			sendString(dataString16);
-			sampleTimer = 0;
-			
-			sendString(",");
-			
+			//Data has been updated	
+        }
+		
+		if(pollEncoder(encoderData))
+		{
+			//Data has been updated
+		}	
+
+        if(transmitString)
+        {
+			sendString("DATA,TIMER,"); //Excel command
+		   
+			//convert16Bit(sampleTimer, dataString16, UNSIGNED);
+			//sendString(dataString16);
+			//sampleTimer = 0;
+
 			for(char i = 0; i < NUMBER_OF_LOAD_CELLS; i++)
 			{
 				convert24Bit(loadCellData[i].rawData, dataString24, SIGNED);
@@ -109,41 +120,40 @@ void main(void) {
 			
 			for(char i = 0; i < 2; i++)
 			{
-				convert16Bit(encoderData[i].pulsePeriod.value, dataString16, UNSIGNED);
-				sendString(dataString16);
+				convert24Bit(encoderData[i].pulsePeriod, dataString24, UNSIGNED);
+				sendString(dataString24);
 				sendString(",");
-				
 				if(encoderData[i].direction == FORWARD) sendString("F");
 				else sendString("R");
-				
 				sendString(",");
 			}
 			
-			sendString("\r\n"); 
-        }
-		
-		for(char i = 0; i < 1; i++)
-		{
-			if(pollEncoder(encoderData))
-			{
-				int k = 0;
-				int j = k+1;
-			}				
-		}
-
-        /* 
-        if(transmitString)
-        {
-            testNum+=5000;
-            convert24Bit(testNum, dataString24, UNSIGNED); //Write the number after the :
-            
-            sendString("DATA,"); //Excel command
-            sendString(dataString24);
-            sendString("\r\n");
-            transmitString = false;
-        }
-        */
-          
+				sendString("\r\n");
+		   
+           transmitString = false;
+        }  
     }
+    
+    switch(mode){   
+        case(STOPPED):
+            //stuff
+            motorsOut[0].dutyCycle = 0;
+            motorsOut[1].dutyCycle = 0;
+            break;
+
+        case(ZEROING):
+            //Other stuff
+            mode = RUNNING;
+            break;
+
+        case(RUNNING):
+            //More stuff
+            motorsOut[0].dutyCycle = 200;
+            motorsOut[1].dutyCycle = 200;
+            break;
+    }
+    
+    updateMotorSpeed(motorsOut);
+          
     return;
 }

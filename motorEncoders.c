@@ -2,16 +2,15 @@
 File: 			motorEnocders.cabs
 Authors:		Kyle Hedges
 Created:		Feb. 20, 2020
-Last Modified:	Feb. 29, 2020
+Last Modified:	Mar. 1, 2020
 (c) 2020 Lakehead University
 
 TARGET DEVICE:PIC18F45K22
 
 Description: 	This file reads a motor's speed and direction using two Hall
-				effect sensors in quadrature. The time between pulses is read
-				on the rising edge. The time between rising edges of encoder A
-				determines the speed and the state of encoder B at the start of
-				a pulse determines direction.
+				effect sensors in quadrature. The time between rising edges of 
+				encoder A determines the speed and the state of encoder B at 
+				this rising edge determines the direction.
 				
 Hardware Settings:	
 					-Motor 1:
@@ -65,10 +64,12 @@ Board Layout (Top View):	1---F---2
 #define M2_DIR_INPUT PORTAbits.RA3
 
 typedef struct encoderDataRaw{
-	timerCount pulsePeriod;
+	timerCount newTimer;
+	timerCount oldTimer;
+	unsigned char overflowTotal;
+	unsigned char overflowCount;
 	bool dataReady;
 	char direction;
-	bool overflow;
 } encoderDataRaw;
 
 volatile encoderDataRaw encoderData1;
@@ -91,54 +92,33 @@ void __interrupt(low_priority, irq(IOC), base(8)) encoderPulse_ISR()
 	if(M1_IOC_FLAG)
 	{
 		//Encoder 1A interrupt
-		
-		//Timer0 Control Register 0
-		T0CON0bits.EN = 0; // [7] Disable timer 0
-			//Timer values need to be read low byte first. Written high first
-		encoderData1.pulsePeriod.byte[TIMER_LOW_BYTE] = TMR0L;
-		encoderData1.pulsePeriod.byte[TIMER_HIGH_BYTE] = TMR0H;
-        TMR0H = 0;
-		TMR0L = 0;
-		T0CON0bits.EN = 1;
-		
-		if(encoderData1.overflow){
-			//If an overflow has been detected
-			//Don't create another data point. Reset to overflow incase not read
-			encoderData1.pulsePeriod.value = 0xFFFF;
-			encoderData1.overflow = false;
-		}
-		else{
-			encoderData1.dataReady = true;
-		}
+		//Timer values need to be read low byte first. Written high first
+		encoderData1.oldTimer.value = encoderData1.newTimer.value;
+		encoderData1.newTimer.byte[TIMER_LOW_BYTE] = TMR0L;
+		encoderData1.newTimer.byte[TIMER_HIGH_BYTE] = TMR0H;
+		encoderData1.overflowTotal = encoderData1.overflowCount;
+		encoderData1.overflowCount = 0;
 		
 		encoderData1.direction = M1_DIR_INPUT;
 		
+		encoderData1.dataReady = true;
+
 		M1_IOC_FLAG = 0; //Clear interrupt flag
 	}
 	
 	if(M2_IOC_FLAG)
 	{
-		//Encoder 2A interrupt (Timer 1)
-		
-		T1CONbits.ON = 0; // [7] Disable timer 0
+		//Encoder 1A interrupt
 		//Timer values need to be read low byte first. Written high first
-		encoderData2.pulsePeriod.byte[TIMER_LOW_BYTE] = TMR1L;
-		encoderData2.pulsePeriod.byte[TIMER_HIGH_BYTE] = TMR1H;
-        TMR1H = 0;
-		TMR1L = 0;
-		T1CONbits.ON = 1;
-		
-		if(encoderData2.overflow){
-			//If an overflow has been detected
-			//Don't create another data point. Reset to overflow incase not read
-			encoderData2.pulsePeriod.value = 0xFFFF;
-			encoderData2.overflow = false;
-		}
-		else{
-			encoderData2.dataReady = true;
-		}
+		encoderData2.oldTimer.value = encoderData2.newTimer.value;
+		encoderData2.newTimer.byte[TIMER_LOW_BYTE] = TMR0L;
+		encoderData2.newTimer.byte[TIMER_HIGH_BYTE] = TMR0H;
+		encoderData2.overflowTotal = encoderData2.overflowCount;
+		encoderData2.overflowCount = 0;
 		
 		encoderData2.direction = M2_DIR_INPUT;
+		
+		encoderData2.dataReady = true;
 		
 		M2_IOC_FLAG = 0; //Clear interrupt flag
 	}	
@@ -154,40 +134,11 @@ void __interrupt(low_priority, irq(IOC), base(8)) encoderPulse_ISR()
 //------------------------------------------------------------------------------
 void __interrupt(low_priority, irq(TMR0), base(8)) pulseOverflow_0()
 {
-	T0CON0bits.EN = 0;
-	
-	//Time between pulses has overflowed (Moving very slow)
-	encoderData1.pulsePeriod.value = 0xFFFF;
-	encoderData1.dataReady = true;
-	encoderData1.overflow = true;
+	encoderData1.overflowCount++;
+	encoderData2.overflowCount++;
 	
 	//Peripheral Interrupt Enable Register 3
 	PIR3bits.TMR0IF = 0; // [7] Clear interrupt flag
-	
-	T0CON0bits.EN = 1;
-}//eo encoderOverflow_ISR-------------------------------------------------------
-
-//so encoderOverflow_ISR: ------------------------------------------------------
-// Parameters:		low_priority: It is a low priority interrupt
-//					irq(TMR0): Interrupt vector source Timer 0
-//					base(8): Base address of the vector table (8 is default)
-// Returns:			void 
-//
-// Description:		Detects that the timer has overflowed
-//------------------------------------------------------------------------------
-void __interrupt(low_priority, irq(TMR1), base(8)) pulseOverflow_1()
-{
-	T1CONbits.ON = 0;
-	
-	//Time between pulses has overflowed (Moving very slow)
-	encoderData2.pulsePeriod.value = 0xFFFF;
-	encoderData2.dataReady = true;
-	encoderData2.overflow = true;
-	
-	//Peripheral Interrupt Enable Register 3
-	PIR3bits.TMR1IF = 0; // [7] Clear interrupt flag
-
-	T1CONbits.ON = 1;
 }//eo encoderOverflow_ISR-------------------------------------------------------
 
 //so initializeEncoders: ---------------------------------------------------------
@@ -210,7 +161,7 @@ void initializeEncoders(void)
 	//Timer0 Control Register 1
 	T0CON1bits.CS = 0b011; // [7:5] HFINTOSC (64MHz) clock source
 	T0CON1bits.ASYNC = 1; // [4] Operate in asynchronous mode
-	T0CON1bits.CKPS = 0b0111; // [3:0] 1:128 prescaler for 500kHz steps
+	T0CON1bits.CKPS = 0b0110; // [3:0] 1:64 prescaler for 1MHz steps
 	
 	//Timer0 Period/Count High/Low Registers
 	TMR0L = 0; // [7:0]
@@ -223,33 +174,6 @@ void initializeEncoders(void)
 	PIE3bits.TMR0IE = ENABLE_INTERRUPT; // [7] Enable overflow interrupt
 	
 	//End of Timer 0 setup------------------------------------------------------
-	
-	//Timer 1/3/5 setup start
-	//These timers use a 500KHz clock source and a prescaler of 1:1
-	
-	//Timer Control Register 0
-	T1CONbits.ON = 0; // [0] Disable timers for setup
-	//T3CONbits.ON = 0;  
-	//T5CONbits.ON = 0;
-	
-	T1CONbits.CKPS = 0b00; // [5:4] Prescaler value of 1
-	//T3CONbits.CKPS = 0b00;
-	//T5CONbits.CKPS = 0b00;
-	
-	T1CONbits.RD16 = 1; // [1] Enable buffered read/write (To match timer 0)
-	//T3CONbits.RD16 = 1;
-	//T5CONbits.RD16 = 1;
-	
-	//Timer Clock Source Selection
-	T1CLKbits.CS = 0b00101; // [4:0] Select MFINTOSC(500kHz) as clock source
-	//T3CONbits.CS = 0b00101;
-	//T5CONbits.CS = 0b00101;
-	
-	//Peripheral Interrupt Priority Register 3
-	IPR3bits.TMR1IP = LOW_PRIORITY; // [4] Set timer overflow to low priority
-	
-	//Peripheral Interrupt Enable Register 3
-	PIE3bits.TMR1IE = ENABLE_INTERRUPT; // [7] Enable overflow interrupt
 	
 	
 	//Configure input pins and IOC
@@ -276,7 +200,6 @@ void initializeEncoders(void)
 	PIE0bits.IOCIE = ENABLE_INTERRUPT; //[7] Enable IOC interrupts
 	
 	T0CON0bits.EN = 1; //Enable Timer0
-	T1CONbits.ON = 1; //Enable Timer1
 }
 
 
@@ -293,7 +216,7 @@ bool pollEncoder(encoderData *currentEncoder)
 	
 	if(encoderData1.dataReady)
 	{	
-		currentEncoder[0].pulsePeriod.value = encoderData1.pulsePeriod.value;
+		currentEncoder[0].pulsePeriod = (encoderData1.newTimer.value + encoderData1.overflowTotal*0x10000) - encoderData1.oldTimer.value;
 		currentEncoder[0].direction = encoderData1.direction;
 		
 		encoderData1.dataReady = false;
@@ -304,7 +227,7 @@ bool pollEncoder(encoderData *currentEncoder)
 	
 	if(encoderData2.dataReady)
 	{	
-		currentEncoder[1].pulsePeriod.value = encoderData2.pulsePeriod.value;
+		currentEncoder[1].pulsePeriod = (encoderData2.newTimer.value + encoderData2.overflowTotal*0x10000) - encoderData2.oldTimer.value; 
 		currentEncoder[1].direction = encoderData2.direction;
 		
 		encoderData2.dataReady = false;

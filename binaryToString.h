@@ -18,7 +18,7 @@ Description: 	This file contains functions to convert a signed binary number
 #define UNSIGNED 0
 #define SIGNED 1
 
-typedef char int24String[9]; //One sign, 5 numbers, null character
+typedef char int24String[10]; //One sign, 8 numbers, null character
 typedef char int16String[7]; //One sign, 7 numbers, null character
 
 // conver24Bit: ---------------------------------------------------
