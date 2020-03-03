@@ -48,12 +48,12 @@ volatile uint32_t rawData4;
 // Description:		Reads in the data on the negative edge of the PWM pulse and
 //					counts out the number of pulses
 //------------------------------------------------------------------------------
-void __interrupt(high_priority,irq(PWM1),base(8)) loadCell_ISR()
+void __interrupt(high_priority,irq(PWM3),base(8)) loadCell_ISR()
 {
 	pulseCount++;
 	
 	if(pulseCount == NUMBER_OF_PULSES){
-		PWM1CONbits.EN = 0; //[7] Disable the PWM module
+		PWM3CONbits.EN = 0; //[7] Disable the PWM module
         dataReady = true;
 		pulseCount = 0;
 	}
@@ -67,7 +67,7 @@ void __interrupt(high_priority,irq(PWM1),base(8)) loadCell_ISR()
     rawData4 <<= 1;
     rawData4 += LOAD_CELL_4_DATA_IN;
     
-    PWM1GIRbits.S1P1IF = 0; // [0] Clear P1 interrupt flag
+    PWM3GIRbits.S1P1IF = 0; // [0] Clear P1 interrupt flag
 }
 
 //so initializeLoadCells: ------------------------------------------------------
@@ -87,53 +87,53 @@ void initializeLoadCells(void)
 {
 	//Output pin configuration
 	ADC_CLK_TRIS = OUTPUT_PIN;
-	ADC_CLK_PPS = PWM1_P1_OUT; //PWM1_P2 output PPS configuration
+	ADC_CLK_PPS = PWM3_P1_OUT; //PWM1_P2 output PPS configuration
 	ADC_CLK_SLR = MAX_SLEW_RATE;
 	
 	//PRM Control Register
-    PWM1CONbits.EN = 0; //[7] PWM module is disabled
-    PWM1CONbits.LD = 1; //[2] Period and duty cycle load is enabled (Redundant)
+    PWM3CONbits.EN = 0; //[7] PWM module is disabled
+    PWM3CONbits.LD = 1; //[2] Period and duty cycle load is enabled (Redundant)
     //PWM1CONbits.ERSPOL = 0; //[1]External Reset is active-high 
     //PWM1CONbits.ERSNOW = 0; //[0]Stop counter at end of period(External reset)
 	
 	 //Clock source
-    PWM1CLKbits.CLK = 0b00011; // [4:0] HFINTOSC source
+    PWM3CLKbits.CLK = 0b00011; // [4:0] HFINTOSC source
 
     //Period register
     //250 Clock cycles per PWM period. F = 64MHz/(255+1) = 250kHz 
-    PWM1PRHbits.PRH = 0;  // [15:8] High byte 
-    PWM1PRLbits.PRL = 255; // [7:0] Lower byte
+    PWM3PRHbits.PRH = 0;  // [15:8] High byte 
+    PWM3PRLbits.PRL = 255; // [7:0] Lower byte
 	
 	//Clock Prescaler Register (Prescaler divides clock signal))
-    PWM1CPREbits.CPRE = 0; //[7:0] no prescaler (division of 0+1 = 1)
+    PWM3CPREbits.CPRE = 0; //[7:0] no prescaler (division of 0+1 = 1)
 	
 	//Interrupt Register
     //PWM1GIRbits.S1P2IF = 0; // [1] Clear P2 interrupt flag (Unused)
-    PWM1GIRbits.S1P1IF = 0; // [0] Clear P1 interrupt flag
+    PWM3GIRbits.S1P1IF = 0; // [0] Clear P1 interrupt flag
 	
 	//Interrupt Enable Register
-    PWM1GIEbits.S1P2IE = DISABLE_INTERRUPT; // [1] P2 match interrupt disabled 
-    PWM1GIEbits.S1P1IE = ENABLE_INTERRUPT; // [0] P1 match enabled
+    PWM3GIEbits.S1P2IE = DISABLE_INTERRUPT; // [1] P2 match interrupt disabled 
+    PWM3GIEbits.S1P1IE = ENABLE_INTERRUPT; // [0] P1 match enabled
 	
 	//PWM Slice "a" Configuration Register
     //PWM1S1CFGbits.POL2 = 0; // [7] P2 output true is high
-    PWM1S1CFGbits.POL1 = 0; // [6] P1 output true is high
-    PWM1S1CFGbits.PPEN = 0; // [3] Push-Pull is disabled
-    PWM1S1CFGbits.MODE = 0b000; // [2:0] P1,P2 mode is left aligned
+    PWM3S1CFGbits.POL1 = 0; // [6] P1 output true is high
+    PWM3S1CFGbits.PPEN = 0; // [3] Push-Pull is disabled
+    PWM3S1CFGbits.MODE = 0b000; // [2:0] P1,P2 mode is left aligned
 	
 	//Slice "a" Parameter 1 Register
     //With left aligned: number of clock periods for which P1 output is high
     //0x0400 = 16. 64MHz/16 = 4MHz = 0.25us on time 
-    PWM1S1P1Hbits.S1P1H = 0x00; // [15:8] //High byte
-    PWM1S1P1Lbits.S1P1L = 0x10; // [7:0] //Low byte
+    PWM3S1P1Hbits.S1P1H = 0x00; // [15:8] //High byte
+    PWM3S1P1Lbits.S1P1L = 0x10; // [7:0] //Low byte
 	
-	PWM1CONbits.LD = 0; //[2] Period and duty cycle load is disabled 
+	PWM3CONbits.LD = 0; //[2] Period and duty cycle load is disabled 
 	
 	//Peripheral Interrupt Priority Register 4
-	IPR4bits.PWM1IP = HIGH_PRIORITY; // [7] Parameter interrupt is low priority
+	IPR7bits.PWM3IP = HIGH_PRIORITY; // [7] Parameter interrupt is low priority
 	
 	//Peripheral Interrupt Enable Register 4
-	PIE4bits.PWM1IE= ENABLE_INTERRUPT; // [7] Enable parameter interrupts
+	PIE7bits.PWM3IE= ENABLE_INTERRUPT; // [7] Enable parameter interrupts
 	  
 	/* Following PWM1 registers are not relevant to current implementation:
 	
@@ -182,7 +182,7 @@ void initializeLoadCells(void)
 //------------------------------------------------------------------------------
 void enableADC_CLK(void)
 {
-	PWM1CONbits.EN = 1; //[7] Enable the PWM module
+	PWM3CONbits.EN = 1; //[7] Enable the PWM module
 }
 
 bool pollLoadCells(loadCell *currentSample)

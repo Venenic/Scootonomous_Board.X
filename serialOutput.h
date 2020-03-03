@@ -18,9 +18,7 @@ Serial Settings:
 #ifndef XC_HEADER_TEMPLATE_H
 #define	XC_HEADER_TEMPLATE_H
 
-//Serial ouptu pin (RB4) setup definitions
-#define SERIAL_OUTPUT_TRIS TRISBbits.TRISB4
-#define SERIAL_OUTPUT_PPS RB4PPS
+
 
 //so initializeLoadCells: ------------------------------------------------------
 // Parameters:		void

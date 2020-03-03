@@ -2,7 +2,7 @@
 File:			serialOutput.c
 Authors:		Kyle Hedges
 Date Created:	Feb 1, 2020
-Last Modified:	Feb 19, 2020
+Last Modified:	Mar. 3, 2020
 (c) 2020 Lakehead University
 
 TARGET DEVICE:PIC18F45K22
@@ -27,7 +27,11 @@ Serial Settings:
  //If made any bigger, remember to adjust Index data types to int
 #define BUFFER_INDEX_MASK 255 //Buffer size is 128 (127+1))
 
-#define UART5_TX_OUT 0x2C; //UART1_TX output source identifier
+#define UART5_TX_OUT 0x2C; //UART5_TX output source identifier
+
+//Serial ouptu pin (RB4) setup definitions
+#define SERIAL_OUTPUT_TRIS TRISBbits.TRISB5
+#define SERIAL_OUTPUT_PPS RB5PPS
 
 char outputBuffer[BUFFER_INDEX_MASK +1]; 
 volatile unsigned char queueLength; //Strings in buffer pending transmission

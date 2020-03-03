@@ -93,6 +93,7 @@ void main(void) {
 
     while(1)                                               
     { 
+        //TODO initialize sensor values to 0
         if(pollLoadCells(loadCellData))
         {
 			//Data has been updated	
