@@ -49,6 +49,7 @@ Board Layout (Top View):	1---F---3
 #define M1_ENCODER_ANSEL ANSELAbits.ANSELA7
 #define M1_POS_IOC IOCAPbits.IOCAP7
 #define M1_IOC_FLAG IOCAFbits.IOCAF7
+#define M1_IOC_INLVL INLVLAbits.INLVLA7
 
 #define M1_DIR_TRIS TRISAbits.TRISA6 
 #define M1_DIR_ANSEL ANSELAbits.ANSELA6
@@ -59,6 +60,7 @@ Board Layout (Top View):	1---F---3
 #define M2_ENCODER_ANSEL ANSELAbits.ANSELA4
 #define M2_POS_IOC IOCAPbits.IOCAP4
 #define M2_IOC_FLAG IOCAFbits.IOCAF4
+#define M2_IOC_INLVL INLVLAbits.INLVLA4
 
 #define M2_DIR_TRIS TRISAbits.TRISA5
 #define M2_DIR_ANSEL ANSELAbits.ANSELA5
@@ -69,6 +71,7 @@ Board Layout (Top View):	1---F---3
 #define M3_ENCODER_ANSEL ANSELBbits.ANSELB0
 #define M3_POS_IOC IOCBPbits.IOCBP0
 #define M3_IOC_FLAG IOCBFbits.IOCBF0
+#define M3_IOC_INLVL INLVLBbits.INLVLB0
 
 #define M3_DIR_TRIS TRISBbits.TRISB1
 #define M3_DIR_ANSEL ANSELBbits.ANSELB1
@@ -79,6 +82,7 @@ Board Layout (Top View):	1---F---3
 #define M4_ENCODER_ANSEL ANSELBbits.ANSELB2
 #define M4_POS_IOC IOCBPbits.IOCBP2
 #define M4_IOC_FLAG IOCBFbits.IOCBF2
+#define M4_IOC_INLVL INLVLBbits.INLVLB2
 
 #define M4_DIR_TRIS TRISBbits.TRISB3
 #define M4_DIR_ANSEL ANSELBbits.ANSELB3
@@ -122,6 +126,7 @@ void __interrupt(low_priority, irq(IOC), base(8)) encoderPulse_ISR()
 		encoderData[0].dataReady = true;
 
 		M1_IOC_FLAG = 0; //Clear interrupt flag
+        
 	}
 	
 	if(M2_IOC_FLAG)
@@ -139,10 +144,12 @@ void __interrupt(low_priority, irq(IOC), base(8)) encoderPulse_ISR()
 		encoderData[1].dataReady = true;
 		
 		M2_IOC_FLAG = 0; //Clear interrupt flag
+        
 	}	
     
     if(M3_IOC_FLAG)
 	{
+        LATAbits.LATA1 = 1;
 		//Encoder 3A interrupt
 		//Timer values need to be read low byte first. Written high first
 		encoderData[2].oldTimer.value = encoderData[2].newTimer.value;
@@ -156,6 +163,7 @@ void __interrupt(low_priority, irq(IOC), base(8)) encoderPulse_ISR()
 		encoderData[2].dataReady = true;
 
 		M3_IOC_FLAG = 0; //Clear interrupt flag
+        LATAbits.LATA1 = 0;
 	}
 	
 	if(M4_IOC_FLAG)
@@ -236,24 +244,28 @@ void initializeEncoders(void)
 	M1_DIR_TRIS = INPUT_PIN;
 	M1_DIR_ANSEL = DIGITAL_INPUT_PIN;
 	M1_POS_IOC = 1; // Enable rising edge interrupt
+    M1_IOC_INLVL = ST_INPUT_PIN;
 	
 	M2_ENCODER_TRIS = INPUT_PIN;
 	M2_ENCODER_ANSEL = DIGITAL_INPUT_PIN;
 	M2_DIR_TRIS = INPUT_PIN;
 	M2_DIR_ANSEL = DIGITAL_INPUT_PIN;
 	M2_POS_IOC = 1; // Enable rising edge interrupt
+    M2_IOC_INLVL = ST_INPUT_PIN;
     
     M3_ENCODER_TRIS = INPUT_PIN;
 	M3_ENCODER_ANSEL = DIGITAL_INPUT_PIN;
 	M3_DIR_TRIS = INPUT_PIN;
 	M3_DIR_ANSEL = DIGITAL_INPUT_PIN;
 	M3_POS_IOC = 1; // Enable rising edge interrupt
+    M3_IOC_INLVL = ST_INPUT_PIN;
     
     M4_ENCODER_TRIS = INPUT_PIN;
 	M4_ENCODER_ANSEL = DIGITAL_INPUT_PIN;
 	M4_DIR_TRIS = INPUT_PIN;
 	M4_DIR_ANSEL = DIGITAL_INPUT_PIN;
 	M4_POS_IOC = 1; // Enable rising edge interrupt
+    M4_IOC_INLVL = ST_INPUT_PIN;
 	
 	//Peripheral Interrupt Request Register 0
 	IPR0bits.IOCIP = LOW_PRIORITY; // [7] IOC set to low priority
@@ -289,7 +301,7 @@ bool pollEncoder(encoderPulse *currentEncoder)
     {
         if(encoderData[i].dataReady)
         {	
-            currentEncoder[i].pulsePeriod = encoderData[i].direction*((encoderData[i].newTimer.value + encoderData[i].overflowTotal*0x10000) - encoderData[i].oldTimer.value);
+            currentEncoder[i].pulsePeriod = ((encoderData[i].newTimer.value + encoderData[i].overflowTotal*0x10000) - encoderData[i].oldTimer.value);
             currentEncoder[i].direction = encoderData[i].direction;
 		
             encoderData[i].dataReady = false;

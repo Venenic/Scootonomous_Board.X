@@ -2,7 +2,7 @@
 File:			loadCells.h
 Authors:		Kyle Hedges
 Date:			Jan 27, 2020
-Last Modified:	Mar. 3, 2020
+Last Modified:	Mar. 5, 2020
 (c) 2020 Lakehead University
 
 TARGET DEVICE:PIC18F45K22
@@ -99,6 +99,7 @@ void main(void) {
 
     while(1)                                               
     { 
+        //LATAbits.LATA1 = PORTBbits.RB0;
         //TODO initialize sensor values to 0
         if(pollLoadCells(loadCellData))
         {
