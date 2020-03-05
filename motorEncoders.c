@@ -149,7 +149,6 @@ void __interrupt(low_priority, irq(IOC), base(8)) encoderPulse_ISR()
     
     if(M3_IOC_FLAG)
 	{
-        LATAbits.LATA1 = 1;
 		//Encoder 3A interrupt
 		//Timer values need to be read low byte first. Written high first
 		encoderData[2].oldTimer.value = encoderData[2].newTimer.value;
@@ -163,7 +162,6 @@ void __interrupt(low_priority, irq(IOC), base(8)) encoderPulse_ISR()
 		encoderData[2].dataReady = true;
 
 		M3_IOC_FLAG = 0; //Clear interrupt flag
-        LATAbits.LATA1 = 0;
 	}
 	
 	if(M4_IOC_FLAG)
