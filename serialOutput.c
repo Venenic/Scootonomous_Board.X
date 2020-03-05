@@ -2,7 +2,7 @@
 File:			serialOutput.c
 Authors:		Kyle Hedges
 Date Created:	Feb 1, 2020
-Last Modified:	Mar. 3, 2020
+Last Modified:	Mar. 5, 2020
 (c) 2020 Lakehead University
 
 TARGET DEVICE:PIC18F45K22
