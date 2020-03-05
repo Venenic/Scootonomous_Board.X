@@ -2,7 +2,7 @@
 File:			motorControl.c
 Authors:		Kyle Hedges
 Date:			Feb 4, 2020
-Last Modified:	Mar 1, 2020
+Last Modified:	Mar 5, 2020
 (c) 2020 Lakehead University
 
 TARGET DEVICE:PIC18F45K22
@@ -11,27 +11,39 @@ Description: 	Controls all four motors
 				Duty cycle is 0-200
 
 Hardware Settings:
-					-Motor 1 Pins: 	PWM: RD0 (Pin 19)
-									Control 1: C0 (Pin 15)
-									Control 2: C1 (Pin 16)
+					-Motor 1 Pins: 	PWM: RD1 (Pin 20)
+									Control 1: C0 (Pin 18)
+									Control 2: D0 (Pin 19)
 									
 							Modules: PWM2, P1
 							
-					-Motor 2 Pins: 	PWM: RD1 (Pin 20)
+					-Motor 2 Pins: 	PWM: RC0 (Pin 15)
 									Control 1: C2 (Pin 17)
-									Control 2: C3 (Pin 18)
+									Control 2: C1 (Pin 16)
 									
-							Modules: PWM2, P2
+							Modules: PWM1, P1
 
-					-Motor 3 PWM: RD2 (Pin 21)
-					-Uses PWM3, P1
-				
-					-Motor 4 PWM: RD3 (Pin 22)
-					-Uses PWM3, P2
-					
-Board Layout (Top View):	1---F---2
+					-Motor 3 Pins:  PWM: RC6 (Pin 25)
+ *                                  Control 1: D4 (Pin 27)
+ *                                  Control 2: C7 (Pin 26)
+ * 
+                            Modules: PWM 2, P2
+ * 
+ *                  -Motor 3 Pins:  PWM: RD7 (Pin 30)
+ *                                  Control 1: D5 (Pin 29)
+ *                                  Control 2: D6 (Pin 28)
+ * 
+ *                          Modules: PWM 1, P2
+ 
+PPS PWM identifiers:
+	-PWM1_P1 0x18 (Port C only)
+	-PWM1_P2 0x19 
+	-PWM2_P1 0x1A (Port D only)
+	-PWM2_P2 0x1B
+ 
+Board Layout (Top View):	1---F---3
 							|		|
-							3---B---4
+							2---B---4
 *******************************************************************************/ 
 
 #include <xc.h>
@@ -42,21 +54,45 @@ Board Layout (Top View):	1---F---2
 
 //Motor 1 pinout
 #define M1_PWM_TRIS TRISDbits.TRISD1
-#define M1_PWM_PPS RD1PPS //Pin RD0 PPS
-#define PWM2_P1_OUT 0x1A //PWM2_P1 PPS output source identifier
+#define M1_PWM_PPS RD1PPS //Pin RD1 PPS
+#define M1_PWM_ID 0x1A //PWM2_P1 PPS output source identifier
+#define M1_P_REG PWM2S1P1L //Parameter register (For setting duty cycle)
 #define M1_CONTROL1_TRIS TRISCbits.TRISC3
-#define M1_CONTROL2_TRIS TRISDbits.TRISD0
 #define M1_CONTROL1 LATCbits.LATC3
+#define M1_CONTROL2_TRIS TRISDbits.TRISD0
 #define M1_CONTROL2 LATDbits.LATD0
 
 //Motor 2 pinout
 #define M2_PWM_TRIS TRISCbits.TRISC0
 #define M2_PWM_PPS RC0PPS //Pin RD0 PPS
-#define PWM1_P1_OUT 0x18 //PWM2_P1 PPS output source identifier
+#define M2_PWM_ID 0x18 //PWM1_P1 PPS output source identifier
+#define M2_P_REG PWM1S1P1L
 #define M2_CONTROL1_TRIS TRISCbits.TRISC2
-#define M2_CONTROL2_TRIS TRISCbits.TRISC1
 #define M2_CONTROL1 LATCbits.LATC2
+#define M2_CONTROL2_TRIS TRISCbits.TRISC1
 #define M2_CONTROL2 LATCbits.LATC1
+
+//Motor 3 pinout
+#define M3_PWM_TRIS TRISCbits.TRISC6
+#define M3_PWM_PPS RC6PPS //Pin RD0 PPS
+#define M3_PWM_ID 0x19 //PWM1_P2 PPS output source identifier
+#define M3_P_REG PWM1S1P2L
+#define M3_CONTROL1_TRIS TRISDbits.TRISD4
+#define M3_CONTROL1 LATDbits.LATD4
+#define M3_CONTROL2_TRIS TRISCbits.TRISC7
+#define M3_CONTROL2 LATCbits.LATC7
+
+//Motor 4 pinout
+#define M4_PWM_TRIS TRISDbits.TRISD7
+#define M4_PWM_PPS RD7PPS //Pin RD0 PPS
+#define M4_PWM_ID 0x1B //PWM2_P2 PPS output source identifier
+#define M4_P_REG PWM2S1P2L
+#define M4_CONTROL1_TRIS TRISDbits.TRISD5
+#define M4_CONTROL1 LATDbits.LATD5
+#define M4_CONTROL2_TRIS TRISDbits.TRISD6
+#define M4_CONTROL2 LATDbits.LATD6
+
+
 
 void initializePWM2(void);
 void initializePWM1(void);
@@ -168,6 +204,7 @@ void initializePWM1()
 	//Interrupt Register
     //PWM3GIRbits.S1P2IF = 0; // [1] Clear P2 interrupt flag (Unused)
     PWM1GIRbits.S1P1IF = 0; // [0] Clear P1 interrupt flag
+    PWM1GIRbits.S1P2IF = 0; // [0] Clear P1 interrupt flag
 	
 	//Interrupt Enable Register
     PWM1GIEbits.S1P2IE = DISABLE_INTERRUPT; // [1] P2 match interrupt disabled 
@@ -215,19 +252,32 @@ void initializePWM1()
 void initializeMotors(void)
 {
 	M1_PWM_TRIS = OUTPUT_PIN;
-	M1_PWM_PPS = PWM2_P1_OUT;
+	M1_PWM_PPS = M1_PWM_ID;
 	M1_CONTROL1 = 0; //Initialize to stop
 	M1_CONTROL2 = 0;
 	M1_CONTROL1_TRIS = OUTPUT_PIN;
 	M1_CONTROL2_TRIS = OUTPUT_PIN;
 	
 	M2_PWM_TRIS = OUTPUT_PIN;
-	M2_PWM_PPS = PWM1_P1_OUT;
+	M2_PWM_PPS = M2_PWM_ID;
 	M2_CONTROL1 = 0; //Initialize to stop
 	M2_CONTROL2 = 0;
 	M2_CONTROL1_TRIS = OUTPUT_PIN;
 	M2_CONTROL2_TRIS = OUTPUT_PIN;
 	
+    M3_PWM_TRIS = OUTPUT_PIN;
+	M3_PWM_PPS = M3_PWM_ID;
+	M3_CONTROL1 = 0; //Initialize to stop
+	M3_CONTROL2 = 0;
+	M3_CONTROL1_TRIS = OUTPUT_PIN;
+	M3_CONTROL2_TRIS = OUTPUT_PIN;
+    
+    M4_PWM_TRIS = OUTPUT_PIN;
+	M4_PWM_PPS = M4_PWM_ID;
+	M4_CONTROL1 = 0; //Initialize to stop
+	M4_CONTROL2 = 0;
+	M4_CONTROL1_TRIS = OUTPUT_PIN;
+	M4_CONTROL2_TRIS = OUTPUT_PIN;
 }					
 
 void enableMotors(void)
@@ -238,8 +288,10 @@ void enableMotors(void)
 
 void updateMotorSpeed(motor *currentMotor)
 {
-	PWM2S1P1Lbits.S1P1L = currentMotor[0].dutyCycle;
-	PWM1S1P1Lbits.S1P1L = currentMotor[1].dutyCycle;
+	M1_P_REG = currentMotor[0].dutyCycle;
+	M2_P_REG = currentMotor[1].dutyCycle;
+    M3_P_REG = currentMotor[2].dutyCycle;
+    M4_P_REG = currentMotor[3].dutyCycle;
 	PWM2CONbits.LD = 1; //[2] Period and duty cycle load is enabled 	
     PWM1CONbits.LD = 1; //[2] Period and duty cycle load is enabled 
 	
@@ -265,7 +317,6 @@ void updateMotorSpeed(motor *currentMotor)
 			M1_CONTROL1 = 0;
 			M1_CONTROL2 = 0;
 			break;
- 
 	}
 	
 	//Motor 2 mode
@@ -290,9 +341,55 @@ void updateMotorSpeed(motor *currentMotor)
 			M2_CONTROL1 = 0;
 			M2_CONTROL2 = 0;
 			break;
- 
+	}
+    
+    //Motor 3 mode
+	switch(currentMotor[2].mode){
+		
+		case M_FORWARD :
+			M3_CONTROL1 = 1;
+			M3_CONTROL2 = 0;
+			break;
+			
+		case M_REVERSE :
+			M3_CONTROL1 = 0;
+			M3_CONTROL2 = 1;
+			break;
+		
+		case M_BRAKE :
+			M3_CONTROL1 = 1;
+			M3_CONTROL2 = 1;
+			break;
+			
+		case M_STOP :
+			M3_CONTROL1 = 0;
+			M3_CONTROL2 = 0;
+			break;
 	}
 	
+    //Motor 4 mode
+	switch(currentMotor[3].mode){
+		
+		case M_FORWARD :
+			M4_CONTROL1 = 1;
+			M4_CONTROL2 = 0;
+			break;
+			
+		case M_REVERSE :
+			M4_CONTROL1 = 0;
+			M4_CONTROL2 = 1;
+			break;
+		
+		case M_BRAKE :
+			M4_CONTROL1 = 1;
+			M4_CONTROL2 = 1;
+			break;
+			
+		case M_STOP :
+			M4_CONTROL1 = 0;
+			M4_CONTROL2 = 0;
+			break;
+	}
 }
 
 
