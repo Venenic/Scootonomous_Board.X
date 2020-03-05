@@ -97,8 +97,16 @@ void initializeSerialOutput(void)
 	//UART Baud Rate Generator
     //Baud rate = Fosc*(1+(BRGS*3))/(16*(BRG-1))
     //          = 64MHz * (1 + 1*3)/(16*(1668-1))
+    //          = 9598 
     U5BRGHbits.BRGH = 6; // [15:8] High byte
     U5BRGLbits.BRGL = 132; // [7:0] Low byte
+    
+    //UART Baud Rate Generator (19200)
+    //Baud rate = Fosc*(1+(BRGS*3))/(16*(BRG-1))
+    //          = 64MHz * (1 + 1*3)/(16*(834-1))
+    //          = 19208
+    //U5BRGHbits.BRGH = 3; // [15:8] High byte
+    //U5BRGLbits.BRGL = 66; // [7:0] Low byte
 	
 	//Peripheral Interrupt Priority Register 13
 	IPR13bits.U5TXIP = LOW_PRIORITY; // [3] Transmit interrupt is low priority

@@ -2,37 +2,36 @@
 File: 			motorEnocders.cabs
 Authors:		Kyle Hedges
 Created:		Feb. 20, 2020
-Last Modified:	Feb. 29, 2020
+Last Modified:	Mar. , 2020
 (c) 2020 Lakehead University
 
 TARGET DEVICE:PIC18F45K22
 
 Description: 	This file reads a motor's speed and direction using two Hall
-				effect sensors in quadrature. The time between pulses is read
-				on the rising edge. The time between rising edges of encoder A
-				determines the speed and the state of encoder B at the start of
-				a pulse determines direction.
+				effect sensors in quadrature. The time between rising edges of 
+				encoder A determines the speed and the state of encoder B at 
+				this rising edge determines the direction.
 				
 Hardware Settings:	
 					-Motor 1:
-					-Hall effect OUTA: A0 (Pin 2)
-					-Hall effect OUTB: A1 (Pin 3)
+					-Hall effect OUTA: A7 (Pin 13)
+					-Hall effect OUTB: A6 (Pin 14)  (Yes, these are right)
 					
 					-Motor 2:
-					-Hall effect OUTA: A2 (Pin 4)
-					-Hall effect OUTB: A3 (Pin 5)
-					
-					-Motor 3:
 					-Hall effect OUTA: A4 (Pin 6)
 					-Hall effect OUTB: A5 (Pin 7)
 					
-					-Motor 4:
-					-Hall effect OUTA: A6 (Pin 14)
-					-Hall effect OUTB: A7 (Pin 13) (Yes, these are right)
+					-Motor 3:
+					-Hall effect OUTA: B0 (Pin 33)
+					-Hall effect OUTB: A1 (Pin 34)
 					
-Board Layout (Top View):	1---F---2
+					-Motor 4:
+					-Hall effect OUTA: B2 (Pin 35)
+					-Hall effect OUTB: B3 (Pin 36)
+					
+Board Layout (Top View):	1---F---3
 							|		|
-							3---B---4
+							2---B---4
 *******************************************************************************/
 
 #ifndef MOTORENCODERS_H
@@ -49,13 +48,13 @@ typedef union timerCount {
 	char byte[2];
 } timerCount;
 
-typedef struct encoderData{
-	uint32_t pulsePeriod;
+typedef struct encoderPulse{
+	int32_t pulsePeriod;
 	char direction;
-} encoderData;
+} encoderPulse;
 
 void initializeEncoders(void);
-bool pollEncoder(encoderData*);
+bool pollEncoder(encoderPulse*);
 
 
 	
