@@ -2,7 +2,7 @@
 File: 			motorEnocders.cabs
 Authors:		Kyle Hedges
 Created:		Feb. 20, 2020
-Last Modified:	Mar. 5, 2020
+Last Modified:	Mar. 8, 2020
 (c) 2020 Lakehead University
 
 TARGET DEVICE:PIC18F45K22
@@ -275,7 +275,7 @@ void initializeEncoders(void)
         encoderData[i].oldTimer.value = 0;
         encoderData[i].overflowCount = 0;
         encoderData[i].overflowTotal = 0;
-        encoderData[i].direction = FORWARD;
+        encoderData[i].direction = ENCODER_FORWARD;
         encoderData[i].dataReady = false;
 	}
 	//Peripheral Interrupt Enable Register 0

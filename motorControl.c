@@ -2,7 +2,7 @@
 File:			motorControl.c
 Authors:		Kyle Hedges
 Date:			Feb 4, 2020
-Last Modified:	Mar 5, 2020
+Last Modified:	Mar 7, 2020
 (c) 2020 Lakehead University
 
 TARGET DEVICE:PIC18F45K22
@@ -100,6 +100,8 @@ void initializeTimers(void);
 void enableMotors(void);
 void initializeMotors(void);
 
+char mode[4];
+
 //so initializeMotorControl: --------------------------------------------------------
 // Parameters:		void
 // Returns:			void 
@@ -114,6 +116,7 @@ void initializeMotorControl(void)
     initializePWM2();
 	//initializePWM3(); Motor 3 and 4 are unused right now
 	initializeMotors();
+    updateMotorSpeeds(STOP,0,0,0,0);
 	enableMotors();
 }
 
@@ -131,7 +134,7 @@ void initializePWM2()
 
     //Period register
     //200 Clock cycles per PWM period. F = 4MHz/(199+1) = 20kHz 
-	//More clock cycles per period means higher duty cycle percision
+	//More clock cycles per period means higher duty cycle precision
     PWM2PRHbits.PRH = 0;  // [15:8] High byte 0
     PWM2PRLbits.PRL = 199; // [7:0] Lower byte 199
 	
@@ -157,9 +160,9 @@ void initializePWM2()
 	//Period is 200 clock cycles
     //(99+1)/200 = 50% DC 
     PWM2S1P1Hbits.S1P1H = 0x00; // [15:8] //High byte   
-    PWM2S1P1Lbits.S1P1L = 0x63; // [7:0] //Low byte		99
+    PWM2S1P1Lbits.S1P1L = 0x00; // [7:0] //Low byte		99
 	PWM2S1P2Hbits.S1P2H = 0x00; // [15:8] //High byte
-    PWM2S1P2Lbits.S1P2L = 0x63; // [7:0] //Low byte
+    PWM2S1P2Lbits.S1P2L = 0x00; // [7:0] //Low byte
 	
 	PWM2CONbits.LD = 0; //[2] Period and duty cycle load is disabled 
 	 
@@ -222,9 +225,9 @@ void initializePWM1()
 	//Period is 1/20kHz = 50us
     //0x0400 = 16. 64MHz/800 = 80kHz = 12.5 us on time fo 25% DC 
     PWM1S1P1Hbits.S1P1H = 0x00; // [15:8] //High byte   768
-    PWM1S1P1Lbits.S1P1L = 0x63; // [7:0] //Low byte		32
+    PWM1S1P1Lbits.S1P1L = 0x00; // [7:0] //Low byte		32
 	PWM1S1P2Hbits.S1P2H = 0x00; // [15:8] //High byte
-    PWM1S1P2Lbits.S1P2L = 0x63; // [7:0] //Low byte
+    PWM1S1P2Lbits.S1P2L = 0x00; // [7:0] //Low byte
 	
 	PWM1CONbits.LD = 0; //[2] Period and duty cycle load is disabled 
 	 
@@ -286,111 +289,156 @@ void enableMotors(void)
 	PWM1CONbits.EN = 1; //[7] Enable the PWM module
 }
 
-void updateMotorSpeed(motor *currentMotor)
+void updateMotorSpeeds(char dir, unsigned char duty1, unsigned char duty2, 
+                            unsigned char duty3, unsigned char duty4)
 {
-	M1_P_REG = currentMotor[0].dutyCycle;
-	M2_P_REG = currentMotor[1].dutyCycle;
-    M3_P_REG = currentMotor[2].dutyCycle;
-    M4_P_REG = currentMotor[3].dutyCycle;
-	PWM2CONbits.LD = 1; //[2] Period and duty cycle load is enabled 	
-    PWM1CONbits.LD = 1; //[2] Period and duty cycle load is enabled 
-	
-	//Motor 1 mode
-	switch(currentMotor[0].mode){
-		
-		case M_FORWARD :
-			M1_CONTROL1 = 1;
-			M1_CONTROL2 = 0;
-			break;
-			
-		case M_REVERSE :
-			M1_CONTROL1 = 0;
-			M1_CONTROL2 = 1;
-			break;
-		
-		case M_BRAKE :
-			M1_CONTROL1 = 1;
-			M1_CONTROL2 = 1;
-			break;
-			
-		case M_STOP :
-			M1_CONTROL1 = 0;
-			M1_CONTROL2 = 0;
-			break;
-	}
-	
-	//Motor 2 mode
-	switch(currentMotor[1].mode){
-		
-		case M_FORWARD :
-			M2_CONTROL1 = 1;
-			M2_CONTROL2 = 0;
-			break;
-			
-		case M_REVERSE :
-			M2_CONTROL1 = 0;
-			M2_CONTROL2 = 1;
-			break;
-		
-		case M_BRAKE :
-			M2_CONTROL1 = 1;
-			M2_CONTROL2 = 1;
-			break;
-			
-		case M_STOP :
-			M2_CONTROL1 = 0;
-			M2_CONTROL2 = 0;
-			break;
-	}
+    M1_P_REG = duty1;
+	M2_P_REG = duty2;
+    M3_P_REG = duty3;
+    M4_P_REG = duty4;
     
-    //Motor 3 mode
-	switch(currentMotor[2].mode){
-		
-		case M_FORWARD :
-			M3_CONTROL1 = 1;
-			M3_CONTROL2 = 0;
-			break;
-			
-		case M_REVERSE :
-			M3_CONTROL1 = 0;
-			M3_CONTROL2 = 1;
-			break;
-		
-		case M_BRAKE :
-			M3_CONTROL1 = 1;
-			M3_CONTROL2 = 1;
-			break;
-			
-		case M_STOP :
-			M3_CONTROL1 = 0;
-			M3_CONTROL2 = 0;
-			break;
-	}
+    switch(dir){
+        
+        case(STOP):
+            mode[0] = M_STOP;
+            mode[1] = M_STOP;
+            mode[2] = M_STOP;
+            mode[3] = M_STOP;
+            break;
+            
+        case(BRAKE):
+            mode[0] = M_BRAKE;
+            mode[1] = M_BRAKE;
+            mode[2] = M_BRAKE;
+            mode[3] = M_BRAKE;
+            
+        case(FORWARD):
+            mode[0] = M_FORWARD;
+            mode[1] = M_FORWARD;
+            mode[2] = M_REVERSE;
+            mode[3] = M_REVERSE;
+            break;
+            
+        case(REVERSE):
+            mode[0] = M_REVERSE;
+            mode[1] = M_REVERSE;
+            mode[2] = M_FORWARD;
+            mode[3] = M_FORWARD;
+            break;
+            
+        case(LEFT):
+            mode[0] = M_REVERSE;
+            mode[1] = M_REVERSE;
+            mode[2] = M_FORWARD;
+            mode[3] = M_FORWARD;
+            break;
+            
+        case(RIGHT):
+            mode[0] = M_FORWARD;
+            mode[1] = M_FORWARD;
+            mode[2] = M_REVERSE;
+            mode[3] = M_REVERSE;
+            break;
+    }
+            
+            
+        PWM2CONbits.LD = 1; //[2] Period and duty cycle load is enabled 	
+        PWM1CONbits.LD = 1; //[2] Period and duty cycle load is enabled 
 	
+        //Motor 1 mode
+    switch(mode[0]){
+
+        case M_FORWARD :
+            M1_CONTROL1 = 1;
+            M1_CONTROL2 = 0;
+            break;
+
+        case M_REVERSE :
+            M1_CONTROL1 = 0;
+            M1_CONTROL2 = 1;
+            break;
+
+        case M_BRAKE :
+            M1_CONTROL1 = 1;
+            M1_CONTROL2 = 1;
+            break;
+
+        case M_STOP :
+            M1_CONTROL1 = 0;
+            M1_CONTROL2 = 0;
+            break;
+    }
+
+    //Motor 2 mode
+    switch(mode[1]){
+
+        case M_FORWARD :
+            M2_CONTROL1 = 1;
+            M2_CONTROL2 = 0;
+            break;
+
+        case M_REVERSE :
+            M2_CONTROL1 = 0;
+            M2_CONTROL2 = 1;
+            break;
+
+        case M_BRAKE :
+            M2_CONTROL1 = 1;
+            M2_CONTROL2 = 1;
+            break;
+
+        case M_STOP :
+            M2_CONTROL1 = 0;
+            M2_CONTROL2 = 0;
+            break;
+    }
+
+    //Motor 3 mode
+    switch(mode[2]){
+
+        case M_FORWARD :
+            M3_CONTROL1 = 1;
+            M3_CONTROL2 = 0;
+            break;
+
+        case M_REVERSE :
+            M3_CONTROL1 = 0;
+            M3_CONTROL2 = 1;
+            break;
+
+        case M_BRAKE :
+            M3_CONTROL1 = 1;
+            M3_CONTROL2 = 1;
+            break;
+
+        case M_STOP :
+            M3_CONTROL1 = 0;
+            M3_CONTROL2 = 0;
+            break;
+    }
+
     //Motor 4 mode
-	switch(currentMotor[3].mode){
-		
-		case M_FORWARD :
-			M4_CONTROL1 = 1;
-			M4_CONTROL2 = 0;
-			break;
-			
-		case M_REVERSE :
-			M4_CONTROL1 = 0;
-			M4_CONTROL2 = 1;
-			break;
-		
-		case M_BRAKE :
-			M4_CONTROL1 = 1;
-			M4_CONTROL2 = 1;
-			break;
-			
-		case M_STOP :
-			M4_CONTROL1 = 0;
-			M4_CONTROL2 = 0;
-			break;
-	}
+    switch(mode[3]){
+
+        case M_FORWARD :
+            M4_CONTROL1 = 1;
+            M4_CONTROL2 = 0;
+            break;
+
+        case M_REVERSE :
+            M4_CONTROL1 = 0;
+            M4_CONTROL2 = 1;
+            break;
+
+        case M_BRAKE :
+            M4_CONTROL1 = 1;
+            M4_CONTROL2 = 1;
+            break;
+
+        case M_STOP :
+            M4_CONTROL1 = 0;
+            M4_CONTROL2 = 0;
+            break;
+    }          
 }
-
-
 

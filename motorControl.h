@@ -51,6 +51,13 @@ Board Layout (Top View):	1---F---3
 #define M_BRAKE 2
 #define M_STOP 3
 
+#define STOP 0
+#define FORWARD 1
+#define REVERSE 2
+#define LEFT 3
+#define RIGHT 4
+#define BRAKE 5
+
 #define NUMBER_OF_MOTORS 4
 
 typedef struct motor {
@@ -65,7 +72,7 @@ typedef struct motor {
 // Description:	Initializes
 //------------------------------------------------------------------------------
 void initializeMotorControl(void);
-void updateMotorSpeed(motor*);
+void updateMotorSpeeds(char, unsigned char, unsigned char, unsigned char, unsigned char);
 
 #endif	/* MOTORCONTROL_H */
 

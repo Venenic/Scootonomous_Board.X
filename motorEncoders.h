@@ -40,8 +40,8 @@ Board Layout (Top View):	1---F---3
 #include <stdint.h>
 
 //May need to change based on physical implementation
-#define FORWARD 1
-#define REVERSE -1
+#define ENCODER_FORWARD 1
+#define ENCODER_REVERSE 0
 
 typedef union timerCount {
 	uint16_t value;

@@ -2,7 +2,7 @@
 File:			initializeHardware.c
 Authors:		Kyle Hedges
 Date:			Jan 27, 2020
-Last Modified:	Feb 4, 2020
+Last Modified:	Mar. 8, 2020
 (c) 2020 Lakehead University
 
 DEVICE:	PIC18F47Q43
@@ -37,6 +37,19 @@ void initializeHardware(void)
     initializeInterrupts(); 
 	initializeMotorControl();
 	initializeEncoders();
+    
+    ENABLE_PB_TRIS = INPUT_PIN;
+    ENABLE_PB_ANSEL = DIGITAL_INPUT_PIN;
+    
+    DEBUG_PIN_TRIS = OUTPUT_PIN;
+    DEBUG_PIN_SLRCON = MAX_SLEW_RATE;
+    
+    STATUS_LED_R_OUT = STATUS_LED_ON;
+    STATUS_LED_R_TRIS = OUTPUT_PIN;
+    STATUS_LED_Y_OUT = STATUS_LED_OFF;
+    STATUS_LED_Y_TRIS = OUTPUT_PIN;
+    STATUS_LED_G_OUT = STATUS_LED_OFF;
+    STATUS_LED_G_TRIS = OUTPUT_PIN;
 }
 
 void initializeInterrupts(void)

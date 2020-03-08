@@ -2,7 +2,7 @@
 File:			loadCells.h
 Authors:		Kyle Hedges
 Date:			Jan 27, 2020
-Last Modified:	Mar. 5, 2020
+Last Modified:	Mar. 8, 2020
 (c) 2020 Lakehead University
 
 TARGET DEVICE:PIC18F45K22
@@ -26,12 +26,13 @@ TODO:Insert description here
 
 //Different modes
 #define STOPPED 0
-#define ZEROING 2
-#define RUNNING 1
+#define ZEROING 1
+#define RUNNING 2
 
-volatile bool transmitString = false;
-volatile uint16_t transmitTimer = 0;
-volatile unsigned int sampleTimer;
+
+volatile unsigned char transmitTimer;
+volatile unsigned char sampleTimer;
+volatile unsigned char debounceTimer;
 
 //D0 is only being used as a test output for the system tick
 
@@ -40,11 +41,8 @@ void __interrupt(low_priority, irq(TMR2), base(8)) sysTick()
 {
     transmitTimer ++;
 	sampleTimer++;
-    if(transmitTimer == 100){
-        transmitString = true;
-        transmitTimer = 0;
-    }
-    
+    debounceTimer++;
+   
 	//Peripheral Interrupt Request Register
 	PIR3bits.TMR2IF = 0; // [3] Clear interrupt flag
 }
@@ -56,122 +54,114 @@ void __interrupt(low_priority, irq(default), base(8)) Default()
 }
 
 //Note: Use unsigned short long to hold load cell ADC values.
-void main(void) {   
+void main(void) {  
+    
+    transmitTimer = 0;
+    sampleTimer = 0;
+    debounceTimer = 0;
+    
+    loadCell loadCellData[NUMBER_OF_LOAD_CELLS];
+	encoderPulse encoderPulses[NUMBER_OF_MOTORS];
+	
+	//Initialize motor speeds to 0
+	motor motorsOut[4];
+ 
+    char mode = STOPPED;
+    char buttonReadOld = 0;
+    char buttonState = ENABLE_PB_RELEASED;
+    int24String dataString24 = "SXXXXXXX";
+    //int16String dataString16 = "SXXXXX";
     
     initializeHardware(); 
-	
-	int24String dataString24 = "SXXXXXXX";
-    int16String dataString16 = "SXXXXX";
-     
-    sendString("\r\nCLEARSHEET\r\n");
-    sendString("LABEL,Sample Time,Cell 1,Cell 2,Cell 3,Cell 4,Speed 1,Dir 1,Speed 2,Dir 2\r\n");
-   
-    sendString("Hello World \r\n");
-
-	//Load cell data variables
-    sampleTimer = 0; 
-    loadCell loadCellData[NUMBER_OF_LOAD_CELLS];
-	encoderPulse encoderPulses[4];
     
-	//Sometimes used for debugging
-    TRISAbits.TRISA1 = OUTPUT_PIN;
-    SLRCONAbits.SLRA1 = MAX_SLEW_RATE;
-    LATAbits.LATA1 = 0;
-	
-	//Initialize motor speeds
-	motor motorsOut[4];
-	
-    for(char i = 0; i < NUMBER_OF_MOTORS; i++)
-    {
-        motorsOut[i].mode = M_FORWARD;
-        motorsOut[i].dutyCycle = 200;
-    }
-
-	updateMotorSpeed(motorsOut);
-    
-    char mode = STOPPED;
-    
-    TRISAbits.TRISA0 = INPUT_PIN;
-    ANSELAbits.ANSELA0 = DIGITAL_INPUT_PIN;
-    
-    
-    //uint32_t testNum = 0;
-
+    sendString("Startup Complete");
     while(1)                                               
     { 
-        //LATAbits.LATA1 = PORTBbits.RB0;
-        //TODO initialize sensor values to 0
-        if(pollLoadCells(loadCellData))
-        {
+        DEBUG_PIN_OUT = buttonState;
+        
+        //Debouncing for the enable button
+        if(debounceTimer >= 1){
+            debounceTimer = 0;
+            //Only updates state if it is consistent across a time period
+            if(ENABLE_PB_IN == buttonReadOld) buttonState = ENABLE_PB_IN;
+            
+            buttonReadOld = ENABLE_PB_IN;
+        }
+        
+        if(pollLoadCells(loadCellData)){
 			//Data has been updated	
         }
 		
-		if(pollEncoder(encoderPulses))
-		{
+		if(pollEncoder(encoderPulses)){
 			//Data has been updated
 		}	
-
-        if(transmitString)
-        {
-          
-			sendString("DATA,TIMER"); //Excel command
-		   
-			//convert16Bit(sampleTimer, dataString16, UNSIGNED);
-			//sendString(dataString16);
-			//sampleTimer = 0;
-
-			for(char i = 0; i < NUMBER_OF_LOAD_CELLS; i++)
-			{
-                sendString(",");
-				convert24Bit(loadCellData[i].rawData, dataString24, SIGNED);
-				sendString(dataString24);
-			}
-			
-            
-			for(char i = 0; i < 4; i++)
-			{
-                sendString(",");
-				convert24Bit(encoderPulses[i].pulsePeriod, dataString24, SIGNED);
-				sendString(dataString24);		
-			}
-			
-			sendString("\r\n");
-		   
-           transmitString = false;
-   
-        }  
-        
-        if(PORTAbits.RA0 == 0)
-        {
-            mode = STOPPED;
-        }
-        else mode = RUNNING;
-        
         
         switch(mode){   
            case(STOPPED):
                //stuff
-               motorsOut[0].dutyCycle = 0;
-               motorsOut[1].dutyCycle = 0;
-               motorsOut[2].dutyCycle = 0;
-               motorsOut[3].dutyCycle = 0;
-               break;
-
-           case(ZEROING):
-               //Other stuff
-               mode = RUNNING;
-               break;
-
+                
+                if(buttonState == ENABLE_PB_PRESSED)
+                {
+                   //Transition to ZEROING mode  
+                   mode = ZEROING;
+                   STATUS_LED_R_OUT = STATUS_LED_OFF;
+                   STATUS_LED_Y_OUT = STATUS_LED_ON;
+                   transmitTimer = 0;
+                   sendString("\r\nCLEARSHEET\r\n");
+                   sendString("LABEL,Sample Time,Cell 1,Cell 2,Cell 3,Cell 4,Speed 1,Dir 1,Speed 2,Dir 2\r\n");
+                }
+                break;
+               
+            case(ZEROING):
+                //Other stuff
+                if(1){
+                    //Transition to RUNNING mode
+                    mode = RUNNING;
+                    STATUS_LED_Y_OUT = STATUS_LED_OFF;
+                    STATUS_LED_G_OUT = STATUS_LED_ON;
+                    updateMotorSpeeds(FORWARD,100,100,100,100);
+                }
+                else 
+                break;
+   
            case(RUNNING):
-               //More stuff
-               motorsOut[0].dutyCycle = 150;
-               motorsOut[1].dutyCycle = 150;
-               motorsOut[2].dutyCycle = 150;
-               motorsOut[3].dutyCycle = 150;
+              
+               if(transmitTimer >= 100) //Send data every 10ms
+               {               
+                    transmitTimer = 0;
+                    sendString("DATA,TIMER"); //Excel command
+		   
+                    //convert16Bit(sampleTimer, dataString16, UNSIGNED);
+                    //sendString(dataString16);
+                    //sampleTimer = 0;
+
+                    for(char i = 0; i < NUMBER_OF_LOAD_CELLS; i++)
+                    {
+                        sendString(",");
+                        convert24Bit(loadCellData[i].rawData, dataString24, SIGNED);
+                        sendString(dataString24);
+                    }
+
+
+                    for(char i = 0; i < 4; i++)
+                    {
+                        sendString(",");
+                        convert24Bit(encoderPulses[i].pulsePeriod, dataString24, SIGNED);
+                        sendString(dataString24);		
+                    }
+			
+                    sendString("\r\n"); 
+                }
+               
+               //Transition to STOPPED
+               if(buttonState == ENABLE_PB_RELEASED){
+                   STATUS_LED_G_OUT = STATUS_LED_OFF;
+                   STATUS_LED_R_OUT = STATUS_LED_ON;
+                    mode = STOPPED;
+                    updateMotorSpeeds(STOP,0,0,0,0);
+               }
                break;
-       }
-        
-       updateMotorSpeed(motorsOut);            
+       }           
     }     
     return;
 }
