@@ -71,9 +71,7 @@ Board Layout (Top View):	1---F---3
 
 
 //Will only hold 24 bits, but that's slower than using 32 for some reason
-typedef struct loadCell {
-	int32_t rawData;
-} loadCell;
+typedef int32_t loadCellData_t;
 	
 
 //so initializeLoadCells: ------------------------------------------------------
@@ -102,7 +100,7 @@ void enableADC_CLK(void);
 //------------------------------------------------------------------------------
 void disableADC_CLK(void);
 
-bool pollLoadCells(loadCell *);
+bool pollLoadCells(loadCellData_t *);
 bool isDataReady(void);
 __int24 getData(void);
 

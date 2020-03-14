@@ -293,3 +293,74 @@ void convert16Bit(int16_t binInput, char* charAddr, char sign)
 	
 	*charAddr = '0' + (bcdOutput[2] & 0x0F);
 }//eo convert16Bit--------------------------------------------------------------
+
+//so conver16Bit: ---------------------------------------------------
+// Parameters:	binInput: The 16 bit binary number to be converted
+//				charAddr: Location of resulting string. Should hold 9 characters
+//				sign:	  Indicates if binInput is a signed or unsigned value
+// Returns:		void
+//
+// Description:	Converts a signed 24 bit binary number to a 7 digit number.
+//				The resulting string is 9 characters long. One sign character,
+//				7 numerical digits and a null termination.
+// Last Modified:	Feb 19, 2020
+//------------------------------------------------------------------------------
+void convert8Bit(int8_t binInput, char* charAddr, char sign)
+{
+	//Range of 16 bit signed value is -128 to 128
+	unsigned char bcdOutput[3];
+	bcdOutput[0] = 0;
+	bcdOutput[1] = 0;
+
+	//Check sign 
+	if((binInput & 0x80) && (sign == SIGNED))
+	{
+		//Negative. Take two's compliment
+		binInput = ~binInput;
+		binInput += 1;
+		*charAddr = '-';
+	} else *charAddr = '+';
+	
+	//Conversion consist of shifting the binary number left into the bcd number
+	//When any single bcd digit is above 5, 3 is added to it
+	
+    unsigned char i = 0;
+	//4 MSB of binary number. Max number: 16
+	for(i = 0; i < 4; i++)
+	{
+		if(bcdOutput[0] >= 5) bcdOutput[0] += 3; //Add 3 to ones for conversion
+		
+		bcdOutput[0] <<= 1;
+		//Shift the MSB from binInput into bcdOutput	
+		if(binInput & 0x8000) bcdOutput[0] += 1; 
+		binInput <<= 1;
+	}
+	
+	//8 MSB of binary number. Max number: 2,56
+	for(i = 0; i < 4; i++)
+	{
+		if((bcdOutput[0] & 0x0F) >= 0x05) bcdOutput[0] += 0x03;	//Add 3 to ones
+		if((bcdOutput[0] & 0xF0) >= 0x50) bcdOutput[0] += 0x30;	//Add 3 to tens
+		
+		//Shift all the bits left
+        bcdOutput[1] <<= 1;
+		if(bcdOutput[0] & 0x80) bcdOutput[1] += 1;
+		bcdOutput[0] <<= 1;
+		if(binInput & 0x8000) bcdOutput[0] += 1; //Shift binary in
+		binInput <<= 1;	
+	}
+
+	
+	//Backfill the five digits
+	charAddr += 3;
+	
+	// +/-,_,_,_,'\0.
+	*charAddr = '0' + (bcdOutput[0] & 0x0F);
+	charAddr -= 1;
+	
+	*charAddr = '0' + ((bcdOutput[0] & 0xF0) >> 4);
+	charAddr -= 1;
+	
+	*charAddr = '0' + (bcdOutput[1] & 0x0F);
+	charAddr -= 1;
+}//eo convert16Bit--------------------------------------------------------------

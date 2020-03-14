@@ -185,26 +185,26 @@ void enableADC_CLK(void)
 	PWM3CONbits.EN = 1; //[7] Enable the PWM module
 }
 
-bool pollLoadCells(loadCell *currentSample)
+bool pollLoadCells(loadCellData_t *currentSample)
 {
 	if(dataReady){
 		//Write data to struct
         //Shift all the way to the left, then back to maintain sign extension
         rawData1 <<= (32-NUMBER_OF_PULSES);
-        currentSample[0].rawData = ((int32_t)rawData1) >> 8;
-        currentSample[0].rawData -= LOAD_CELL_1_ZERO;
+        currentSample[0] = ((int32_t)rawData1) >> 8;
+        currentSample[0] -= LOAD_CELL_1_ZERO;
         
         rawData2 <<= (32-NUMBER_OF_PULSES);
-        currentSample[1].rawData = ((int32_t)rawData2) >> 8; 
-        currentSample[1].rawData -= LOAD_CELL_2_ZERO;
+        currentSample[1] = ((int32_t)rawData2) >> 8; 
+        currentSample[1] -= LOAD_CELL_2_ZERO;
         
         rawData3 <<= (32-NUMBER_OF_PULSES);
-        currentSample[2].rawData = ((int32_t)rawData3) >> 8;
-        currentSample[2].rawData -= LOAD_CELL_3_ZERO;
+        currentSample[2] = ((int32_t)rawData3) >> 8;
+        currentSample[2] -= LOAD_CELL_3_ZERO;
         
         rawData4 <<= (32-NUMBER_OF_PULSES);
-        currentSample[3].rawData = ((int32_t)rawData4) >> 8;
-        currentSample[3].rawData -= LOAD_CELL_4_ZERO;
+        currentSample[3] = ((int32_t)rawData4) >> 8;
+        currentSample[3] -= LOAD_CELL_4_ZERO;
 		dataReady = false;
 		return true;
 	}

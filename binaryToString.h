@@ -21,6 +21,7 @@ Description: 	This file contains functions to convert a signed binary number
 typedef char uint24String[10]; //One sign, 8 numbers, null character
 typedef char int24String[9]; //One sign, 7 numbers, null character
 typedef char int16String[7]; //One sign, 7 numbers, null character
+typedef char int8String[5]; //One sign, 3 numbers, null character
 
 // conver24Bit: ---------------------------------------------------
 // Parameters:	int32_t: The 24 bit binary number to be converted
@@ -46,6 +47,7 @@ void convert24Bit(int32_t, char*, char);
 //				5 numerical digits and a null termination.
 //------------------------------------------------------------------------------
 void convert16Bit(int16_t, char*, char);
+void convert8Bit(int8_t, char*, char);
 
 #endif	/* BINARYTOSTRING_H */
 

@@ -33,9 +33,31 @@ TODO:Insert description here
 #define LOAD_CELL_ALPHA_NUM 7
 #define LOAD_CELL_ALPHA_DENOM 8 //Must be base two value;
 
+
+#define LOAD_CELL_SUM_THRESHOLD 200000 //(Very) Roughly 500g
+#define X_ZERO_BOUND 2 //Roughly num
+#define Y_ZERO_BOUND 1
+
+//Global variables
 volatile unsigned char transmitTimer;
 volatile unsigned char sampleTimer;
 volatile unsigned char debounceTimer;
+
+loadCellData_t loadCellData[NUMBER_OF_LOAD_CELLS];
+loadCellData_t loadCellSum = 0;
+loadCellData_t loadCellRawX = 99;
+loadCellData_t loadCellRawY = 99;
+loadCellData_t loadCellAvgX = 99;
+loadCellData_t loadCellAvgY = 99;
+loadCellData_t relativePosX = 99;
+loadCellData_t relativePosY = 99;
+
+int24String dataString24 = "SXXXXXXX";
+int16String dataString16 = "SXXXXX";
+int8String dataString8 = "SXXX";
+
+//Function prototypes
+void transmitLoadCellData(void);
 
 //D0 is only being used as a test output for the system tick
 
@@ -63,22 +85,21 @@ void main(void) {
     sampleTimer = 0;
     debounceTimer = 0;
     
-    loadCell loadCellData[NUMBER_OF_LOAD_CELLS];
-    int32_t loadCellSum = 0;
-    int32_t loadCellRawX = 99;
-    int32_t loadCellRawY = 99;
-    int32_t loadCellAvgX = 99;
-    int32_t loadCellAvgY = 99;
+    bool newLoadCellData = true; //Ensures data is only used once
+    
 	encoderPulse encoderPulses[NUMBER_OF_MOTORS];
 	
 	//Initialize motor speeds to 0
 	motor motorsOut[4];
+    
+    //Zeroing variables
+    char zeroSuccessCount = 0;
+    loadCellData_t loadCellRefX = 99;
+    loadCellData_t loadCellRefY = 99;
  
     char mode = STOPPED;
     char buttonReadOld = 0;
     char buttonState = ENABLE_PB_RELEASED;
-    int24String dataString24 = "SXXXXXXX";
-    //int16String dataString16 = "SXXXXX";
     
     initializeHardware(); 
     
@@ -96,19 +117,16 @@ void main(void) {
         
         if(pollLoadCells(loadCellData))
         { 
-            DEBUG_PIN_OUT = 1;
-            loadCellSum = loadCellData[0].rawData;
-            loadCellSum += loadCellData[1].rawData;
-            loadCellSum += loadCellData[2].rawData;
-            loadCellSum += loadCellData[3].rawData;
+            loadCellSum = loadCellData[0] + loadCellData[1] + loadCellData[2] + loadCellData[3];
             
             //Uses a moving average
-            loadCellRawX = ((loadCellData[LOAD_CELL_FR].rawData+loadCellData[LOAD_CELL_BR].rawData)<<7)/loadCellSum;
+            loadCellRawX = ((loadCellData[LOAD_CELL_FR]+loadCellData[LOAD_CELL_BR])<<7)/loadCellSum;
             loadCellAvgX = loadCellRawX + (((loadCellAvgX-loadCellRawX)*LOAD_CELL_ALPHA_NUM)>> LOAD_CELL_ALPHA_DENOM);
             
-            loadCellRawY = ((loadCellData[LOAD_CELL_FR].rawData+loadCellData[LOAD_CELL_FL].rawData)<<7)/loadCellSum;
+            loadCellRawY = ((loadCellData[LOAD_CELL_FR]+loadCellData[LOAD_CELL_FL])<<7)/loadCellSum;
             loadCellAvgY = loadCellRawY + (((loadCellAvgY-loadCellRawY)*LOAD_CELL_ALPHA_NUM)>> LOAD_CELL_ALPHA_DENOM);
-            DEBUG_PIN_OUT = 0;
+            
+            newLoadCellData = true;
         }
 		
 		if(pollEncoder(encoderPulses))
@@ -119,85 +137,150 @@ void main(void) {
         switch(mode){  
            case(STOPPED):
                //stuff
-                
-                if(buttonState == ENABLE_PB_PRESSED)
+                //transmitLoadCellData();
+                if(buttonState == ENABLE_PB_PRESSED && loadCellSum > LOAD_CELL_SUM_THRESHOLD)
                 {
+                   sendString("Zeroing");
                    //Transition to ZEROING mode  
                    mode = ZEROING;
                    STATUS_LED_R_OUT = STATUS_LED_OFF;
                    STATUS_LED_Y_OUT = STATUS_LED_ON;
                    transmitTimer = 0;
-                   sendString("\r\nCLEARSHEET\r\n");
-                   sendString("LABEL,Sample Time,Cell 1,Cell 2,Cell 3,Cell 4,Spd 1,Spd 2,Spd 3,Spd 4\r\n");
+                   //sendString("\r\nCLEARSHEET\r\n");
+                   //sendString("LABEL,Sample Time,Cell 1,Cell 2,Cell 3,Cell 4,Spd 1,Spd 2,Spd 3,Spd 4\r\n");
                 }
                 break;
                
             case(ZEROING):
-                //Other stuff
-                if(1){
+                //Test for steady state
+                if(newLoadCellData == true)
+                {
+                    if(loadCellRawX >= (loadCellAvgX-X_ZERO_BOUND) 
+                            && loadCellRawX <= (loadCellAvgX + X_ZERO_BOUND)
+                            && loadCellRawY >= (loadCellAvgY - Y_ZERO_BOUND)
+                            && loadCellRawY <= (loadCellAvgY + Y_ZERO_BOUND)) 
+                    {
+                        sendString("Pass \r\n");
+                        zeroSuccessCount++;
+                    }
+                    else
+                    {
+                        sendString("Fail \r\n");
+                        zeroSuccessCount = 0;
+                    }
+                    
+                    //transmitLoadCellData();
+                }
+                   
+  
+                if(buttonState == ENABLE_PB_RELEASED || loadCellSum < LOAD_CELL_SUM_THRESHOLD)
+                {
+                    //Switch to stopped
+                     mode = STOPPED;
+                    STATUS_LED_Y_OUT = STATUS_LED_OFF;
+                    STATUS_LED_R_OUT = STATUS_LED_ON;
+                    
+                }
+                else if(zeroSuccessCount >= 10)
+                {
+                    sendString("Reference point found");
                     //Transition to RUNNING mode
                     mode = RUNNING;
                     STATUS_LED_Y_OUT = STATUS_LED_OFF;
                     STATUS_LED_G_OUT = STATUS_LED_ON;
-                    updateMotorSpeeds(FORWARD,200,200,200,200);
+                    
+                    loadCellRefX = loadCellAvgX;
+                    loadCellRefY = loadCellAvgY;
+                    zeroSuccessCount = 0;
                 }
-                else 
+  
                 break;
    
-           case(RUNNING):
-                    
+           case(RUNNING): 
                
-               if(transmitTimer >= 100) //Send data every 10ms
-               {    
+               if(newLoadCellData)
+               {
+                    relativePosX = loadCellAvgX - loadCellRefX;
+                    relativePosY = loadCellAvgY - loadCellRefY;
+                    transmitLoadCellData();
+               }
+        
+                
+               //Transition to STOPPED
+               if(buttonState == ENABLE_PB_RELEASED || loadCellSum < LOAD_CELL_SUM_THRESHOLD){
+                   STATUS_LED_G_OUT = STATUS_LED_OFF;
+                   STATUS_LED_R_OUT = STATUS_LED_ON;
+                    mode = STOPPED;
+                    updateMotorSpeeds(STOP,0,0,0,0);
+                    relativePosX = 99;
+                    relativePosY = 99;
+               }
+               break;
+       }  
+        
+       newLoadCellData = false;
+    }     
+    return;
+}
+
+void transmitLoadCellData(void)
+{
+    //if(transmitTimer >= 100) //Send data every 10ms
+    //{ 
+        //transmitTimer = 0;
+        //sendString("DATA,TIMER"); //Excel command
+
+        //convert16Bit(sampleTimer, dataString16, UNSIGNED);
+                        //sendString(dataString16);
+                        //sampleTimer = 0;
+
+        for(char i = 0; i < NUMBER_OF_LOAD_CELLS; i++)
+        {
+            sendString(",");
+            convert24Bit(loadCellData[i], dataString24, SIGNED);
+            sendString(dataString24);
+        }
+
+        sendString(",");
+        convert24Bit(loadCellSum, dataString24, SIGNED);
+        sendString(dataString24);    
+
+        sendString(",");
+        convert8Bit(loadCellRawX, dataString8, SIGNED);
+        sendString(dataString8);
+
+        sendString(",");
+        convert8Bit(loadCellRawY, dataString8, SIGNED);
+        sendString(dataString8);
+
+        sendString(",");
+        convert8Bit(loadCellAvgX, dataString8, SIGNED);
+        sendString(dataString8);
+
+        sendString(",");
+        convert8Bit(loadCellAvgY, dataString8, SIGNED);
+        sendString(dataString8);
+        
+        sendString(",");
+        convert8Bit(relativePosX, dataString8, SIGNED);
+        sendString(dataString8);
+
+        sendString(",");
+        convert8Bit(relativePosY, dataString8, SIGNED);
+        sendString(dataString8);
+  
+        sendString("\r\n"); 
+    //}
+                    
                    
-                    transmitTimer = 0;
-                    sendString("DATA,TIMER"); //Excel command
-		   
-                    //convert16Bit(sampleTimer, dataString16, UNSIGNED);
-                    //sendString(dataString16);
-                    //sampleTimer = 0;
+                    
+}
 
-                    for(char i = 0; i < NUMBER_OF_LOAD_CELLS; i++)
-                    {
-                        sendString(",");
-                        convert24Bit(loadCellData[i].rawData, dataString24, SIGNED);
-                        sendString(dataString24);
-                    }
-                    
-                    sendString(",");
-                    convert24Bit(loadCellRawX, dataString24, SIGNED);
-                    sendString(dataString24);
-                    
-                    sendString(",");
-                    convert24Bit(loadCellRawY, dataString24, SIGNED);
-                    sendString(dataString24);
-                    
-                    sendString(",");
-                    convert24Bit(loadCellSum, dataString24, SIGNED);
-                    sendString(dataString24);
-
-                    /*    
+    /*    
                     for(char i = 0; i < 4; i++)
                     {
                         sendString(",");
                         convert24Bit(encoderPulses[i].pulsePeriod, dataString24, SIGNED);
                         sendString(dataString24);		
                     }
-                    */ 
-                    sendString("\r\n"); 
-                   
-                    
-                }
-                            
-               //Transition to STOPPED
-               if(buttonState == ENABLE_PB_RELEASED){
-                   STATUS_LED_G_OUT = STATUS_LED_OFF;
-                   STATUS_LED_R_OUT = STATUS_LED_ON;
-                    mode = STOPPED;
-                    updateMotorSpeeds(STOP,0,0,0,0);
-               }
-               break;
-       }           
-    }     
-    return;
-}
+                    */
