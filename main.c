@@ -131,7 +131,8 @@ void main(void) {
 		
 		if(pollEncoder(encoderPulses))
         {
-			//Data has been updated   
+			//Data has been updated 
+            
 		}	
         
         switch(mode){  
@@ -183,7 +184,9 @@ void main(void) {
                 }
                 else if(zeroSuccessCount >= 10)
                 {
-                    sendString("Reference point found");
+                    sendString("Reference point found\r\n");
+                    sendString("CLEARSHEET\r\n");
+                    sendString("LABEL,Sample Time,Cell 1,Cell 2,Cell 3,Cell 4,Raw X,Raw Y,Avg X,Avg Y,Rel X,Rel Y\r\n");
                     //Transition to RUNNING mode
                     mode = RUNNING;
                     STATUS_LED_Y_OUT = STATUS_LED_OFF;
@@ -228,7 +231,7 @@ void transmitLoadCellData(void)
     //if(transmitTimer >= 100) //Send data every 10ms
     //{ 
         //transmitTimer = 0;
-        //sendString("DATA,TIMER"); //Excel command
+        sendString("DATA,TIMER"); //Excel command
 
         //convert16Bit(sampleTimer, dataString16, UNSIGNED);
                         //sendString(dataString16);
