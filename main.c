@@ -2,7 +2,7 @@
 File:			loadCells.h
 Authors:		Kyle Hedges
 Date:			Jan 27, 2020
-Last Modified:	Mar. 8, 2020
+Last Modified:	Mar. 14, 2020
 (c) 2020 Lakehead University
 
 TARGET DEVICE:PIC18F45K22
@@ -29,6 +29,9 @@ TODO:Insert description here
 #define ZEROING 1
 #define RUNNING 2
 
+//NUM/DENOM = Alpha = 7/8 = .875 for load cell moving average
+#define LOAD_CELL_ALPHA_NUM 7
+#define LOAD_CELL_ALPHA_DENOM 8 //Must be base two value;
 
 volatile unsigned char transmitTimer;
 volatile unsigned char sampleTimer;
@@ -61,6 +64,11 @@ void main(void) {
     debounceTimer = 0;
     
     loadCell loadCellData[NUMBER_OF_LOAD_CELLS];
+    int32_t loadCellSum = 0;
+    int32_t loadCellRawX = 99;
+    int32_t loadCellRawY = 99;
+    int32_t loadCellAvgX = 99;
+    int32_t loadCellAvgY = 99;
 	encoderPulse encoderPulses[NUMBER_OF_MOTORS];
 	
 	//Initialize motor speeds to 0
@@ -77,8 +85,6 @@ void main(void) {
     sendString("Startup Complete");
     while(1)                                               
     { 
-        DEBUG_PIN_OUT = buttonState;
-        
         //Debouncing for the enable button
         if(debounceTimer >= 1){
             debounceTimer = 0;
@@ -88,15 +94,29 @@ void main(void) {
             buttonReadOld = ENABLE_PB_IN;
         }
         
-        if(pollLoadCells(loadCellData)){
-			//Data has been updated	
+        if(pollLoadCells(loadCellData))
+        { 
+            DEBUG_PIN_OUT = 1;
+            loadCellSum = loadCellData[0].rawData;
+            loadCellSum += loadCellData[1].rawData;
+            loadCellSum += loadCellData[2].rawData;
+            loadCellSum += loadCellData[3].rawData;
+            
+            //Uses a moving average
+            loadCellRawX = ((loadCellData[LOAD_CELL_FR].rawData+loadCellData[LOAD_CELL_BR].rawData)<<7)/loadCellSum;
+            loadCellAvgX = loadCellRawX + (((loadCellAvgX-loadCellRawX)*LOAD_CELL_ALPHA_NUM)>> LOAD_CELL_ALPHA_DENOM);
+            
+            loadCellRawY = ((loadCellData[LOAD_CELL_FR].rawData+loadCellData[LOAD_CELL_FL].rawData)<<7)/loadCellSum;
+            loadCellAvgY = loadCellRawY + (((loadCellAvgY-loadCellRawY)*LOAD_CELL_ALPHA_NUM)>> LOAD_CELL_ALPHA_DENOM);
+            DEBUG_PIN_OUT = 0;
         }
 		
-		if(pollEncoder(encoderPulses)){
-			//Data has been updated
+		if(pollEncoder(encoderPulses))
+        {
+			//Data has been updated   
 		}	
         
-        switch(mode){   
+        switch(mode){  
            case(STOPPED):
                //stuff
                 
@@ -108,7 +128,7 @@ void main(void) {
                    STATUS_LED_Y_OUT = STATUS_LED_ON;
                    transmitTimer = 0;
                    sendString("\r\nCLEARSHEET\r\n");
-                   sendString("LABEL,Sample Time,Cell 1,Cell 2,Cell 3,Cell 4,Speed 1,Dir 1,Speed 2,Dir 2\r\n");
+                   sendString("LABEL,Sample Time,Cell 1,Cell 2,Cell 3,Cell 4,Spd 1,Spd 2,Spd 3,Spd 4\r\n");
                 }
                 break;
                
@@ -119,15 +139,17 @@ void main(void) {
                     mode = RUNNING;
                     STATUS_LED_Y_OUT = STATUS_LED_OFF;
                     STATUS_LED_G_OUT = STATUS_LED_ON;
-                    updateMotorSpeeds(FORWARD,100,100,100,100);
+                    updateMotorSpeeds(FORWARD,200,200,200,200);
                 }
                 else 
                 break;
    
            case(RUNNING):
-              
+                    
+               
                if(transmitTimer >= 100) //Send data every 10ms
-               {               
+               {    
+                   
                     transmitTimer = 0;
                     sendString("DATA,TIMER"); //Excel command
 		   
@@ -141,18 +163,32 @@ void main(void) {
                         convert24Bit(loadCellData[i].rawData, dataString24, SIGNED);
                         sendString(dataString24);
                     }
+                    
+                    sendString(",");
+                    convert24Bit(loadCellRawX, dataString24, SIGNED);
+                    sendString(dataString24);
+                    
+                    sendString(",");
+                    convert24Bit(loadCellRawY, dataString24, SIGNED);
+                    sendString(dataString24);
+                    
+                    sendString(",");
+                    convert24Bit(loadCellSum, dataString24, SIGNED);
+                    sendString(dataString24);
 
-
+                    /*    
                     for(char i = 0; i < 4; i++)
                     {
                         sendString(",");
                         convert24Bit(encoderPulses[i].pulsePeriod, dataString24, SIGNED);
                         sendString(dataString24);		
                     }
-			
+                    */ 
                     sendString("\r\n"); 
+                   
+                    
                 }
-               
+                            
                //Transition to STOPPED
                if(buttonState == ENABLE_PB_RELEASED){
                    STATUS_LED_G_OUT = STATUS_LED_OFF;

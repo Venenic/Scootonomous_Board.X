@@ -2,7 +2,7 @@
 File:			loadCells.h
 Authors:		Kyle Hedges
 Date:			Jan 31, 2020
-Last Modified:	Feb 15, 2020
+Last Modified:	Mar. 14, 2020
 (c) 2020 Lakehead University
 
 TARGET DEVICE:PIC18F45K22
@@ -19,9 +19,9 @@ ADC clock:
 					Data pins:
 					-Load cells [3:0] use RD[4:7] (Pins 27-30) respectively
 					
-Board Layout (Top View):	1---F---2
+Board Layout (Top View):	1---F---3
 							|		|
-							3---B---4
+							2---B---4
 				
 
 *******************************************************************************/
@@ -191,13 +191,20 @@ bool pollLoadCells(loadCell *currentSample)
 		//Write data to struct
         //Shift all the way to the left, then back to maintain sign extension
         rawData1 <<= (32-NUMBER_OF_PULSES);
-        currentSample[0].rawData = rawData1 >> 8;
+        currentSample[0].rawData = ((int32_t)rawData1) >> 8;
+        currentSample[0].rawData -= LOAD_CELL_1_ZERO;
+        
         rawData2 <<= (32-NUMBER_OF_PULSES);
-        currentSample[1].rawData = rawData2 >> 8; 
+        currentSample[1].rawData = ((int32_t)rawData2) >> 8; 
+        currentSample[1].rawData -= LOAD_CELL_2_ZERO;
+        
         rawData3 <<= (32-NUMBER_OF_PULSES);
-        currentSample[2].rawData = rawData3 >> 8; 
+        currentSample[2].rawData = ((int32_t)rawData3) >> 8;
+        currentSample[2].rawData -= LOAD_CELL_3_ZERO;
+        
         rawData4 <<= (32-NUMBER_OF_PULSES);
-        currentSample[3].rawData = rawData4 >> 8; 
+        currentSample[3].rawData = ((int32_t)rawData4) >> 8;
+        currentSample[3].rawData -= LOAD_CELL_4_ZERO;
 		dataReady = false;
 		return true;
 	}

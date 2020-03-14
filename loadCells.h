@@ -2,7 +2,7 @@
 File:			loadCells.h
 Authors:		Kyle Hedges
 Date:			Jan 31, 2020
-Last Modified:	Feb 15, 2020
+Last Modified:	Mar. 14, 2020
 (c) 2020 Lakehead University
 
 TARGET DEVICE:PIC18F45K22
@@ -19,9 +19,9 @@ ADC clock:
 					Data pins:
 					-Load cells [3:0] use RD[4:7] (Pins 27-30) respectively
 					
-Board Layout (Top View):	1---F---2
+Board Layout (Top View):	1---F---3
 							|		|
-							3---B---4
+							2---B---4
 
 *******************************************************************************/
 #ifndef LOADCELLS_H
@@ -58,9 +58,21 @@ Board Layout (Top View):	1---F---2
 
 #define NUMBER_OF_LOAD_CELLS 4
 
+//Index definitions
+#define LOAD_CELL_FL 0
+#define LOAD_CELL_BL 1
+#define LOAD_CELL_FR 2
+#define LOAD_CELL_BR 3
+
+#define LOAD_CELL_1_ZERO -6947
+#define LOAD_CELL_2_ZERO -401121
+#define LOAD_CELL_3_ZERO -68488
+#define LOAD_CELL_4_ZERO 327445
+
+
 //Will only hold 24 bits, but that's slower than using 32 for some reason
 typedef struct loadCell {
-	uint32_t rawData;
+	int32_t rawData;
 } loadCell;
 	
 

@@ -2,7 +2,7 @@
 File:			serialOutput.c
 Authors:		Kyle Hedges
 Date Created:	Feb 1, 2020
-Last Modified:	Mar. 5, 2020
+Last Modified:	Mar. 14, 2020
 (c) 2020 Lakehead University
 
 TARGET DEVICE:PIC18F45K22
@@ -48,7 +48,7 @@ volatile unsigned char queueLength; //Strings in buffer pending transmission
 //------------------------------------------------------------------------------
 void __interrupt(low_priority,irq(U5TX),base(8)) serialOutput_ISR()
 {
-	static unsigned char txIndex = 0;
+	static unsigned int txIndex = 0;
 	
 	char currentChar = outputBuffer[txIndex];
 	
@@ -107,7 +107,21 @@ void initializeSerialOutput(void)
     //          = 19208
     //U5BRGHbits.BRGH = 3; // [15:8] High byte
     //U5BRGLbits.BRGL = 66; // [7:0] Low byte
+    
+    //UART Baud Rate Generator (38400)
+    //Baud rate = Fosc*(1+(BRGS*3))/(16*(BRG-1))
+    //          = 64MHz * (1 + 1*3)/(16*(418-1))
+    //          = 38369
+    //U5BRGHbits.BRGH = 1; // [15:8] High byte
+    //U5BRGLbits.BRGL = 162; // [7:0] Low byte
 	
+    //UART Baud Rate Generator (256000)
+    //Baud rate = Fosc*(1+(BRGS*3))/(16*(BRG-1))
+    //          = 64MHz * (1 + 1*3)/(16*(64-1))
+    //          = 253968
+    //U5BRGHbits.BRGH = 0; // [15:8] High byte
+    //U5BRGLbits.BRGL = 64; // [7:0] Low byte
+    
 	//Peripheral Interrupt Priority Register 13
 	IPR13bits.U5TXIP = LOW_PRIORITY; // [3] Transmit interrupt is low priority
     
@@ -131,7 +145,7 @@ void initializeSerialOutput(void)
 //------------------------------------------------------------------------------
 void sendString(char *message)
 {
-	static unsigned char storeIndex = 0;
+	static unsigned int storeIndex = 0;
 	
 	while(*message != '\0')
 	{

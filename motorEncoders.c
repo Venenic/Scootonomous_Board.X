@@ -130,7 +130,7 @@ void __interrupt(low_priority, irq(IOC), base(8)) encoderPulse_ISR()
 	}
 	
 	if(M2_IOC_FLAG)
-	{
+	{      
 		//Encoder 2A interrupt
 		//Timer values need to be read low byte first. Written high first
 		encoderData[1].oldTimer.value = encoderData[1].newTimer.value;
@@ -144,11 +144,10 @@ void __interrupt(low_priority, irq(IOC), base(8)) encoderPulse_ISR()
 		encoderData[1].dataReady = true;
 		
 		M2_IOC_FLAG = 0; //Clear interrupt flag
-        
 	}	
     
     if(M3_IOC_FLAG)
-	{
+	{        
 		//Encoder 3A interrupt
 		//Timer values need to be read low byte first. Written high first
 		encoderData[2].oldTimer.value = encoderData[2].newTimer.value;
@@ -160,12 +159,12 @@ void __interrupt(low_priority, irq(IOC), base(8)) encoderPulse_ISR()
 		encoderData[2].direction = M3_DIR_INPUT;
 		
 		encoderData[2].dataReady = true;
-
-		M3_IOC_FLAG = 0; //Clear interrupt flag
+        
+		M3_IOC_FLAG = 0; //Clear interrupt flag      
 	}
 	
 	if(M4_IOC_FLAG)
-	{
+	{   
 		//Encoder 1A interrupt
 		//Timer values need to be read low byte first. Written high first
 		encoderData[3].oldTimer.value = encoderData[3].newTimer.value;
@@ -177,8 +176,8 @@ void __interrupt(low_priority, irq(IOC), base(8)) encoderPulse_ISR()
 		encoderData[3].direction = M4_DIR_INPUT;
 		
 		encoderData[3].dataReady = true;
-		
-		M4_IOC_FLAG = 0; //Clear interrupt flag
+        
+		M4_IOC_FLAG = 0; //Clear interrupt flag        
 	}
 }//eo enocderPulse_ISR----------------------------------------------------------
 
