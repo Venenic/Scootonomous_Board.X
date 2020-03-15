@@ -87,7 +87,7 @@ void main(void) {
     
     bool newLoadCellData = true; //Ensures data is only used once
     
-	encoderPulse encoderPulses[NUMBER_OF_MOTORS];
+	motorSpeed motorSpeeds[NUMBER_OF_MOTORS];
 	
 	//Initialize motor speeds to 0
 	motor motorsOut[4];
@@ -115,6 +115,13 @@ void main(void) {
             buttonReadOld = ENABLE_PB_IN;
         }
         
+        //Added for encoder testing
+        if(buttonState == ENABLE_PB_PRESSED){
+            updateMotorSpeeds(FORWARD,200,200,200,200);
+        }
+        else updateMotorSpeeds(STOP,200,200,200,200);
+        
+        
         if(pollLoadCells(loadCellData))
         { 
             loadCellSum = loadCellData[0] + loadCellData[1] + loadCellData[2] + loadCellData[3];
@@ -129,11 +136,22 @@ void main(void) {
             newLoadCellData = true;
         }
 		
-		if(pollEncoder(encoderPulses))
-        {
-			//Data has been updated 
-            
+		if(pollEncoder(motorSpeeds))
+        { 
+			//Data has been updated           
 		}	
+        
+        if(transmitTimer >= 100) //Send data every 100ms
+        { 
+            transmitTimer = 0;
+            for(char i = 0; i < 4; i++)
+             {
+                sendString(",");
+                convert24Bit(motorSpeeds[i], dataString24, SIGNED);
+                sendString(dataString24);	
+             }
+            sendString("\r\n");
+        }
         
         switch(mode){  
            case(STOPPED):
@@ -204,10 +222,9 @@ void main(void) {
                if(newLoadCellData)
                {
                     relativePosX = loadCellAvgX - loadCellRefX;
-                    relativePosY = loadCellAvgY - loadCellRefY;
-                    transmitLoadCellData();
-               }
-        
+                    relativePosY = loadCellAvgY - loadCellRefY;            
+                }
+               //transmitLoadCellData();
                 
                //Transition to STOPPED
                if(buttonState == ENABLE_PB_RELEASED || loadCellSum < LOAD_CELL_SUM_THRESHOLD){
@@ -228,9 +245,7 @@ void main(void) {
 
 void transmitLoadCellData(void)
 {
-    //if(transmitTimer >= 100) //Send data every 10ms
-    //{ 
-        //transmitTimer = 0;
+  
         sendString("DATA,TIMER"); //Excel command
 
         //convert16Bit(sampleTimer, dataString16, UNSIGNED);
@@ -279,11 +294,4 @@ void transmitLoadCellData(void)
                     
 }
 
-    /*    
-                    for(char i = 0; i < 4; i++)
-                    {
-                        sendString(",");
-                        convert24Bit(encoderPulses[i].pulsePeriod, dataString24, SIGNED);
-                        sendString(dataString24);		
-                    }
-                    */
+                   

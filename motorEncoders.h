@@ -40,21 +40,22 @@ Board Layout (Top View):	1---F---3
 #include <stdint.h>
 
 //May need to change based on physical implementation
-#define ENCODER_FORWARD 1
 #define ENCODER_REVERSE 0
+#define ENCODER_FORWARD 1
+#define ENCODER_STOP 2
 
 typedef union timerCount {
 	uint16_t value;
 	char byte[2];
 } timerCount;
 
-typedef struct encoderPulse{
-	int32_t pulsePeriod;
-	char direction;
-} encoderPulse;
+typedef int32_t motorSpeed;
+typedef int32_t encoderPeriod_t;
+
+
 
 void initializeEncoders(void);
-bool pollEncoder(encoderPulse*);
+bool pollEncoder(motorSpeed*);
 
 
 	

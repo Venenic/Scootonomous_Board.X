@@ -2,7 +2,7 @@
 File: 			motorEnocders.cabs
 Authors:		Kyle Hedges
 Created:		Feb. 20, 2020
-Last Modified:	Mar. 8, 2020
+Last Modified:	Mar. 14, 2020
 (c) 2020 Lakehead University
 
 TARGET DEVICE:PIC18F45K22
@@ -88,6 +88,9 @@ Board Layout (Top View):	1---F---3
 #define M4_DIR_ANSEL ANSELBbits.ANSELB3
 #define M4_DIR_INPUT PORTBbits.RB3
 
+#define ENCODER_ALPHA_NUM 3 //Alpha = 3/(2^2) = 0.75
+#define ENCODER_ALPHA_DENOM 2
+
 
 typedef struct encoderDataRaw{
 	timerCount newTimer;
@@ -96,6 +99,7 @@ typedef struct encoderDataRaw{
 	unsigned char overflowCount;
 	bool dataReady;
 	char direction;
+    int16_t periodAvg;
 } encoderDataRaw;
 
 volatile encoderDataRaw encoderData[4];
@@ -291,21 +295,44 @@ void initializeEncoders(void)
 //
 // Description:		Copies over the raw data to synchronize it
 //------------------------------------------------------------------------------
-bool pollEncoder(encoderPulse *currentEncoder)
+bool pollEncoder(motorSpeed *motorSpeeds)
 {	
 	bool dataUpdated = false;
+    
 	for(char i = 0; i < 4; i++)
     {
         if(encoderData[i].dataReady)
         {	
-            currentEncoder[i].pulsePeriod = ((encoderData[i].newTimer.value + encoderData[i].overflowTotal*0x10000) - encoderData[i].oldTimer.value);
-            currentEncoder[i].direction = encoderData[i].direction;
-		
-            encoderData[i].dataReady = false;
-		
-            dataUpdated = true;		
-        }    
-    }
+            //Get time between rising edges
+            encoderPeriod_t pulsePeriodRaw = ((encoderData[i].newTimer.value + encoderData[i].overflowTotal*0x10000) - encoderData[i].oldTimer.value);
+            if(pulsePeriodRaw > 500) //Ignores false triggers (Period < 500us))
+            { 
+                //Computer moving average
+                encoderData[i].periodAvg = pulsePeriodRaw + (((encoderData[i].periodAvg - pulsePeriodRaw)*ENCODER_ALPHA_NUM)>>ENCODER_ALPHA_DENOM);
+                
+                
+                //Get motor RPM
+                motorSpeeds[i] = (1000000*60)/((int32_t)encoderData[i].periodAvg*20*7); //RIP clock cycles  
+                if(encoderData[i].direction == ENCODER_REVERSE)
+                {
+                   motorSpeeds[i] = 0 - motorSpeeds[i];
+                }
+                dataUpdated = true;	
+            }
+   
+            encoderData[i].dataReady = false;     	
+        }
+        else if(encoderData[i].overflowCount >= 2) //Check for timeout (motor is stopped)
+        {
+            encoderData[i].overflowCount = 0;
+            motorSpeeds[i]  = 0;
+            
+            dataUpdated = true;
+        }
+        
+        
+    }   
+    
 	
 	return dataUpdated;
 }
